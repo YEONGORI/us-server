@@ -9,11 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.stake.Stake;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,10 +42,6 @@ public class Novel extends BaseEntity {
 
     @NotBlank
     @Size(max = 500)
-    private String author; // 종두 님의 Author class 로 교체 예정
-
-    @NotBlank
-    @Size(max = 500)
     private String synopsis;
 
     @NotBlank
@@ -58,6 +56,13 @@ public class Novel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Set<AgeRating> ageRating;
 
+    @NotBlank
+    @Size(max = 500)
+    private Author author;
+
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Chapter> chapters = new ArrayList<>();
+
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
+    private List<Stake> stakes = new ArrayList<>();
 }

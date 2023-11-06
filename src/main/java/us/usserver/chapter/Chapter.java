@@ -39,4 +39,6 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
+
+    // TODO: 연관 관계 설정을 위한 method 필요
 }
