@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.base.BaseEntity;
+import us.usserver.comment.ChapterComment;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 
@@ -23,7 +24,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Chapter extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chapter_id")
     private Long id;
 
     @NotBlank
@@ -40,5 +42,6 @@ public class Chapter extends BaseEntity {
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
 
-    // TODO: 연관 관계 설정을 위한 method 필요
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
+    private List<ChapterComment> chapterComments = new ArrayList<>();
 }

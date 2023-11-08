@@ -18,7 +18,8 @@ import us.usserver.novel.Novel;
 @AllArgsConstructor
 public class Stake extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "stake_id")
     private Long id;
 
     @ManyToOne
@@ -26,7 +27,7 @@ public class Stake extends BaseEntity {
     private Novel novel;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "author_id")
     private Author author;
 
     @NotNull

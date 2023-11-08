@@ -20,7 +20,8 @@ import us.usserver.chapter.Chapter;
 @AllArgsConstructor
 public class Score extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "score_id")
     private Long id;
 
     @Max(10)
@@ -29,7 +30,7 @@ public class Score extends BaseEntity {
     private Integer score;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "author_id")
     private Author author;
 
     @ManyToOne
