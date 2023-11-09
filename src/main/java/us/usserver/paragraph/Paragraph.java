@@ -20,7 +20,8 @@ import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 @AllArgsConstructor
 public class Paragraph extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "paragraph_id")
     private Long id;
 
     @NotBlank

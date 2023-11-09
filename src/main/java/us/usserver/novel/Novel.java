@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
+import us.usserver.comment.NovelComment;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
@@ -29,7 +30,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Novel extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "novel_id")
     private Long id;
 
     @NotBlank
@@ -69,4 +71,7 @@ public class Novel extends BaseEntity {
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Stake> stakes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
+    private List<NovelComment> novelComments = new ArrayList<>();
 }
