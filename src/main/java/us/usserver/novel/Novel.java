@@ -18,7 +18,6 @@ import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
 import us.usserver.stake.Stake;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -62,8 +61,8 @@ public class Novel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Set<AgeRating> ageRating;
 
-    @NotNull
-    @Size(max = 500)
+    @OneToOne
+    @JoinColumn(name = "author_id")
     private Author author;
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import us.usserver.authority.Authority;
 import us.usserver.comment.ChapterComment;
 import us.usserver.comment.NovelComment;
@@ -17,6 +16,7 @@ import us.usserver.like.ParagraphLike;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
+import us.usserver.member.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +38,12 @@ public class Author {
     @Max(100)
     private String introduction;
 
-    //프로필 사진을 설정하지 않았을 때 default 이미지 값을 Input 예정
+    //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     private String profileImg;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
