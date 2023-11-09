@@ -33,30 +33,34 @@ public class Novel extends BaseEntity {
     private Long id;
 
     @NotBlank
-    @Size(max = 30) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
+    @Size(max = 16) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
     private String title;
 
     @NotBlank
-    @Lob
     private String thumbnail;
 
     @NotBlank
-    @Size(max = 500)
+    @Size(max = 300)
     private String synopsis;
 
     @NotBlank
+    @Size(max = 300)
+    @Column(name = "authordescription")
+    private String authorDescription;
+
+    @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
     private Set<Hashtag> hashtag;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Set<Genre> genre;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Set<AgeRating> ageRating;
 
-    @NotBlank
+    @NotNull
     @Size(max = 500)
     private Author author;
 
