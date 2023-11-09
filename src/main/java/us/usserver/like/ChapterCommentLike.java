@@ -1,14 +1,12 @@
-package us.usserver.stake;
-
+package us.usserver.like;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
-import us.usserver.base.BaseEntity;
+import us.usserver.comment.ChapterComment;
 import us.usserver.novel.Novel;
 
 @Entity
@@ -16,20 +14,17 @@ import us.usserver.novel.Novel;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stake extends BaseEntity {
+public class ChapterCommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stake_id")
+    @Column(name = "chapter_comment_like_id")
     private Long id;
-
-    @ManyToOne
-    @JoinColumn
-    private Novel novel;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @NotNull
-    private Float percentage;
+    @ManyToOne
+    @JoinColumn(name = "chapter_comment_id")
+    private ChapterComment chapterComment;
 }

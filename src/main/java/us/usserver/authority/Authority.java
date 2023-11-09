@@ -1,14 +1,13 @@
-package us.usserver.stake;
-
+package us.usserver.authority;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.dialect.InnoDBStorageEngine;
+import org.springframework.security.core.userdetails.User;
 import us.usserver.author.Author;
-import us.usserver.base.BaseEntity;
 import us.usserver.novel.Novel;
 
 @Entity
@@ -16,10 +15,10 @@ import us.usserver.novel.Novel;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stake extends BaseEntity {
+public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stake_id")
+    @Column(name = "authority_id")
     private Long id;
 
     @ManyToOne
@@ -29,7 +28,4 @@ public class Stake extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
-
-    @NotNull
-    private Float percentage;
 }
