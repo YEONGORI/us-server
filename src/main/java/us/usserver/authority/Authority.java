@@ -26,6 +26,6 @@ public class Authority {
     private Novel novel;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     private Author author;
 }

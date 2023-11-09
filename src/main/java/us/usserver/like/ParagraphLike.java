@@ -16,7 +16,7 @@ import us.usserver.paragraph.Paragraph;
 public class ParagraphLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "paragraphLike_id")
+    @Column(name = "paragraph_like_id")
     private Long id;
     @ManyToOne
     @JoinColumn(name = "author_id")

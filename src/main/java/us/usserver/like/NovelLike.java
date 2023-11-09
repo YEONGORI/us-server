@@ -16,7 +16,7 @@ import us.usserver.novel.Novel;
 public class NovelLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "novelLike_id")
+    @Column(name = "novel_like_id")
     private Long id;
 
     @ManyToOne
