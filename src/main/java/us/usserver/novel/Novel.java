@@ -51,15 +51,16 @@ public class Novel extends BaseEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<Hashtag> hashtag;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Set<Genre> genre;
+    private Genre genre;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Set<AgeRating> ageRating;
+    private AgeRating ageRating;
 
     @OneToOne
     @JoinColumn(name = "author_id")

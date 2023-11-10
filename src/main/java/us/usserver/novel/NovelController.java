@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.novel.dto.NovelInfoResponse;
 
 @ResponseBody
 @RestController
@@ -14,18 +15,17 @@ public class NovelController {
     private final NovelService novelService;
 
     @GetMapping("/{novelId}")
-    public ResponseEntity<?> getNovelInfo(
-            @PathVariable Long novelId
-    ) {
+    public ResponseEntity<?> getNovelInfo(@PathVariable Long novelId) {
+        NovelInfoResponse novelInfo = novelService.getNovelInfo(novelId);
 
     }
-    public ResponseEntity<?> createNovelSection(
-            @PathVariable Long novelId,
-            @Validated @RequestBody NovelSectionCreateDTO createDTO,
-            HttpServletResponse response
-    ) {
-        Long memberId = getMemberId();
-        NovelSectionResponseDTO novelSectionResponseDTO = novelSectionService.createNovelSection(novelId, memberId, createDTO);
-        return makeResponseEntity(novelSectionResponseDTO, HttpStatus.CREATED);
-    }
+//    public ResponseEntity<?> createNovelSection(
+//            @PathVariable Long novelId,
+//            @Validated @RequestBody NovelSectionCreateDTO createDTO,
+//            HttpServletResponse response
+//    ) {
+//        Long memberId = getMemberId();
+//        NovelSectionResponseDTO novelSectionResponseDTO = novelSectionService.createNovelSection(novelId, memberId, createDTO);
+//        return makeResponseEntity(novelSectionResponseDTO, HttpStatus.CREATED);
+//    }
 }
