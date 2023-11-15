@@ -1,4 +1,4 @@
-package us.usserver.like;
+package us.usserver.commentLike;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,15 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
-import us.usserver.comment.ChapterComment;
-import us.usserver.novel.Novel;
+import us.usserver.comment.chapter.ChComment;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChapterCommentLike {
+public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chapter_comment_like_id")
@@ -26,5 +25,5 @@ public class ChapterCommentLike {
 
     @ManyToOne
     @JoinColumn(name = "chapter_comment_id")
-    private ChapterComment chapterComment;
+    private ChComment chComment;
 }

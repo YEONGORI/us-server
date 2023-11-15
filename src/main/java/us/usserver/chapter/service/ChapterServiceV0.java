@@ -1,0 +1,79 @@
+package us.usserver.chapter.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import us.usserver.global.ExceptionMessage;
+import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterRepository;
+import us.usserver.chapter.ChapterService;
+import us.usserver.chapter.dto.ChapterDetailResponse;
+import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.global.ChapterNotFoundException;
+import us.usserver.novel.Novel;
+import us.usserver.novel.NovelRepository;
+import us.usserver.global.NovelNotFoundException;
+import us.usserver.paragraph.dto.ParagraphInfo;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class ChapterServiceV0 implements ChapterService {
+    private final NovelRepository novelRepository;
+    private final ChapterRepository chapterRepository;
+
+    @Override
+    public List<ChaptersOfNovel> getChaptersOfNovel(Long novelId) {
+        Novel novel = getNovel(novelId);
+
+        return chapterRepository.findAllByNovel(novel)
+                .stream().map(chapter -> ChaptersOfNovel.builder()
+                        .id(chapter.getId())
+                        .title(chapter.getTitle())
+                        .part(chapter.getPart())
+                        .createdAt(chapter.getCreatedAt())
+                        .updatedAt(chapter.getUpdatedAt())
+                        .build())
+                .toList();
+    }
+
+
+    @Override
+    public ChapterDetailResponse getChapterDetail(Long novelId, Long chapterId) {
+        Novel novel = getNovel(novelId);
+        Chapter chapter = getChapter(chapterId);
+
+        List<ParagraphInfo> paragraphInfos = chapter.getParagraphs()
+                .stream().map(paragraph -> ParagraphInfo.builder()
+                        .id(paragraph.getId())
+                        .number(paragraph.getNumber())
+                        .content(paragraph.getContent())
+                        .paragraphStatus(paragraph.getParagraphStatus())
+                        .build())
+                .toList();
+
+        return ChapterDetailResponse.builder()
+                .id(chapter.getId())
+                .title(chapter.getTitle())
+                .part(chapter.getPart())
+                .paragraphInfos(paragraphInfos)
+                .build();
+    }
+
+    private Novel getNovel(Long novelId) {
+        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
+        if (novelById.isEmpty()) {
+            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
+        }
+        return novelById.get();
+    }
+
+    private Chapter getChapter(Long chapterId) {
+        Optional<Chapter> chapterById = chapterRepository.findChapterById(chapterId);
+        if (chapterById.isEmpty()) {
+            throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
+        }
+        return chapterById.get();
+    }
+}

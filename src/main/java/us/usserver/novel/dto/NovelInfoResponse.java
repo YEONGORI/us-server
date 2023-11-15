@@ -7,7 +7,6 @@ import us.usserver.novel.novelEnum.Hashtag;
 
 import java.util.Set;
 
-@Getter
 @Builder
 @ToString
 @NoArgsConstructor
@@ -19,6 +18,6 @@ public class NovelInfoResponse {
     private Author createdAuthor;
     private Integer joinedAuthorCnt;
     private Integer commentCnt;
-    private String novelUrlForShare;
+    private String novelSharelUrl;
     private String detailNovelInfoUrl;
 }

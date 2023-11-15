@@ -8,11 +8,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.authority.Authority;
-import us.usserver.comment.ChapterComment;
-import us.usserver.comment.NovelComment;
-import us.usserver.like.ChapterCommentLike;
-import us.usserver.like.NovelLike;
-import us.usserver.like.ParagraphLike;
+import us.usserver.comment.chapter.ChComment;
+import us.usserver.comment.novel.NoComment;
+import us.usserver.commentLike.CommentLike;
+import us.usserver.like.novel.NovelLike;
+import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
@@ -64,12 +64,12 @@ public class Author {
     private List<ParagraphLike> paragraphLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<NovelComment> novelComments = new ArrayList<>();
+    private List<NoComment> noComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChapterComment> chapterComments = new ArrayList<>();
+    private List<ChComment> chComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChapterCommentLike> chapterCommentLikeList = new ArrayList<>();
+    private List<CommentLike> commentLikeList = new ArrayList<>();
 }
 

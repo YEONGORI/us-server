@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.comment.NovelComment;
+import us.usserver.comment.novel.NoComment;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
@@ -73,5 +73,5 @@ public class Novel extends BaseEntity {
     private List<Stake> stakes = new ArrayList<>();
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
-    private List<NovelComment> novelComments = new ArrayList<>();
+    private List<NoComment> noComments = new ArrayList<>();
 }
