@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChapterDetailResponse {
+public class ChapterDetailRes {
     private Long id;
     private String title;
     private Integer part;

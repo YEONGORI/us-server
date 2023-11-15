@@ -2,11 +2,12 @@ package us.usserver.chapter.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
-import us.usserver.chapter.dto.ChapterDetailResponse;
+import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 import us.usserver.global.ChapterNotFoundException;
 import us.usserver.novel.Novel;
@@ -40,8 +41,8 @@ public class ChapterServiceV0 implements ChapterService {
 
 
     @Override
-    public ChapterDetailResponse getChapterDetail(Long novelId, Long chapterId) {
-        Novel novel = getNovel(novelId);
+    public ChapterDetailRes getChapterDetail(Long novelId, Long chapterId) {
+        getNovel(novelId);
         Chapter chapter = getChapter(chapterId);
 
         List<ParagraphInfo> paragraphInfos = chapter.getParagraphs()
@@ -53,12 +54,19 @@ public class ChapterServiceV0 implements ChapterService {
                         .build())
                 .toList();
 
-        return ChapterDetailResponse.builder()
+        return ChapterDetailRes.builder()
                 .id(chapter.getId())
                 .title(chapter.getTitle())
                 .part(chapter.getPart())
                 .paragraphInfos(paragraphInfos)
                 .build();
+    }
+
+    @Override
+    public void createChapter(Long novelId, CreateChapterReq req) {
+        getNovel(novelId);
+        chapterRepository.
+
     }
 
     private Novel getNovel(Long novelId) {
@@ -70,7 +78,7 @@ public class ChapterServiceV0 implements ChapterService {
     }
 
     private Chapter getChapter(Long chapterId) {
-        Optional<Chapter> chapterById = chapterRepository.findChapterById(chapterId);
+        Optional<Chapter> chapterById = chapterRepository.getChapterById(chapterId);
         if (chapterById.isEmpty()) {
             throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
         }

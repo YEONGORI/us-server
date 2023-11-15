@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @ResponseBody
 @RestController
-@RequestMapping("/novel")
+@RequestMapping("/comment")
 @RequiredArgsConstructor
 public class CommentController {
+    private final CommentService commentService;
 
 }
