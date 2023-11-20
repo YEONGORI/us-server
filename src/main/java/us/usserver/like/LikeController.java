@@ -20,9 +20,10 @@ public class LikeController {
     public ResponseEntity<ApiResponse<?>> setLike(@RequestBody SetLikeReq likeReq) {
         LikeType likeType = likeReq.getLikeType();
         Long likeId = likeReq.getId();
+        Long authorId = 1L; // TODO: 이 부분은 토큰 에서 가져올 예정
 
         if (likeType == LikeType.NOVEL) {
-            likeService.setNovelLike(likeId);
+            likeService.setNovelLike(likeId, authorId);
         } else if (likeType == LikeType.PARAGRAPH) {
             likeService.setParagraphLike(likeId);
         } else if (likeType == LikeType.CHAPTER_COMMENT) {

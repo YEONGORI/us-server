@@ -9,8 +9,7 @@ import us.usserver.author.Author;
 
 @Entity
 @Builder
-@Getter
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn
 @NoArgsConstructor
 @AllArgsConstructor

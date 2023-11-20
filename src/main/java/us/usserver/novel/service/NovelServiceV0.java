@@ -10,7 +10,7 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
-import us.usserver.global.NovelNotFoundException;
+import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.comment.novel.NoCommentRepository;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;

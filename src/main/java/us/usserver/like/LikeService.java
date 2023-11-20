@@ -7,7 +7,7 @@ import us.usserver.like.paragraph.ParagraphLike;
 
 @Service
 public interface LikeService {
-    void setNovelLike(Long novelId);
+    void setNovelLike(Long novelId, Long authorId);
 
     void setParagraphLike(Long paragraphId);
 

@@ -9,10 +9,10 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
-import us.usserver.global.ChapterNotFoundException;
+import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
-import us.usserver.global.NovelNotFoundException;
+import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.paragraph.dto.ParagraphInfo;
 
 import java.util.List;
