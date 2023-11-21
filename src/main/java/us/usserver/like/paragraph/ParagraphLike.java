@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
-import us.usserver.like.Like;
 import us.usserver.paragraph.Paragraph;
 
 @Entity
@@ -14,14 +13,14 @@ import us.usserver.paragraph.Paragraph;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParagraphLike extends Like {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "paragraph_like_id")
-//    private Long id;
-//    @ManyToOne
-//    @JoinColumn(name = "author_id")
-//    private Author author;
+public class ParagraphLike {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "paragraph_like_id")
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
 
     @ManyToOne
     @JoinColumn

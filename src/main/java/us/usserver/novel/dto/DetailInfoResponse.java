@@ -9,6 +9,7 @@ import us.usserver.stake.dto.StakeInfo;
 import java.util.List;
 import java.util.Set;
 
+@Getter
 @Builder
 @ToString
 @NoArgsConstructor

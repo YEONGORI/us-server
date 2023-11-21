@@ -1,4 +1,4 @@
-package us.usserver.like.service;
+package us.usserver.like.novel.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,10 +8,9 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.NovelNotFoundException;
-import us.usserver.like.Like;
-import us.usserver.like.LikeRepository;
-import us.usserver.like.LikeService;
 import us.usserver.like.novel.NovelLike;
+import us.usserver.like.novel.NovelLikeRepository;
+import us.usserver.like.novel.NovelLikeService;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 
@@ -19,11 +18,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class LikeServiceV0 implements LikeService {
+public class NovelLikeServiceV0 implements NovelLikeService {
     private final NovelRepository novelRepository;
     private final AuthorRepository authorRepository;
-    private final LikeRepository likeRepository;
-    private final ChapterRepository chapterRepository;
+    private final NovelLikeRepository novelLikeRepository;
 
     @Override
     public void setNovelLike(Long novelId, Long authorId) {
@@ -38,15 +36,12 @@ public class LikeServiceV0 implements LikeService {
 
         Novel novel = novelById.get();
         Author author = authorById.get();
+        NovelLike novelLike = NovelLike
+                .builder()
+                .novel(novel)
+                .author(author)
+                .build();
+        novelLikeRepository.save(novelLike);
     }
 
-    @Override
-    public void setParagraphLike(Long paragraphId) {
-
-    }
-
-    @Override
-    public void setChatperCommentLike(Long chCommentId) {
-
-    }
 }

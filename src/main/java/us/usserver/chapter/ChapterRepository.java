@@ -13,5 +13,7 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
 
     Optional<Chapter> getChapterById(Long chapterId);
 
+    Optional<Chapter> getChapterByTitle(String title);
+
     Integer countChapterByNovel(Novel novel);
 }

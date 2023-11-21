@@ -51,7 +51,7 @@ public class Novel extends BaseEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
-    @ElementCollection(fetch = FetchType.LAZY)
+//    @ElementCollection(fetch = FetchType.LAZY)
     private Set<Hashtag> hashtag;
 
     @NotNull

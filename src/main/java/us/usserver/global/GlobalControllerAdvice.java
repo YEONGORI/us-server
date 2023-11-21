@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import us.usserver.ApiResponse;
+import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.NovelNotFoundException;
 
 @Slf4j
@@ -15,6 +16,12 @@ public class GlobalControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiResponse<Object> novelNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Novel_NOT_FOUND);
+        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+    @ExceptionHandler(AuthorNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiResponse<Object> authorNotFoundHandler(Exception e) {
+        log.error(ExceptionMessage.Author_NOT_FOUND);
         return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 }

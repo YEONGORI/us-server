@@ -32,6 +32,6 @@ public class ChComment extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @OneToMany(mappedBy = "chapter_comment_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chComment", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
 }

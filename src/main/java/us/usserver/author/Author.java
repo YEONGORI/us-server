@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import us.usserver.authority.Authority;
 import us.usserver.comment.chapter.ChComment;
 import us.usserver.comment.novel.NoComment;
 import us.usserver.like.comment.ChCommentLike;
-import us.usserver.like.Like;
+import us.usserver.like.novel.NovelLike;
+import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
@@ -34,7 +36,7 @@ public class Author {
     @NotBlank
     private String nickname;
 
-    @Max(100)
+    @Length(max = 100)
     private String introduction;
 
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
@@ -57,13 +59,10 @@ public class Author {
     private List<Authority> authorities = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
+    private List<NovelLike> novelLikes = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-//    private List<NovelLike> novelLikes = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-//    private List<ParagraphLike> paragraphLikes = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<ParagraphLike> paragraphLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<NoComment> noComments = new ArrayList<>();

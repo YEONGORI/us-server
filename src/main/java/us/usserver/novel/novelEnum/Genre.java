@@ -1,7 +1,7 @@
 package us.usserver.novel.novelEnum;
 
 public enum Genre {
-    FAMTASY,
+    FANTASY,
     MYSTERY,
     ROMANCE,
     THRILLER,

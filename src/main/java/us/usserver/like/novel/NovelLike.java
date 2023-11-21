@@ -1,13 +1,11 @@
 package us.usserver.like.novel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import us.usserver.like.Like;
+import us.usserver.author.Author;
 import us.usserver.novel.Novel;
 
 @Entity
@@ -15,15 +13,15 @@ import us.usserver.novel.Novel;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NovelLike extends Like {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "novel_like_id")
-//    private Long id;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "author_id")
-//    private Author author;
+public class NovelLike {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "novel_like_id")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
 
     @ManyToOne
     @JoinColumn

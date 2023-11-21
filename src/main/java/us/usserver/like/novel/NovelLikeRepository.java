@@ -1,8 +1,8 @@
-package us.usserver.like;
+package us.usserver.like.novel;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LikeRepository extends JpaRepository<Like, Long> {
+public interface NovelLikeRepository extends JpaRepository<NovelLike, Long> {
 }

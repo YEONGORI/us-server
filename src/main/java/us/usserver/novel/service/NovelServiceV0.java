@@ -37,6 +37,7 @@ public class NovelServiceV0 implements NovelService {
 
         // TODO : url 은 상의가 좀 필요함
         return NovelInfoResponse.builder()
+                .title(novel.getTitle())
                 .createdAuthor(novel.getAuthor())
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtag())
