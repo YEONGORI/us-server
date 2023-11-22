@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.comment.NovelComment;
+import us.usserver.comment.novel.NoComment;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
 import us.usserver.stake.Stake;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,30 +34,36 @@ public class Novel extends BaseEntity {
     private Long id;
 
     @NotBlank
-    @Size(max = 30) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
+    @Size(max = 16) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
     private String title;
 
     @NotBlank
     private String thumbnail;
 
     @NotBlank
-    @Size(max = 500)
+    @Size(max = 300)
     private String synopsis;
 
     @NotBlank
+    @Size(max = 300)
+    @Column(name = "authordescription")
+    private String authorDescription;
+
+    @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<Hashtag> hashtag;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
-    private Set<Genre> genre;
+    private Genre genre;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
-    private Set<AgeRating> ageRating;
+    private AgeRating ageRating;
 
-    @NotBlank
-    @Size(max = 500)
+    @OneToOne
+    @JoinColumn(name = "author_id")
     private Author author;
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
@@ -68,5 +73,5 @@ public class Novel extends BaseEntity {
     private List<Stake> stakes = new ArrayList<>();
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
-    private List<NovelComment> novelComments = new ArrayList<>();
+    private List<NoComment> noComments = new ArrayList<>();
 }

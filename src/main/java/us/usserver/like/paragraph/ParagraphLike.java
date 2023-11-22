@@ -1,4 +1,4 @@
-package us.usserver.like;
+package us.usserver.like.paragraph;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package us.usserver.user;
+package us.usserver.member;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -7,21 +7,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.base.BaseEntity;
-import us.usserver.user.userEnum.Gender;
+import us.usserver.member.memberEnum.Gender;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-
-    @NotBlank
-    private String email;
 
     @NotBlank
     private Integer age;

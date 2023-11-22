@@ -1,4 +1,4 @@
-package us.usserver.comment;
+package us.usserver.comment.chapter;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.like.ChapterCommentLike;
+import us.usserver.commentLike.CommentLike;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChapterComment extends BaseEntity {
+public class ChComment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chapter_comment_id")
@@ -33,5 +33,5 @@ public class ChapterComment extends BaseEntity {
     private Author author;
 
     @OneToMany(mappedBy = "chapter_comment_id", cascade = CascadeType.ALL)
-    private List<ChapterCommentLike> chapterCommentLikeList = new ArrayList<>();
+    private List<CommentLike> commentLikeList = new ArrayList<>();
 }

@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.base.BaseEntity;
-import us.usserver.comment.ChapterComment;
+import us.usserver.comment.chapter.ChComment;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 
@@ -43,5 +43,5 @@ public class Chapter extends BaseEntity {
     private List<Paragraph> paragraphs = new ArrayList<>();
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private List<ChapterComment> chapterComments = new ArrayList<>();
+    private List<ChComment> chComments = new ArrayList<>();
 }

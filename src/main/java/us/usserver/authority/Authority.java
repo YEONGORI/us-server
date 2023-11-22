@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.dialect.InnoDBStorageEngine;
-import org.springframework.security.core.userdetails.User;
 import us.usserver.author.Author;
 import us.usserver.novel.Novel;
 

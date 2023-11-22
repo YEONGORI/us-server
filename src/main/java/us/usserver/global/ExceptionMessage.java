@@ -1,0 +1,10 @@
+package us.usserver.global;
+
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public final class ExceptionMessage {
+
+    public static final String Novel_NOT_FOUND = "해당 소설이 존재 하지 않습니다.";
+    public static final String Chapter_NOT_FOUND = "해당 화가 존재 하지 않습니다.";
+}

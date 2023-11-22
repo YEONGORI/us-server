@@ -7,16 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import us.usserver.authority.Authority;
-import us.usserver.comment.ChapterComment;
-import us.usserver.comment.NovelComment;
-import us.usserver.like.ChapterCommentLike;
-import us.usserver.like.NovelLike;
-import us.usserver.like.ParagraphLike;
+import us.usserver.comment.chapter.ChComment;
+import us.usserver.comment.novel.NoComment;
+import us.usserver.commentLike.CommentLike;
+import us.usserver.like.novel.NovelLike;
+import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
+import us.usserver.member.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +38,12 @@ public class Author {
     @Max(100)
     private String introduction;
 
-    //프로필 사진을 설정하지 않았을 때 default 이미지 값을 Input 예정
+    //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     private String profileImg;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
@@ -64,12 +64,12 @@ public class Author {
     private List<ParagraphLike> paragraphLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<NovelComment> novelComments = new ArrayList<>();
+    private List<NoComment> noComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChapterComment> chapterComments = new ArrayList<>();
+    private List<ChComment> chComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChapterCommentLike> chapterCommentLikeList = new ArrayList<>();
+    private List<CommentLike> commentLikeList = new ArrayList<>();
 }
 
