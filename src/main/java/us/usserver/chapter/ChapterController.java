@@ -48,9 +48,9 @@ public class ChapterController {
     @PostMapping("/{novelId}")
     public ResponseEntity<ApiResponse<?>> createChapter(
             @PathVariable Long novelId,
-            @Validated @RequestBody CreateChapterReq request
     ) {
-        chapterService.createChapter(novelId, request);
+        Long authorId = 0L;
+        chapterService.createChapter(novelId, authorId);
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())

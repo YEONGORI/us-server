@@ -14,5 +14,5 @@ public interface ChapterService {
 
     ChapterDetailRes getChapterDetail(Long novelId, Long chapterId);
 
-    void createChapter(Long novelId, CreateChapterReq req);
+    void createChapter(Long novelId, Long authorId);
 }

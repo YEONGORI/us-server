@@ -64,18 +64,18 @@ public class ChapterServiceV0 implements ChapterService {
 
     // TODO: 챕터(회차) 생성 시 제목은 받아야 할 듯.
     @Override
-    public void createChapter(Long novelId, CreateChapterReq req) {
+    public void createChapter(Long novelId, Long authorId) {
         Novel novel = getNovel(novelId);
-        Integer currentChapterPart = chapterRepository.countChapterByNovel(novel);
+        Integer prevChapterPart = chapterRepository.countChapterByNovel(novel);
+        int curChapterPart = prevChapterPart + 1;
 
         Chapter chapter = Chapter.builder()
-                .part(currentChapterPart + 1)
-                .title(req.getTitle())
+                .part(curChapterPart)
+                .title(novel.getTitle() + " " + curChapterPart + "화")
                 .novel(novel)
                 .build();
 
         chapterRepository.save(chapter);
-
     }
 
     private Novel getNovel(Long novelId) {
