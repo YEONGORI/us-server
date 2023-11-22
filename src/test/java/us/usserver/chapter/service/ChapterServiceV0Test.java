@@ -6,10 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
@@ -22,7 +20,6 @@ import us.usserver.novel.novelEnum.Hashtag;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,8 +33,6 @@ class ChapterServiceV0Test {
     private NovelRepository novelRepository;
     @Autowired
     private ChapterServiceV0 chapterServiceV0;
-    @Autowired
-    private ChapterRepository chapterRepository;
 
     private Novel novel;
     private Author author;
@@ -79,45 +74,36 @@ class ChapterServiceV0Test {
                 .build();
 
         assertDoesNotThrow(
-                () -> chapterServiceV0.createChapter(1L, createChapterReq1));
+                () -> chapterServiceV0.createChapter(1L, 1L));
     }
 
     @Test
     @DisplayName("소설 회차 정보 조회")
     void getChaptersOfNovel() {
-        CreateChapterReq createChapterReq1 = CreateChapterReq.builder()
-                .title("두번 째 이야기")
-                .build();
-        CreateChapterReq createChapterReq2 = CreateChapterReq.builder()
-                .title("세번 째 이야기")
-                .build();
+        int prevSize = chapterServiceV0.getChaptersOfNovel(1L).size();
         assertDoesNotThrow(
                 () -> {
-                    chapterServiceV0.createChapter(1L, createChapterReq1);
-                    chapterServiceV0.createChapter(1L, createChapterReq2);
+                    chapterServiceV0.createChapter(1L, 1L);
+                    chapterServiceV0.createChapter(1L, 1L);
                 }
         );
 
         List<ChaptersOfNovel> chaptersOfNovels = assertDoesNotThrow(
                 () -> chapterServiceV0.getChaptersOfNovel(1L));
 
-        assertThat(chaptersOfNovels.size()).isEqualTo(3);
+        assertThat(chaptersOfNovels.size()).isEqualTo(prevSize + 2);
     }
 
     @Test
     @DisplayName("회차 상세 정보 조회")
     void getChapterDetail() {
-        CreateChapterReq createChapterReq = CreateChapterReq.builder()
-                .title("마지막 이야기")
-                .build();
         Assertions.assertDoesNotThrow(
-                () -> chapterServiceV0.createChapter(1L, createChapterReq));
-        Optional<Chapter> chapter = chapterRepository.getChapterByTitle("마지막 이야기");
-        Long chapterId = chapter.get().getId();
+                () -> chapterServiceV0.createChapter(1L, 1L));
+        List<ChaptersOfNovel> chaptersOfNovel = chapterServiceV0.getChaptersOfNovel(novel.getId());
 
-
-        ChapterDetailRes chapterDetail = chapterServiceV0.getChapterDetail(1L, chapterId);
-        org.assertj.core.api.Assertions.assertThat()
-
+        for (ChaptersOfNovel chapter : chaptersOfNovel) {
+            ChapterDetailRes chapterDetail = chapterServiceV0.getChapterDetail(novel.getId(), chapter.getId());
+            assertThat(chapterDetail.getId()).isEqualTo(chapter.getId());
+        }
     }
 }

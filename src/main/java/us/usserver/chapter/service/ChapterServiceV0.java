@@ -1,7 +1,11 @@
 package us.usserver.chapter.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import us.usserver.author.Author;
+import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.chapter.Chapter;
@@ -9,7 +13,9 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.ChapterNotFoundException;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.global.exception.NovelNotFoundException;
@@ -18,11 +24,14 @@ import us.usserver.paragraph.dto.ParagraphInfo;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ChapterServiceV0 implements ChapterService {
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
+    private final AuthorRepository authorRepository;
 
     @Override
     public List<ChaptersOfNovel> getChaptersOfNovel(Long novelId) {
@@ -66,8 +75,13 @@ public class ChapterServiceV0 implements ChapterService {
     @Override
     public void createChapter(Long novelId, Long authorId) {
         Novel novel = getNovel(novelId);
-        Integer prevChapterPart = chapterRepository.countChapterByNovel(novel);
-        int curChapterPart = prevChapterPart + 1;
+        Author author = getAuthor(authorId);
+
+        if (!novel.getAuthor().getId().equals(author.getId())) {
+            throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
+        }
+
+        int curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
 
         Chapter chapter = Chapter.builder()
                 .part(curChapterPart)
@@ -76,6 +90,14 @@ public class ChapterServiceV0 implements ChapterService {
                 .build();
 
         chapterRepository.save(chapter);
+    }
+
+    private Author getAuthor(Long authorId) {
+        Optional<Author> authorById = authorRepository.getAuthorById(authorId);
+        if (authorById.isEmpty()) {
+            throw new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND);
+        }
+        return authorById.get();
     }
 
     private Novel getNovel(Long novelId) {
