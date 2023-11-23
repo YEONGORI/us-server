@@ -93,17 +93,4 @@ class ChapterServiceV0Test {
 
         assertThat(chaptersOfNovels.size()).isEqualTo(prevSize + 2);
     }
-
-    @Test
-    @DisplayName("회차 상세 정보 조회")
-    void getChapterDetail() {
-        Assertions.assertDoesNotThrow(
-                () -> chapterServiceV0.createChapter(1L, 1L));
-        List<ChaptersOfNovel> chaptersOfNovel = chapterServiceV0.getChaptersOfNovel(novel.getId());
-
-        for (ChaptersOfNovel chapter : chaptersOfNovel) {
-            ChapterDetailRes chapterDetail = chapterServiceV0.getChapterDetail(novel.getId(), chapter.getId());
-            assertThat(chapterDetail.getId()).isEqualTo(chapter.getId());
-        }
-    }
 }

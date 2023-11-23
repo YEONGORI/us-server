@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParagraphInfo {
-    private List<ParagraphSelected> selectedList;
-    private List<ParagraphUnSelected> unSelectedList;
+public class ParagraphUnSelected {
+    private Long id;
+    private String content;
+    private int order;
+    private int likeCnt;
+    private String authorName;
+    private ParagraphStatus paragraphStatus;
 }

@@ -12,7 +12,5 @@ import java.util.List;
 public interface ChapterService {
     List<ChaptersOfNovel> getChaptersOfNovel(Long novelId);
 
-    ChapterDetailRes getChapterDetail(Long novelId, Long chapterId);
-
     void createChapter(Long novelId, Long authorId);
 }

@@ -32,18 +32,6 @@ public class ChapterController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{novelId}/{chapterId}")
-    public ResponseEntity<ApiResponse<?>> getChapterDetail(
-            @PathVariable Long novelId, @PathVariable Long chapterId) {
-        ChapterDetailRes detail = chapterService.getChapterDetail(novelId, chapterId);
-        ApiResponse<Object> response = ApiResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(detail)
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
     // TODO: 이전 회차의 권한 설정을 가져올 수 있는 기능을 제공 해야 하는데, 이 권한을 저장 하는 엔티티가 없어서 생성 해야함
     @PostMapping("/{novelId}")
     public ResponseEntity<ApiResponse<?>> createChapter(

@@ -16,6 +16,5 @@ public class ChapterDetailRes {
     private Long id;
     private String title;
     private Integer part;
-
     private List<ParagraphInfo> paragraphInfos;
 }
