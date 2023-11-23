@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import us.usserver.ApiResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.exception.ChapterNotFoundException;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
 
 @Slf4j
@@ -23,5 +25,19 @@ public class GlobalControllerAdvice {
     protected ApiResponse<Object> authorNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Author_NOT_FOUND);
         return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(ChapterNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiResponse<Object> chapterNotFoundHandler(Exception e) {
+        log.error(ExceptionMessage.Chapter_NOT_FOUND);
+        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(MainAuthorIsNotMatchedException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    protected ApiResponse<Object> mainAuthorIsNotMatchedHandler(Exception e) {
+        log.error(ExceptionMessage.Main_Author_NOT_MATCHED);
+        return new ApiResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
 }
