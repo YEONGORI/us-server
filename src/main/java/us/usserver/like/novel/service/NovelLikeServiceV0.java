@@ -25,23 +25,31 @@ public class NovelLikeServiceV0 implements NovelLikeService {
 
     @Override
     public void setNovelLike(Long novelId, Long authorId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
-        Optional<Author> authorById = authorRepository.getAuthorById(authorId);
-        if (novelById.isEmpty()) {
-            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
-        }
-        if (authorById.isEmpty()) {
-            throw new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND);
-        }
+        Novel novel = getNovel(novelId);
+        Author author = getAuthor(authorId);
 
-        Novel novel = novelById.get();
-        Author author = authorById.get();
         NovelLike novelLike = NovelLike
                 .builder()
                 .novel(novel)
                 .author(author)
                 .build();
         novelLikeRepository.save(novelLike);
+    }
+
+    private Novel getNovel(Long novelId) {
+        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
+        if (novelById.isEmpty()) {
+            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
+        }
+        return novelById.get();
+    }
+
+    private Author getAuthor(Long authorId) {
+        Optional<Author> authorById = authorRepository.getAuthorById(authorId);
+        if (authorById.isEmpty()) {
+            throw new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND);
+        }
+        return authorById.get();
     }
 
 }

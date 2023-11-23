@@ -29,11 +29,7 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public NovelInfoResponse getNovelInfo(Long novelId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
-        if (novelById.isEmpty()) {
-            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
-        }
-        Novel novel = novelById.get();
+        Novel novel = getNovel(novelId);
 
         // TODO : url 은 상의가 좀 필요함
         return NovelInfoResponse.builder()
@@ -50,13 +46,7 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
-        if (novelById.isEmpty()) {
-            log.info(ExceptionMessage.Novel_NOT_FOUND);
-            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
-        }
-
-        Novel novel = novelById.get();
+        Novel novel = getNovel(novelId);
         List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel);
 
         return DetailInfoResponse.builder()
@@ -70,5 +60,15 @@ public class NovelServiceV0 implements NovelService {
                 .hashtags(novel.getHashtag())
                 .stakeInfos(stakeInfos)
                 .build();
+    }
+
+    private Novel getNovel(Long novelId) {
+        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
+        if (novelById.isEmpty()) {
+            log.info(ExceptionMessage.Novel_NOT_FOUND);
+            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
+        }
+
+        return novelById.get();
     }
 }
