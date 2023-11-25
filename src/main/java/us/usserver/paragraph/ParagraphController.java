@@ -21,7 +21,9 @@ public class ParagraphController {
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<ApiResponse<?>> getParagraphs(@PathVariable Long chapterId) {
-        ParagraphInfo paragraphs = paragraphService.getParagraphs(chapterId);
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        ParagraphInfo paragraphs = paragraphService.getParagraphs(authorId, chapterId);
+
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -35,7 +37,7 @@ public class ParagraphController {
             @PathVariable Long chapterId,
             @Validated @RequestBody PostParagraphReq req
     ) {
-        Long authorId = 0L; // TODO: 토큰으로 부터 author 정보를 가져올 예정
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
         ParagraphUnSelected paragraph = paragraphService.postParagraph(authorId, chapterId, req);
 
         ApiResponse<Object> response = ApiResponse.builder()
@@ -50,7 +52,7 @@ public class ParagraphController {
     public ResponseEntity<ApiResponse<?>> selectParagraph(
             @PathVariable Long novelId, @PathVariable Long chapterId, @PathVariable Long paragraphId
     ) {
-        Long authorId = 0L; // TODO: 토큰으로 부터 author 정보를 가져올 예정
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
         paragraphService.selectParagraph(authorId, novelId, chapterId, paragraphId);
 
         ApiResponse<Object> response = ApiResponse.builder()

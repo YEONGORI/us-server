@@ -3,15 +3,10 @@ package us.usserver.chapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.ApiResponse;
-import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
-import us.usserver.chapter.dto.CreateChapterReq;
-import us.usserver.chapter.dto.CreateChatperRes;
 
-import java.net.URI;
 import java.util.List;
 
 @ResponseBody

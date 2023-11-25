@@ -15,14 +15,12 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.paragraph.ParagraphService;
-import us.usserver.paragraph.dto.ParagraphInfo;
-import us.usserver.paragraph.dto.ParagraphSelected;
-import us.usserver.paragraph.dto.ParagraphUnSelected;
-import us.usserver.paragraph.dto.PostParagraphReq;
+import us.usserver.paragraph.dto.*;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
+import us.usserver.stake.StakeService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -35,12 +33,35 @@ public class ParagraphServiceV0 implements ParagraphService {
     private final ParagraphLikeRepository paragraphLikeRepository;
     private final AuthorRepository authorRepository;
 
+    private final StakeService stakeService;
+
     @Override
-    public ParagraphInfo getParagraphs(Long chapterId) {
+    public ParagraphsInfo getParagraphs(Long authorId, Long chapterId) {
+        Author author = getAuthor(authorId);
         Chapter chapter = getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-        int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
+        int nextChapterCnt = paragraphs.size();
+
+        List<ParagraphSelected> selectedParagraph = new ArrayList<>();
+        ParagraphInfo myParagraph = null, bestParagraph = null;
+
+        int maxLikeCount = 0, likeCount;
+        for (Paragraph paragraph : paragraphs) {
+            ParagraphStatus status = paragraph.getParagraphStatus();
+            likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
+
+            if (status == ParagraphStatus.REGISTERED && // 내가 쓴 한줄
+                            paragraph.getAuthor().getId().equals(author.getId())) {
+                myParagraph = ParagraphInfo.fromParagraph(paragraph, likeCount);
+            } else if (status == ParagraphStatus.REGISTERED && // 베스트 한줄
+                            likeCount > maxLikeCount) {
+                bestParagraph = ParagraphInfo.fromParagraph(paragraph, likeCount);
+            } else if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
+                selectedParagraph.add(ParagraphSelected.fromParagraph(paragraph));
+            }
+
+        }
 
         List<ParagraphSelected> selectedList = paragraphs.stream()
                 .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
@@ -61,18 +82,24 @@ public class ParagraphServiceV0 implements ParagraphService {
                         .build()
                 ).toList();
 
-        return ParagraphInfo.builder()
-                .selectedList(selectedList)
-                .unSelectedList(unSelectedList)
+        return ParagraphsInfo.builder()
+                .selectedParagraphs(selectedParagraph)
+                .myParagraph(myParagraph)
+                .bestParagraph(bestParagraph)
                 .build();
     }
+
+    @Override
+    public List<ParagraphInfo> getRegisteredParagraphs(Long authorId, Long chapterId) {
+        return null;
+    }
+
 
     @Override
     public ParagraphUnSelected postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
         Author author = getAuthor(authorId);
         Chapter chapter = getChapter(chapterId);
         Integer curChapterCnt = paragraphRepository.countParagraphsByChapter(chapter);
-
 
         Paragraph paragraph = paragraphRepository.save(
                 Paragraph.builder()
@@ -84,9 +111,11 @@ public class ParagraphServiceV0 implements ParagraphService {
                         .build()
         );
 
+        chapter.getParagraphs().add(paragraph);
+
         return ParagraphUnSelected.builder()
                 .content(paragraph.getContent())
-                .likeCnt(paragraphLikeRepository.countAllByParagraph(paragraph))
+                .likeCnt(0)
                 .order(paragraph.getOrder())
                 .authorName(paragraph.getAuthor().getNickname())
                 .paragraphStatus(paragraph.getParagraphStatus())
@@ -96,16 +125,24 @@ public class ParagraphServiceV0 implements ParagraphService {
     @Override
     public void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId) {
         Novel novel = getNovel(novelId);
+        Chapter chapter = getChapter(chapterId);
+        Paragraph paragraph = getParagraph(paragraphId);
+        Author author = getAuthor(authorId);
+        
+        // TODO: 선택되지 않은 paragraph들의 status 변경
+
         if (!novel.getAuthor().getId().equals(authorId)) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
+        if (!novel.getChapters().contains(chapter)) {
+            throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
+        }
+        if (!chapter.getParagraphs().contains(paragraph)) {
+            throw new ParagraphNotFoundException(ExceptionMessage.Paragraph_NOT_FOUND);
+        }
 
-        Author author = getAuthor(authorId);
-        Chapter chapter = getChapter(chapterId);
-        Paragraph paragraph = getParagraph(paragraphId);
         paragraph.setParagraphStatus(ParagraphStatus.SELECTED);
-
-
+        stakeService.setStakeInfoOfNovel(novel, author);
     }
 
     private Novel getNovel(Long novelId) {

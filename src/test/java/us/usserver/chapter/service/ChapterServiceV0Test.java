@@ -1,6 +1,5 @@
 package us.usserver.chapter.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.novel.Novel;

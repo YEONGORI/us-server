@@ -22,6 +22,9 @@ public class Stake extends BaseEntity {
     @Column(name = "stake_id")
     private Long id;
 
+    @NotNull
+    private Float percentage;
+
     @ManyToOne
     @JoinColumn
     private Novel novel;
@@ -29,7 +32,4 @@ public class Stake extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
-
-    @NotNull
-    private Float percentage;
 }

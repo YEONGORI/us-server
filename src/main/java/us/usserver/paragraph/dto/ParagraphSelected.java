@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import us.usserver.paragraph.Paragraph;
 
 @Getter
 @Builder
@@ -12,5 +13,15 @@ import lombok.NoArgsConstructor;
 public class ParagraphSelected {
     private Long id;
     private String content;
+    private Long authorId;
     private int order;
+
+    public static ParagraphSelected fromParagraph(Paragraph paragraph) {
+        return ParagraphSelected.builder()
+                .id(paragraph.getId())
+                .content(paragraph.getContent())
+                .authorId(paragraph.getAuthor().getId())
+                .order(paragraph.getOrder())
+                .build();
+    }
 }
