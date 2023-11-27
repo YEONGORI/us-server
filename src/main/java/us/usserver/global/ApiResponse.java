@@ -1,4 +1,4 @@
-package us.usserver;
+package us.usserver.global;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

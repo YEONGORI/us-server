@@ -116,8 +116,8 @@ class NoCommentServiceV0Test {
     void postCommentInNotExistAuthor() {
         assertThrows(AuthorNotFoundException.class,
                 () -> noCommentServiceV0.postCommentInNovel(
-                        11L,
                         1L,
+                        11L,
                         PostCommentReq.builder().content("").build()
                 ));
     }

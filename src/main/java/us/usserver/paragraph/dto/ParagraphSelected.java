@@ -21,7 +21,7 @@ public class ParagraphSelected {
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .authorId(paragraph.getAuthor().getId())
-                .order(paragraph.getOrder())
+                .order(paragraph.getSequence())
                 .build();
     }
 }

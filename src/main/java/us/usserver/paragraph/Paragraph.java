@@ -26,7 +26,7 @@ public class Paragraph extends BaseEntity {
 
     @Min(0)
     @Max(15)
-    private int order;
+    private int sequence;
 
     @NotNull
     @Setter

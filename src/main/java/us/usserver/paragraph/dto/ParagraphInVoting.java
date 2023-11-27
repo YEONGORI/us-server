@@ -28,7 +28,7 @@ public class ParagraphInVoting {
         return ParagraphInVoting.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
-                .order(paragraph.getOrder())
+                .order(paragraph.getSequence())
                 .likeCnt(likeCnt)
                 .status(paragraph.getParagraphStatus())
                 .authorId(paragraph.getAuthor().getId())
