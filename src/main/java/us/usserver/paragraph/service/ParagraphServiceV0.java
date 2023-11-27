@@ -7,6 +7,7 @@ import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
+import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.*;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
@@ -36,75 +37,73 @@ public class ParagraphServiceV0 implements ParagraphService {
     private final StakeService stakeService;
 
     @Override
-    public ParagraphsInfo getParagraphs(Long authorId, Long chapterId) {
+    public GetParagraphsRes getParagraphs(Long authorId, Long chapterId) {
         Author author = getAuthor(authorId);
         Chapter chapter = getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-        int nextChapterCnt = paragraphs.size();
+        if (chapter.getStatus() == ChapterStatus.COMPLETED) {
+            return getCompletedChParagraph(paragraphs);
+        } else {
+            return getInProgressChParagraph(paragraphs, author);
+        }
+    }
 
-        List<ParagraphSelected> selectedParagraph = new ArrayList<>();
-        ParagraphInfo myParagraph = null, bestParagraph = null;
+    private GetParagraphsRes getCompletedChParagraph(List<Paragraph> paragraphs) {
+        List<ParagraphSelected> selectedParagraphs = paragraphs.stream()
+                .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
+                .map(ParagraphSelected::fromParagraph)
+                .toList();
+
+        return GetParagraphsRes.builder()
+                .selectedParagraphs(selectedParagraphs)
+                .myParagraph(null)
+                .bestParagraph(null)
+                .build();
+    }
+
+    private GetParagraphsRes getInProgressChParagraph(List<Paragraph> paragraphs, Author author) {
+        List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
+        ParagraphInVoting myParagraph = null, bestParagraph = null;
 
         int maxLikeCount = 0, likeCount;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
 
-            if (status == ParagraphStatus.REGISTERED && // 내가 쓴 한줄
+            if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {
-                myParagraph = ParagraphInfo.fromParagraph(paragraph, likeCount);
-            } else if (status == ParagraphStatus.REGISTERED && // 베스트 한줄
+                myParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
+            } else if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
                             likeCount > maxLikeCount) {
-                bestParagraph = ParagraphInfo.fromParagraph(paragraph, likeCount);
+                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
             } else if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
-                selectedParagraph.add(ParagraphSelected.fromParagraph(paragraph));
+                selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
             }
-
         }
 
-        List<ParagraphSelected> selectedList = paragraphs.stream()
-                .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
-                .map(paragraph -> ParagraphSelected.builder()
-                        .content(paragraph.getContent())
-                        .order(nextChapterCnt)
-                        .build()
-                ).toList();
-
-        List<ParagraphUnSelected> unSelectedList = paragraphs.stream()
-                .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.UNSELECTED)
-                .map(paragraph -> ParagraphUnSelected.builder()
-                        .content(paragraph.getContent())
-                        .order(nextChapterCnt)
-                        .likeCnt(paragraphLikeRepository.countAllByParagraph(paragraph))
-                        .authorName(paragraph.getAuthor().getNickname())
-                        .paragraphStatus(ParagraphStatus.UNSELECTED)
-                        .build()
-                ).toList();
-
-        return ParagraphsInfo.builder()
-                .selectedParagraphs(selectedParagraph)
+        return GetParagraphsRes.builder()
+                .selectedParagraphs(selectedParagraphs)
                 .myParagraph(myParagraph)
                 .bestParagraph(bestParagraph)
                 .build();
     }
 
     @Override
-    public List<ParagraphInfo> getRegisteredParagraphs(Long authorId, Long chapterId) {
+    public List<ParagraphInVoting> getInVotingParagraphs(Long chapterId) {
         return null;
     }
 
-
     @Override
-    public ParagraphUnSelected postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
+    public ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
         Author author = getAuthor(authorId);
         Chapter chapter = getChapter(chapterId);
-        Integer curChapterCnt = paragraphRepository.countParagraphsByChapter(chapter);
+        int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
         Paragraph paragraph = paragraphRepository.save(
                 Paragraph.builder()
                         .content(req.getContent())
-                        .order(curChapterCnt + 1)
+                        .order(nextChapterCnt)
                         .paragraphStatus(ParagraphStatus.UNSELECTED)
                         .chapter(chapter)
                         .author(author)
@@ -112,13 +111,15 @@ public class ParagraphServiceV0 implements ParagraphService {
         );
 
         chapter.getParagraphs().add(paragraph);
-
-        return ParagraphUnSelected.builder()
+        return ParagraphInVoting.builder()
                 .content(paragraph.getContent())
-                .likeCnt(0)
                 .order(paragraph.getOrder())
+                .likeCnt(0)
+                .status(paragraph.getParagraphStatus())
+                .authorId(0L) // TODO: 이 부분은 아예 제거 할지 말지 고민중
                 .authorName(paragraph.getAuthor().getNickname())
-                .paragraphStatus(paragraph.getParagraphStatus())
+                .createdAt(paragraph.getCreatedAt())
+                .updatedAt(paragraph.getUpdatedAt())
                 .build();
     }
 
@@ -129,7 +130,6 @@ public class ParagraphServiceV0 implements ParagraphService {
         Paragraph paragraph = getParagraph(paragraphId);
         Author author = getAuthor(authorId);
         
-        // TODO: 선택되지 않은 paragraph들의 status 변경
 
         if (!novel.getAuthor().getId().equals(authorId)) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
@@ -143,6 +143,14 @@ public class ParagraphServiceV0 implements ParagraphService {
 
         paragraph.setParagraphStatus(ParagraphStatus.SELECTED);
         stakeService.setStakeInfoOfNovel(novel, author);
+
+        // 선택 되지 않은 paragraph 들의 status 변경
+        List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
+        for (Paragraph para : paragraphs) {
+            if (para.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
+                para.setParagraphStatus(ParagraphStatus.UNSELECTED);
+            }
+        }
     }
 
     private Novel getNovel(Long novelId) {

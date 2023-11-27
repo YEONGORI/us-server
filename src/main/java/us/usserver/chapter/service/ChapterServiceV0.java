@@ -9,6 +9,7 @@ import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
+import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
@@ -38,6 +39,7 @@ public class ChapterServiceV0 implements ChapterService {
                         .id(chapter.getId())
                         .title(chapter.getTitle())
                         .part(chapter.getPart())
+                        .status(chapter.getStatus())
                         .createdAt(chapter.getCreatedAt())
                         .updatedAt(chapter.getUpdatedAt())
                         .build())
@@ -59,6 +61,7 @@ public class ChapterServiceV0 implements ChapterService {
         Chapter chapter = Chapter.builder()
                 .part(curChapterPart)
                 .title(novel.getTitle() + " " + curChapterPart + "화")
+                .status(ChapterStatus.IN_PROGRESS)
                 .novel(novel)
                 .build();
 

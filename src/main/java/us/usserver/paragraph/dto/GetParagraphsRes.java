@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParagraphsInfo {
+public class GetParagraphsRes {
     private List<ParagraphSelected> selectedParagraphs;
-    private ParagraphInfo myParagraph;
-    private ParagraphInfo bestParagraph;
+    private ParagraphInVoting myParagraph;
+    private ParagraphInVoting bestParagraph;
 }

@@ -12,9 +12,8 @@ import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 @AllArgsConstructor
 public class ParagraphUnSelected {
     private Long id;
+    private String novelName;
+    private String chapterName;
     private String content;
-    private int order;
     private int likeCnt;
-    private String authorName;
-    private ParagraphStatus paragraphStatus;
 }

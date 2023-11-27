@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.base.BaseEntity;
+import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.comment.chapter.ChComment;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
@@ -34,6 +35,8 @@ public class Chapter extends BaseEntity {
 
     @NotNull
     private Integer part;
+
+    private ChapterStatus status;
 
     @ManyToOne
     @JoinColumn

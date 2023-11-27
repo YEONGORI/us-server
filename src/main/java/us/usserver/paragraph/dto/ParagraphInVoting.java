@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import us.usserver.author.dto.AuthorInfo;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParagraphInfo {
+public class ParagraphInVoting {
     private Long id;
     private String content;
     private int order;
@@ -26,8 +24,8 @@ public class ParagraphInfo {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ParagraphInfo fromParagraph(Paragraph paragraph, int likeCnt) {
-        return ParagraphInfo.builder()
+    public static ParagraphInVoting fromParagraph(Paragraph paragraph, int likeCnt) {
+        return ParagraphInVoting.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .order(paragraph.getOrder())
