@@ -41,6 +41,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.mockito:mockito-core'
+
+    testImplementation 'org.jeasy:easy-random-core:5.0.0'
+    testImplementation 'org.jeasy:easy-random-bean-validation:5.0.0'
 }
 
 tasks.named('test') {

@@ -1,6 +1,7 @@
 package us.usserver.paragraph.service;
 
 import org.aspectj.lang.annotation.Before;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,21 +14,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.parameters.P;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorMother;
 import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelMother;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
 import us.usserver.paragraph.Paragraph;
+import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.paragraph.dto.GetParagraphsRes;
+import us.usserver.paragraph.dto.ParagraphInVoting;
+import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.stake.StakeService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,29 +61,34 @@ class ParagraphServiceV0Test {
     private Chapter chapter1;
     private Chapter chapter2;
     private Chapter chapter3;
-    private Paragraph paragraph;
+    private Paragraph paragraph1;
+    private Paragraph paragraph2;
+
     private int paragraphLikeCnt;
 
     @BeforeEach
     public void setUp() {
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
+//        author = Author.builder()
+//                .id(1L)
+//                .nickname("NICKNAME")
+//                .introduction("INTRODUCTION")
+//                .profileImg("PROFILE_IMG")
+//                .build();
+        author = AuthorMother.generateAuthor();
 
-        novel = Novel.builder()
-                .id(1L)
-                .title("NOVEL_TITLE")
-                .thumbnail("THUMBNAIL")
-                .synopsis("SYNOPSIS")
-                .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-                .genre(Genre.FANTASY)
-                .ageRating(AgeRating.GENERAL)
-                .author(author)
-                .build();
+//        novel = Novel.builder()
+//                .id(1L)
+//                .title("NOVEL_TITLE")
+//                .thumbnail("THUMBNAIL")
+//                .synopsis("SYNOPSIS")
+//                .authorDescription("AUTHOR_DESCRIPTION")
+//                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
+//                .genre(Genre.FANTASY)
+//                .ageRating(AgeRating.GENERAL)
+//                .author(author)
+//                .build();
+
+        novel = NovelMother.generateNovel(author);
 
         chapter1 = Chapter.builder()
                 .id(1L)
@@ -101,36 +114,47 @@ class ParagraphServiceV0Test {
                 .novel(novel)
                 .build();
 
-        paragraph = Paragraph.builder()
-                .id(1L)
-                .paragraphStatus(ParagraphStatus.IN_VOTING)
-                .content("PARAGRAPH_CONTENT")
-                .chapter(chapter1)
-                .author(author)
-                .sequence(0)
-                .build();
-
+        paragraph1 = ParagraphMother.generateParagraph(author, chapter1);
+        paragraph2 = ParagraphMother.generateParagraph(author, chapter1);
+//        paragraph1 = Paragraph.builder()
+//                .id(1L)
+//                .paragraphStatus(ParagraphStatus.IN_VOTING)
+//                .content("PARAGRAPH_CONTENT_1")
+//                .chapter(chapter1)
+//                .author(author)
+//                .sequence(0)
+//                .build();
+//
+//        paragraph2 = Paragraph.builder()
+//                .id(2L)
+//                .paragraphStatus(ParagraphStatus.IN_VOTING)
+//                .content("PARAGRAPH_CONTENT_2")
+//                .chapter(chapter1)
+//                .author(author)
+//                .sequence(1)
+//                .build();
 
         Mockito.lenient().when(entityService.getAuthor(anyLong())).thenReturn(author);
         Mockito.lenient().when(entityService.getNovel(anyLong())).thenReturn(novel);
         Mockito.lenient().when(entityService.getChapter(1L)).thenReturn(chapter1);
         Mockito.lenient().when(entityService.getChapter(2L)).thenReturn(chapter2);
         Mockito.lenient().when(entityService.getChapter(3L)).thenReturn(chapter3);
-        Mockito.lenient().when(entityService.getParagraph(anyLong())).thenReturn(paragraph);
-        Mockito.lenient().when(paragraphLikeRepository.countAllByParagraph(paragraph))
+        Mockito.lenient().when(entityService.getParagraph(1L)).thenReturn(paragraph1);
+        Mockito.lenient().when(entityService.getParagraph(2L)).thenReturn(paragraph2);
+        Mockito.lenient().when(paragraphLikeRepository.countAllByParagraph(paragraph1))
                 .thenReturn(paragraphLikeCnt);
     }
 
     @Test
     @DisplayName("회차 보기")
     void getParagraphs() {
-        // when
-        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
-                .thenReturn(Collections.singletonList(paragraph));
-        Mockito.when(paragraphRepository.findAllByChapter(chapter2))
-                .thenReturn(Collections.singletonList(paragraph));
-
         // given
+        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
+                .thenReturn(Collections.singletonList(paragraph1));
+        Mockito.when(paragraphRepository.findAllByChapter(chapter2))
+                .thenReturn(Collections.singletonList(paragraph1));
+
+        // when
         GetParagraphsRes paragraphs1 = paragraphServiceV0.getParagraphs(1L, 1L);
         GetParagraphsRes paragraphs2 = paragraphServiceV0.getParagraphs(1L, 2L);
 
@@ -147,11 +171,11 @@ class ParagraphServiceV0Test {
     @Test
     @DisplayName("처음 시작된 회차 보기")
     void getInitialChParagraph() {
-        // when
+        // given
         Mockito.when(paragraphRepository.findAllByChapter(chapter3))
                 .thenReturn(Collections.emptyList());
 
-        // given
+        // when
         GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(1L, 3L);
 
         // then
@@ -164,12 +188,43 @@ class ParagraphServiceV0Test {
     @Test
     @DisplayName("투표 중인 한줄들 보기")
     void getInVotingParagraphs() {
+        // given
+        List<Paragraph> paragraphs = Arrays.asList(paragraph1, paragraph2);
+        List<ParagraphInVoting> paragraphInVotings = paragraphs.stream()
+                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, 0)).toList();
+
+        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
+                .thenReturn(paragraphs);
+
+        // when
+        List<ParagraphInVoting> inVotingParagraphs = paragraphServiceV0.getInVotingParagraphs(1L);
+
+        // then
+        assertEquals(paragraphInVotings.size(), inVotingParagraphs.size());
+        for (int i = 0; i < paragraphInVotings.size(); i++) {
+            assertEquals(paragraphInVotings.get(i).getContent(), inVotingParagraphs.get(i).getContent());
+        }
 
     }
 
     @Test
     void postParagraph() {
-
+        // TODO: MOCK 객체의 한계로 인해 테스트 코드가 너무 복잡해 짐, @Autowired 로 생성자 주입 받아 다시 작성 예정
+//        // given
+//        PostParagraphReq req = PostParagraphReq.builder()
+//                .content("TEST")
+//                .build();
+//        Mockito.lenient().when(paragraphRepository.save(paragraph1)).thenReturn(paragraph1);
+//        List<Paragraph> paragraphs = Arrays.asList(paragraph1, paragraph2);
+//
+//        // when
+//        ParagraphInVoting paragraphInVoting = paragraphServiceV0.postParagraph(1L, 1L, req);
+//
+//        List<Integer> sequences = paragraphs.stream().map(Paragraph::getSequence).toList();
+//        Integer maxSequence = Collections.max(sequences);
+//
+//        // then
+//        Assertions.assertThat(paragraphInVoting.getSequence()).isEqualTo(maxSequence + 1);
     }
 
     @Test

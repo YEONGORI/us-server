@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class ParagraphInVoting {
     private Long id;
     private String content;
-    private int order;
+    private int sequence;
     private int likeCnt;
     private ParagraphStatus status;
     private Long authorId;
@@ -28,7 +28,7 @@ public class ParagraphInVoting {
         return ParagraphInVoting.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
-                .order(paragraph.getSequence())
+                .sequence(paragraph.getSequence())
                 .likeCnt(likeCnt)
                 .status(paragraph.getParagraphStatus())
                 .authorId(paragraph.getAuthor().getId())

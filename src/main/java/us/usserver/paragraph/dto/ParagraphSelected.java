@@ -14,14 +14,14 @@ public class ParagraphSelected {
     private Long id;
     private String content;
     private Long authorId;
-    private int order;
+    private int sequence;
 
     public static ParagraphSelected fromParagraph(Paragraph paragraph) {
         return ParagraphSelected.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .authorId(paragraph.getAuthor().getId())
-                .order(paragraph.getSequence())
+                .sequence(paragraph.getSequence())
                 .build();
     }
 }

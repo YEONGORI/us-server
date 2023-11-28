@@ -3,6 +3,7 @@ package us.usserver.author;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,9 +35,10 @@ public class Author {
     private Long id;
 
     @NotBlank
+    @Size(max = 11)
     private String nickname;
 
-    @Length(max = 100)
+    @Size(max = 100)
     private String introduction;
 
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
