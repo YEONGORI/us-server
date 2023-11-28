@@ -2,6 +2,7 @@ package us.usserver.paragraph.service;
 
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.parameters.P;
 import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
+import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
+import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.novel.Novel;
 import us.usserver.novel.novelEnum.AgeRating;
@@ -26,6 +29,7 @@ import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.stake.StakeService;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,8 +50,11 @@ class ParagraphServiceV0Test {
 
     private Author author;
     private Novel novel;
-    private Chapter chapter;
+    private Chapter chapter1;
+    private Chapter chapter2;
+    private Chapter chapter3;
     private Paragraph paragraph;
+    private int paragraphLikeCnt;
 
     @BeforeEach
     public void setUp() {
@@ -70,10 +77,27 @@ class ParagraphServiceV0Test {
                 .author(author)
                 .build();
 
-        chapter = Chapter.builder()
+        chapter1 = Chapter.builder()
                 .id(1L)
-                .title("PARAGRAPH_TITLE")
+                .title("PARAGRAPH_TITLE_1")
                 .part(1)
+                .status(ChapterStatus.IN_PROGRESS)
+                .novel(novel)
+                .build();
+
+        chapter2 = Chapter.builder()
+                .id(2L)
+                .title("PARAGRAPH_TITLE_2")
+                .part(2)
+                .status(ChapterStatus.COMPLETED)
+                .novel(novel)
+                .build();
+
+        chapter3 = Chapter.builder()
+                .id(3L)
+                .title("PARAGRAPH_TITLE_3")
+                .part(3)
+                .status(ChapterStatus.IN_PROGRESS)
                 .novel(novel)
                 .build();
 
@@ -81,37 +105,71 @@ class ParagraphServiceV0Test {
                 .id(1L)
                 .paragraphStatus(ParagraphStatus.IN_VOTING)
                 .content("PARAGRAPH_CONTENT")
-                .chapter(chapter)
+                .chapter(chapter1)
                 .author(author)
                 .sequence(0)
                 .build();
 
 
-
-
-        Mockito.when(entityService.getAuthor(anyLong())).thenReturn(author);
-        Mockito.when(entityService.getNovel(anyLong())).thenReturn(novel);
-        Mockito.when(entityService.getChapter(anyLong())).thenReturn(chapter);
-        Mockito.when(entityService.getParagraph(anyLong())).thenReturn(paragraph);
+        Mockito.lenient().when(entityService.getAuthor(anyLong())).thenReturn(author);
+        Mockito.lenient().when(entityService.getNovel(anyLong())).thenReturn(novel);
+        Mockito.lenient().when(entityService.getChapter(1L)).thenReturn(chapter1);
+        Mockito.lenient().when(entityService.getChapter(2L)).thenReturn(chapter2);
+        Mockito.lenient().when(entityService.getChapter(3L)).thenReturn(chapter3);
+        Mockito.lenient().when(entityService.getParagraph(anyLong())).thenReturn(paragraph);
+        Mockito.lenient().when(paragraphLikeRepository.countAllByParagraph(paragraph))
+                .thenReturn(paragraphLikeCnt);
     }
 
     @Test
+    @DisplayName("회차 보기")
     void getParagraphs() {
-        Mockito.when(paragraphRepository.findAllByChapter(any(Chapter.class)))
+        // when
+        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
+                .thenReturn(Collections.singletonList(paragraph));
+        Mockito.when(paragraphRepository.findAllByChapter(chapter2))
                 .thenReturn(Collections.singletonList(paragraph));
 
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(1L, 1L);
+        // given
+        GetParagraphsRes paragraphs1 = paragraphServiceV0.getParagraphs(1L, 1L);
+        GetParagraphsRes paragraphs2 = paragraphServiceV0.getParagraphs(1L, 2L);
 
-        assertNotNull(paragraphs);
-        Mockito.verify(paragraphRepository).findAllByChapter(any(Chapter.class));
+        // then
+        assertNotNull(paragraphs1.getMyParagraph());
+        assertNotNull(paragraphs1.getBestParagraph());
+        assertNull(paragraphs2.getMyParagraph());
+        assertNull(paragraphs2.getBestParagraph());
+
+        Mockito.verify(paragraphRepository).findAllByChapter(chapter1);
+        Mockito.verify(paragraphRepository).findAllByChapter(chapter2);
     }
 
     @Test
+    @DisplayName("처음 시작된 회차 보기")
+    void getInitialChParagraph() {
+        // when
+        Mockito.when(paragraphRepository.findAllByChapter(chapter3))
+                .thenReturn(Collections.emptyList());
+
+        // given
+        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(1L, 3L);
+
+        // then
+        assertNull(paragraphs.getSelectedParagraphs());
+        assertNull(paragraphs.getMyParagraph());
+        assertNull(paragraphs.getBestParagraph());
+        assertNotNull(paragraphs);
+    }
+
+    @Test
+    @DisplayName("투표 중인 한줄들 보기")
     void getInVotingParagraphs() {
+
     }
 
     @Test
     void postParagraph() {
+
     }
 
     @Test

@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface ParagraphLikeRepository extends JpaRepository<ParagraphLike, Long> {
     List<ParagraphLike> findAllByParagraph(Paragraph paragraph);
-    Integer countAllByParagraph(Paragraph paragraph);
+    int countAllByParagraph(Paragraph paragraph);
 }

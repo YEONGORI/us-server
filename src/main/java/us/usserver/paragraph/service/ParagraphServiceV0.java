@@ -42,11 +42,21 @@ public class ParagraphServiceV0 implements ParagraphService {
         Chapter chapter = entityService.getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-        if (chapter.getStatus() == ChapterStatus.COMPLETED) {
+        if (paragraphs.isEmpty()) {
+            return getInitialChParagraph();
+        } else if (chapter.getStatus() == ChapterStatus.COMPLETED) {
             return getCompletedChParagraph(paragraphs);
         } else {
             return getInProgressChParagraph(paragraphs, author);
         }
+    }
+
+    private GetParagraphsRes getInitialChParagraph() {
+        return GetParagraphsRes.builder()
+                .selectedParagraphs(null)
+                .myParagraph(null)
+                .bestParagraph(null)
+                .build();
     }
 
     private GetParagraphsRes getCompletedChParagraph(List<Paragraph> paragraphs) {
@@ -74,10 +84,12 @@ public class ParagraphServiceV0 implements ParagraphService {
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {
                 myParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
-            } else if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
-                            likeCount > maxLikeCount) {
+            }
+            if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
+                            likeCount >= maxLikeCount) {
                 bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
-            } else if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
+            }
+            if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
                 selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
             }
         }
@@ -91,7 +103,12 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public List<ParagraphInVoting> getInVotingParagraphs(Long chapterId) {
-        return null;
+        Chapter chapter = entityService.getChapter(chapterId);
+        List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
+
+        return paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
+                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, paragraphLikeRepository.countAllByParagraph(paragraph)))
+                .toList();
     }
 
     @Override
