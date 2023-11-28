@@ -8,6 +8,8 @@ import us.usserver.global.ApiResponse;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
 
+import java.net.URI;
+
 @ResponseBody
 @RestController
 @RequestMapping("/novel")
@@ -35,5 +37,35 @@ public class NovelController {
                 .data(detailInfo)
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{novelId}/synopsis")
+    public ResponseEntity<ApiResponse<?>> modifyNovelSynopsis(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        DetailInfoResponse detailInfo = novelService.modifyNovelSynopsis(novelId, authorId);
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(detailInfo)
+                .build();
+        return ResponseEntity
+                .created(URI.create("http://localhost:8080/novel/" + novelId + "/detail"))
+                .body(response);
+    }
+
+    @PatchMapping("/{novelId}/author-description")
+    public ResponseEntity<ApiResponse<?>> modifyAuthorDescription(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        DetailInfoResponse detailInfo = novelService.modifyAuthorDescription(novelId, authorId);
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(detailInfo)
+                .build();
+        return ResponseEntity
+                .created(URI.create("http://localhost:8080/novel/" + novelId + "/detail"))
+                .body(response);
     }
 }

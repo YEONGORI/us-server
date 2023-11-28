@@ -9,4 +9,8 @@ public interface NovelService {
     NovelInfoResponse getNovelInfo(Long novelId);
 
     DetailInfoResponse getNovelDetailInfo(Long novelId);
+
+    DetailInfoResponse modifyNovelSynopsis(Long novelId, Long authorId);
+
+    DetailInfoResponse modifyAuthorDescription(Long novelId, Long authorId);
 }
