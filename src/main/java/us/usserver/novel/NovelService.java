@@ -1,8 +1,10 @@
 package us.usserver.novel;
 
 import org.springframework.stereotype.Service;
+import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
+import us.usserver.novel.dto.NovelSynopsis;
 
 @Service
 public interface NovelService {
@@ -10,7 +12,7 @@ public interface NovelService {
 
     DetailInfoResponse getNovelDetailInfo(Long novelId);
 
-    DetailInfoResponse modifyNovelSynopsis(Long novelId, Long authorId);
+    NovelSynopsis modifyNovelSynopsis(Long novelId, Long authorId, NovelSynopsis req);
 
-    DetailInfoResponse modifyAuthorDescription(Long novelId, Long authorId);
+    AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req);
 }

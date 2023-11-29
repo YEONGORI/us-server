@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
@@ -37,13 +34,17 @@ public class Novel extends BaseEntity {
     @Size(max = 16) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
     private String title;
 
+    @Setter
     @NotBlank
+    @Size(max = 500)
     private String thumbnail;
 
+    @Setter
     @NotBlank
     @Size(max = 300)
     private String synopsis;
 
+    @Setter
     @NotBlank
     @Size(max = 300)
     @Column(name = "authordescription")
@@ -51,7 +52,7 @@ public class Novel extends BaseEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
-//    @ElementCollection(fetch = FetchType.LAZY)
+//    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Hashtag> hashtag;
 
     @NotNull

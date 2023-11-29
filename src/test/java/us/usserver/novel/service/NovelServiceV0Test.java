@@ -5,10 +5,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
 import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
@@ -23,12 +29,15 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 @SpringBootTest
 class NovelServiceV0Test {
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     @Autowired
     private NovelServiceV0 novelServiceV0;
 
@@ -37,30 +46,14 @@ class NovelServiceV0Test {
 
     @BeforeEach
     void setup() {
-        Set<Hashtag> hashtags = new HashSet<>();
-        hashtags.add(Hashtag.HASHTAG1);
-        hashtags.add(Hashtag.HASHTAG2);
-        hashtags.add(Hashtag.MONCHKIN);
+        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member);
 
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
+        author = AuthorMother.generateAuthor();
+        author.setMember(member);
         authorRepository.save(author);
 
-        novel = Novel.builder()
-                .id(1L)
-                .title("TITLE")
-                .thumbnail("THUMBNAIL")
-                .synopsis("SYNOPSIS")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtag(hashtags)
-                .genre(Genre.FANTASY)
-                .ageRating(AgeRating.GENERAL)
-                .build();
+        novel = NovelMother.generateNovel(author);
         novelRepository.save(novel);
     }
 
@@ -113,5 +106,13 @@ class NovelServiceV0Test {
         assertThat(detailInfoResponse.getGenre()).isEqualTo(novel.getGenre());
         assertThat(detailInfoResponse.getHashtags()).isEqualTo(novel.getHashtag());
         assertThat(detailInfoResponse.getStakeInfos()).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    void modifyNovelSynopsis() {
+    }
+
+    @Test
+    void modifyAuthorDescription() {
     }
 }

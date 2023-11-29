@@ -3,10 +3,13 @@ package us.usserver.novel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiResponse;
+import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
+import us.usserver.novel.dto.NovelSynopsis;
 
 import java.net.URI;
 
@@ -40,32 +43,34 @@ public class NovelController {
     }
 
     @PatchMapping("/{novelId}/synopsis")
-    public ResponseEntity<ApiResponse<?>> modifyNovelSynopsis(@PathVariable Long novelId) {
+    public ResponseEntity<ApiResponse<?>> modifyNovelSynopsis(
+            @PathVariable Long novelId,
+            @Validated @RequestBody NovelSynopsis req
+    ) {
         Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
-        DetailInfoResponse detailInfo = novelService.modifyNovelSynopsis(novelId, authorId);
+        NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
 
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(detailInfo)
+                .data(synopsis)
                 .build();
-        return ResponseEntity
-                .created(URI.create("http://localhost:8080/novel/" + novelId + "/detail"))
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{novelId}/author-description")
-    public ResponseEntity<ApiResponse<?>> modifyAuthorDescription(@PathVariable Long novelId) {
+    public ResponseEntity<ApiResponse<?>> modifyAuthorDescription(
+            @PathVariable Long novelId,
+            @Validated @RequestBody AuthorDescription req
+    ) {
         Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
-        DetailInfoResponse detailInfo = novelService.modifyAuthorDescription(novelId, authorId);
+        AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
 
         ApiResponse<Object> response = ApiResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(detailInfo)
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(description)
                 .build();
-        return ResponseEntity
-                .created(URI.create("http://localhost:8080/novel/" + novelId + "/detail"))
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 }

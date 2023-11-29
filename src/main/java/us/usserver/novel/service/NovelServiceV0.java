@@ -1,26 +1,29 @@
 package us.usserver.novel.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import us.usserver.author.Author;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.authority.AuthorityRepository;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.novel.Novel;
-import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
+import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
-import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.comment.novel.NoCommentRepository;
+import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class NovelServiceV0 implements NovelService {
     private final EntityService entityService;
@@ -62,4 +65,31 @@ public class NovelServiceV0 implements NovelService {
                 .stakeInfos(stakeInfos)
                 .build();
     }
+
+    @Override
+    public NovelSynopsis modifyNovelSynopsis(Long novelId, Long authorId, NovelSynopsis req) {
+        Novel novel = entityService.getNovel(novelId);
+        Author author = entityService.getAuthor(authorId);
+
+        if (!novel.getAuthor().getId().equals(author.getId())) {
+            throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
+        }
+
+        novel.setSynopsis(req.getSynopsis());
+        return req;
+    }
+
+    @Override
+    public AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req) {
+        Novel novel = entityService.getNovel(novelId);
+        Author author = entityService.getAuthor(authorId);
+
+        if (!novel.getAuthor().getId().equals(author.getId())) {
+            throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
+        }
+
+        novel.setAuthorDescription(req.getDescription());
+        return req;
+    }
+
 }

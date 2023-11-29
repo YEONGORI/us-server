@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import us.usserver.authority.Authority;
 import us.usserver.comment.chapter.ChComment;
@@ -44,7 +41,8 @@ public class Author {
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     private String profileImg;
 
-    @OneToOne
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
