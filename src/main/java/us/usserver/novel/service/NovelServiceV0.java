@@ -51,7 +51,7 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel);
+        List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel).stream();
 
         return DetailInfoResponse.builder()
                 .title(novel.getTitle())

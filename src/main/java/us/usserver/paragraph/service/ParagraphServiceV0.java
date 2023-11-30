@@ -156,6 +156,9 @@ public class ParagraphServiceV0 implements ParagraphService {
         if (!novel.getMainAuthor().getId().equals(authorId)) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
+//        if (novel.getChapters().stream().noneMatch(ch -> ch.getId().equals(chapterId))) {
+//            throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
+//        }
         if (!novel.getChapters().contains(chapter)) {
             throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
         }
