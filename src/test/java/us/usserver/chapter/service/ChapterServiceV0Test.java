@@ -54,7 +54,7 @@ class ChapterServiceV0Test {
                 .title("TITLE")
                 .thumbnail("THUMBNAIL")
                 .synopsis("SYNOPSIS")
-                .author(author)
+                .mainAuthor(author)
                 .authorDescription("AUTHOR_DESCRIPTION")
                 .hashtag(hashtags)
                 .genre(Genre.FANTASY)

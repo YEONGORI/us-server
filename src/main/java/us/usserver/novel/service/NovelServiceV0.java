@@ -38,7 +38,7 @@ public class NovelServiceV0 implements NovelService {
         // TODO : url 은 상의가 좀 필요함
         return NovelInfoResponse.builder()
                 .title(novel.getTitle())
-                .createdAuthor(novel.getAuthor())
+                .createdAuthor(novel.getMainAuthor())
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtag())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
@@ -57,7 +57,7 @@ public class NovelServiceV0 implements NovelService {
                 .title(novel.getTitle())
                 .thumbnail(novel.getThumbnail())
                 .synopsis(novel.getSynopsis())
-                .authorName(novel.getAuthor().getNickname())
+                .authorName(novel.getMainAuthor().getNickname())
                 .authorIntroduction(novel.getAuthorDescription())
                 .ageRating(novel.getAgeRating())
                 .genre(novel.getGenre())
@@ -71,7 +71,7 @@ public class NovelServiceV0 implements NovelService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (!novel.getAuthor().getId().equals(author.getId())) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 
@@ -84,7 +84,7 @@ public class NovelServiceV0 implements NovelService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (!novel.getAuthor().getId().equals(author.getId())) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 

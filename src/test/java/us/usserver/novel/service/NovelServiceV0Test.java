@@ -75,7 +75,7 @@ class NovelServiceV0Test {
                 () -> novelServiceV0.getNovelInfo(novel.getId()));
 
         assertThat(novelInfoResponse.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelInfoResponse.getCreatedAuthor().getId()).isEqualTo(novel.getAuthor().getId());
+        assertThat(novelInfoResponse.getCreatedAuthor().getId()).isEqualTo(novel.getMainAuthor().getId());
         assertThat(novelInfoResponse.getGenre()).isEqualTo(novel.getGenre());
         assertThat(novelInfoResponse.getHashtag()).isEqualTo(novel.getHashtag());
 
@@ -99,7 +99,7 @@ class NovelServiceV0Test {
         assertThat(detailInfoResponse.getTitle()).isEqualTo(novel.getTitle());
         assertThat(detailInfoResponse.getThumbnail()).isEqualTo(novel.getThumbnail());
         assertThat(detailInfoResponse.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(detailInfoResponse.getAuthorName()).isEqualTo(novel.getAuthor().getNickname());
+        assertThat(detailInfoResponse.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
         assertThat(detailInfoResponse.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
         assertThat(detailInfoResponse.getAgeRating()).isEqualTo(novel.getAgeRating());
         assertThat(detailInfoResponse.getGenre()).isEqualTo(novel.getGenre());

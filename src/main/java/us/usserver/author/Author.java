@@ -1,21 +1,19 @@
 package us.usserver.author;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import us.usserver.authority.Authority;
 import us.usserver.comment.chapter.ChComment;
 import us.usserver.comment.novel.NoComment;
 import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
+import us.usserver.member.Member;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
-import us.usserver.member.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +71,10 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
-}
 
+
+    public void addAuthorNovel(Authority authority) {
+        authority.setAuthor(this);
+        this.authorities.add(authority);
+    }
+}
