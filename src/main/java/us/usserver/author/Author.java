@@ -39,6 +39,7 @@ public class Author {
     private String introduction;
 
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
+    @Size(max = 500)
     private String profileImg;
 
     @Setter

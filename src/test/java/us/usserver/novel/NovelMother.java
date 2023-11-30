@@ -8,6 +8,8 @@ import org.jeasy.random.randomizers.text.StringRandomizer;
 import us.usserver.author.Author;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.novel.Novel;
+import us.usserver.novel.dto.AuthorDescription;
+import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
@@ -34,7 +36,24 @@ public class NovelMother {
                 .randomize(Author.class, () -> author);
 
         EasyRandom easyRandom = new EasyRandom(randomParameters);
-        Novel novel = easyRandom.nextObject(Novel.class);
-        return novel;
+        return easyRandom.nextObject(Novel.class);
+    }
+
+    public static NovelSynopsis generateSysnopsis() {
+        EasyRandomParameters randomParameters = new EasyRandomParameters()
+                .charset(StandardCharsets.UTF_8)
+                .randomize(String.class, new StringRandomizer(300));
+
+        EasyRandom easyRandom = new EasyRandom(randomParameters);
+        return easyRandom.nextObject(NovelSynopsis.class);
+    }
+
+    public static AuthorDescription generateDescription() {
+        EasyRandomParameters randomParameters = new EasyRandomParameters()
+                .charset(StandardCharsets.UTF_8)
+                .randomize(String.class, new StringRandomizer(300));
+
+        EasyRandom easyRandom = new EasyRandom(randomParameters);
+        return easyRandom.nextObject(AuthorDescription.class);
     }
 }
