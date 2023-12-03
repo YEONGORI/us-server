@@ -73,4 +73,37 @@ public class NovelController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<?>> searchNovel(@Valid SearchNovelReq searchNovelReq) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(searchNovelReq);
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(novelPageInfoResponse)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search-keyword")
+    public ResponseEntity<ApiResponse<?>> getSearchWord() {
+        SearchKeywordResponse searchWordResponse = novelService.searchKeyword();
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(searchWordResponse)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/search-keyword")
+    public ResponseEntity<ApiResponse<?>> deleteAllSearchWord() {
+        novelService.deleteSearchKeyword();
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }

@@ -11,11 +11,15 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import us.usserver.novel.Novel;
 import us.usserver.novel.dto.MoreInfoOfNovel;
+import us.usserver.novel.dto.SearchNovelReq;
 import us.usserver.novel.dto.SortDto;
+import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.novelEnum.NovelStatus;
 import us.usserver.novel.novelEnum.Orders;
 
 import java.util.List;
 
+import static org.springframework.util.StringUtils.hasText;
 import static us.usserver.novel.QNovel.novel;
 
 @RequiredArgsConstructor
@@ -32,6 +36,14 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
         return novelSlice;
     }
 
+    @Override
+    public Slice<Novel> searchNovelList(SearchNovelReq searchNovelReq, Pageable pageable) {
+        List<Novel> novels = getSearchNovel(searchNovelReq, pageable);
+        Slice<Novel> novelSlice = checkLastPage(pageable, novels);
+
+        return novelSlice;
+    }
+
     private List<Novel> getMoreNovel(MoreInfoOfNovel moreInfoOfNovel, Pageable pageable) {
         return queryFactory
                 .select(novel)
@@ -42,8 +54,35 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
                 .limit(pageable.getPageSize()+1)
                 .fetch();
     }
+
+    private List<Novel> getSearchNovel(SearchNovelReq searchNovelReq, Pageable pageable) {
+        return queryFactory
+                .select(novel)
+                .from(novel)
+                .where(
+                        ltNovelId(searchNovelReq.getLastNovelId()),
+                        containsTitle(searchNovelReq.getTitle()),
+                        containsHashtag(searchNovelReq.getHashtag()),
+                        eqNovelStatus(searchNovelReq.getStatus()))
+                .orderBy(novelSort(searchNovelReq.getSortDto()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()+1)
+                .fetch();
+    }
+
     private BooleanExpression ltNovelId(Long lastNovelId) {
         return lastNovelId == 0L ? null : novel.id.lt(lastNovelId);
+    }
+    private BooleanExpression containsTitle(String title) {
+        return hasText(title) ? novel.title.contains(title) : null;
+    }
+
+    private BooleanExpression containsHashtag(Hashtag hashtag) {
+        return hasText(String.valueOf(hashtag)) ? novel.hashtag.contains(hashtag) : null;
+    }
+
+    private BooleanExpression eqNovelStatus(NovelStatus status) {
+        return hasText(String.valueOf(status)) ? novel.status.eq(status) : null;
     }
 
     private OrderSpecifier<?> novelSort(SortDto sortDto) {

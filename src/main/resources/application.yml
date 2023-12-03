@@ -8,3 +8,7 @@ spring:
     username: sa
     password: ""
     url: jdbc:h2:mem:US_FOR_TEST
+
+  redis:
+    host: localhost
+    port: 6379

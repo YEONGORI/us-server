@@ -14,4 +14,10 @@ public interface NovelService {
     HomeNovelListResponse homeNovelInfo(Long memberId);
 
     NovelPageInfoResponse moreNovel(MoreInfoOfNovel novelMoreDto);
+
+    NovelPageInfoResponse searchNovel(SearchNovelReq searchNovelReq);
+
+    SearchKeywordResponse searchKeyword();
+
+    void deleteSearchKeyword();
 }

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
@@ -22,6 +25,8 @@ import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,6 +39,9 @@ public class NovelServiceV0 implements NovelService {
     private final NovelRepository novelRepository;
     private final AuthorRepository authorRepository;
     private final NovelCustomRepository novelCustomRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    private static final Integer RECENT_KEYWORD_SIZE = 10;
 
     @Override
     public Novel createNovel(CreateNovelReq createNovelReq) {
@@ -83,6 +91,7 @@ public class NovelServiceV0 implements NovelService {
     }
 
     @Override
+    //TODO: authorId 임시
     public HomeNovelListResponse homeNovelInfo(Long authorId) {
         Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
 
@@ -120,5 +129,68 @@ public class NovelServiceV0 implements NovelService {
     private Long getLastNovelId(Slice<Novel> novelSlice){
         Long id = novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
         return id;
+    }
+
+    @Override
+    public NovelPageInfoResponse searchNovel(SearchNovelReq searchNovelReq) {
+        PageRequest pageable = PageRequest.ofSize(searchNovelReq.getSize());
+        if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
+            increaseKeywordScore(searchNovelReq.getTitle());
+            recentKeyword(searchNovelReq.getAuthorId(), searchNovelReq.getTitle());
+        }
+        Slice<Novel> novelSlice = novelCustomRepository.searchNovelList(searchNovelReq, pageable);
+
+        return getNovelPageInfoResponse(novelSlice, searchNovelReq.getSortDto());
+    }
+
+    @Override
+    public SearchKeywordResponse searchKeyword() {
+        //Token 값으로 변경
+        Long memberId = 1L;
+
+        //최신 검색어
+        ListOperations<String, String> opsForList = redisTemplate.opsForList();
+        ZSetOperations<String, String> opsForZSet = redisTemplate.opsForZSet();
+
+        //인기 검색어
+        String hot_keyword = "ranking";
+        Set<ZSetOperations.TypedTuple<String>> rankingTuples = opsForZSet.reverseRangeWithScores(hot_keyword, 0, 9);
+
+        return SearchKeywordResponse.builder()
+                .recentSearch(opsForList.range(String.valueOf(memberId), 0, 9))
+                .hotSearch(rankingTuples.stream().map(set -> String.valueOf(set)).collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    public void deleteSearchKeyword() {
+        //TODO memberId 토큰에서 꺼내올 예정
+        Long memberId = 1L;
+        String key = String.valueOf(memberId);
+        Long size = redisTemplate.opsForList().size(key);
+
+        redisTemplate.opsForList().rightPop(key, size);
+    }
+
+    private void increaseKeywordScore(String keyword) {
+        Integer score = 0;
+
+        try {
+            redisTemplate.opsForZSet().incrementScore("ranking", keyword,1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        redisTemplate.opsForZSet().incrementScore("ranking", keyword, score);
+    }
+
+    private void recentKeyword(Long memberId, String keyword) {
+        //security 도입 후 Long memberId -> 현재 로그인 중인 MemberId
+        String key = String.valueOf(memberId);
+
+        Long size = redisTemplate.opsForList().size(key);
+        if (size == (long) RECENT_KEYWORD_SIZE) {
+            redisTemplate.opsForList().rightPop(key);
+        }
+        redisTemplate.opsForList().leftPush(key, keyword);
     }
 }
