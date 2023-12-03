@@ -3,13 +3,17 @@ package us.usserver.novel.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import us.usserver.author.Author;
+import us.usserver.author.AuthorRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.authority.AuthorityRepository;
+import us.usserver.global.exception.MemberNotFoundException;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
 import us.usserver.novel.dto.DetailInfoResponse;
+import us.usserver.novel.dto.NovelCreateDto;
 import us.usserver.novel.dto.NovelInfoResponse;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.comment.novel.NoCommentRepository;
@@ -27,6 +31,20 @@ public class NovelServiceV0 implements NovelService {
     private final AuthorityRepository authorityRepository;
     private final NoCommentRepository noCommentRepository;
     private final StakeRepository stakeRepository;
+    private final NovelRepository novelRepository;
+    private final AuthorRepository authorRepository;
+
+    @Override
+    public Novel createNovel(NovelCreateDto novelCreateDto) {
+        //TODO: 토큰 값 변경 예정
+        Long authorId = 1L;
+        Author author = authorRepository.findById(authorId).orElseThrow(() -> new MemberNotFoundException(ExceptionMessage.Member_NOT_FOUND));
+
+        Novel novel = novelCreateDto.toEntity(author);
+        Novel saveNovel = novelRepository.save(novel);
+
+        return saveNovel;
+    }
 
     @Override
     public NovelInfoResponse getNovelInfo(Long novelId) {

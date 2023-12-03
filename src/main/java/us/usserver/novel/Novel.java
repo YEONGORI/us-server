@@ -16,6 +16,7 @@ import us.usserver.comment.novel.NoComment;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.novelEnum.NovelStatus;
 import us.usserver.stake.Stake;
 
 import java.util.ArrayList;
@@ -61,6 +62,12 @@ public class Novel extends BaseEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AgeRating ageRating;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private NovelStatus status;
+    @NotBlank
+    private Integer hit;
 
     @OneToOne
     @JoinColumn(name = "author_id")
