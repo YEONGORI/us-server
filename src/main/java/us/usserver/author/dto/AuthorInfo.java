@@ -1,14 +1,15 @@
-package us.usserver;
+package us.usserver.author.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse<T> {
-    private int status;
-    private String message;
-    private T data;
+public class AuthorInfo {
+    private Long id;
+    private String nickName;
 }

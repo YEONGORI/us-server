@@ -1,7 +1,7 @@
 package us.usserver.paragraph.paragraphEnum;
 
 public enum ParagraphStatus {
-    ENROLLED,
+    IN_VOTING,
     SELECTED,
-
+    UNSELECTED
 }

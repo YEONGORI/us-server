@@ -3,15 +3,10 @@ package us.usserver.chapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import us.usserver.ApiResponse;
-import us.usserver.chapter.dto.ChapterDetailRes;
+import us.usserver.global.ApiResponse;
 import us.usserver.chapter.dto.ChaptersOfNovel;
-import us.usserver.chapter.dto.CreateChapterReq;
-import us.usserver.chapter.dto.CreateChatperRes;
 
-import java.net.URI;
 import java.util.List;
 
 @ResponseBody
@@ -28,18 +23,6 @@ public class ChapterController {
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(chapters)
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{novelId}/{chapterId}")
-    public ResponseEntity<ApiResponse<?>> getChapterDetail(
-            @PathVariable Long novelId, @PathVariable Long chapterId) {
-        ChapterDetailRes detail = chapterService.getChapterDetail(novelId, chapterId);
-        ApiResponse<Object> response = ApiResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(detail)
                 .build();
         return ResponseEntity.ok(response);
     }

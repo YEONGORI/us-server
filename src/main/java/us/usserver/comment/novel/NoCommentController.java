@@ -5,8 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import us.usserver.ApiResponse;
-import us.usserver.chapter.dto.ChapterDetailRes;
+import us.usserver.global.ApiResponse;
 import us.usserver.comment.novel.dto.CommentsInNovelRes;
 import us.usserver.comment.novel.dto.PostCommentReq;
 

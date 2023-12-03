@@ -3,10 +3,7 @@ package us.usserver.paragraph;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
@@ -29,9 +26,10 @@ public class Paragraph extends BaseEntity {
 
     @Min(0)
     @Max(15)
-    private int number;
+    private int sequence;
 
     @NotNull
+    @Setter
     private ParagraphStatus paragraphStatus;
 
     @ManyToOne

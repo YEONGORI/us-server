@@ -3,6 +3,7 @@ package us.usserver.novel.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.novel.Novel;
@@ -22,14 +23,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class NovelServiceV0 implements NovelService {
-    private final NovelRepository novelRepository;
+    private final EntityService entityService;
     private final AuthorityRepository authorityRepository;
     private final NoCommentRepository noCommentRepository;
     private final StakeRepository stakeRepository;
 
     @Override
     public NovelInfoResponse getNovelInfo(Long novelId) {
-        Novel novel = getNovel(novelId);
+        Novel novel = entityService.getNovel(novelId);
 
         // TODO : url 은 상의가 좀 필요함
         return NovelInfoResponse.builder()
@@ -46,7 +47,7 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
-        Novel novel = getNovel(novelId);
+        Novel novel = entityService.getNovel(novelId);
         List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel);
 
         return DetailInfoResponse.builder()
@@ -60,15 +61,5 @@ public class NovelServiceV0 implements NovelService {
                 .hashtags(novel.getHashtag())
                 .stakeInfos(stakeInfos)
                 .build();
-    }
-
-    private Novel getNovel(Long novelId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
-        if (novelById.isEmpty()) {
-            log.info(ExceptionMessage.Novel_NOT_FOUND);
-            throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
-        }
-
-        return novelById.get();
     }
 }

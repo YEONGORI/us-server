@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NovelLikeRepository extends JpaRepository<NovelLike, Long> {
+
 }

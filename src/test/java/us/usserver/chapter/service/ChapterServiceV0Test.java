@@ -1,6 +1,5 @@
 package us.usserver.chapter.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.chapter.dto.ChapterDetailRes;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.novel.Novel;
@@ -92,18 +89,5 @@ class ChapterServiceV0Test {
                 () -> chapterServiceV0.getChaptersOfNovel(1L));
 
         assertThat(chaptersOfNovels.size()).isEqualTo(prevSize + 2);
-    }
-
-    @Test
-    @DisplayName("회차 상세 정보 조회")
-    void getChapterDetail() {
-        Assertions.assertDoesNotThrow(
-                () -> chapterServiceV0.createChapter(1L, 1L));
-        List<ChaptersOfNovel> chaptersOfNovel = chapterServiceV0.getChaptersOfNovel(novel.getId());
-
-        for (ChaptersOfNovel chapter : chaptersOfNovel) {
-            ChapterDetailRes chapterDetail = chapterServiceV0.getChapterDetail(novel.getId(), chapter.getId());
-            assertThat(chapterDetail.getId()).isEqualTo(chapter.getId());
-        }
     }
 }

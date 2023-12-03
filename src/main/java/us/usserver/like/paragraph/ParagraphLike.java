@@ -18,6 +18,7 @@ public class ParagraphLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "paragraph_like_id")
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
