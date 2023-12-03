@@ -7,10 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import us.usserver.authority.Authority;
 import us.usserver.comment.chapter.ChComment;
 import us.usserver.comment.novel.NoComment;
-import us.usserver.commentLike.CommentLike;
+import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.paragraph.Paragraph;
@@ -35,7 +36,7 @@ public class Author {
     @NotBlank
     private String nickname;
 
-    @Max(100)
+    @Length(max = 100)
     private String introduction;
 
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
@@ -70,6 +71,6 @@ public class Author {
     private List<ChComment> chComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<CommentLike> commentLikeList = new ArrayList<>();
+    private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
 }
 

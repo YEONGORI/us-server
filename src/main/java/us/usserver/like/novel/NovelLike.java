@@ -20,10 +20,10 @@ public class NovelLike {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
-    private Novel novel;
-
-    @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
+
+    @ManyToOne
+    @JoinColumn
+    private Novel novel;
 }

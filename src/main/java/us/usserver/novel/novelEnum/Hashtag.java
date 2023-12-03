@@ -7,4 +7,6 @@ package us.usserver.novel.novelEnum;
  */
 public enum Hashtag {
     MONCHKIN,
+    HASHTAG1,
+    HASHTAG2
 }

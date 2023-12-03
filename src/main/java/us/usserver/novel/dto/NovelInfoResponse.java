@@ -7,6 +7,7 @@ import us.usserver.novel.novelEnum.Hashtag;
 
 import java.util.Set;
 
+@Getter
 @Builder
 @ToString
 @NoArgsConstructor

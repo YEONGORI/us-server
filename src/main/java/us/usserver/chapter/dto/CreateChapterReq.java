@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChaptersOfNovel {
-    private Long id;
+public class CreateChapterReq {
     private String title;
-    private Integer part;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
 }

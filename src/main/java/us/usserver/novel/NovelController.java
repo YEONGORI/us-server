@@ -36,13 +36,4 @@ public class NovelController {
                 .build();
         return ResponseEntity.ok(response);
     }
-//    public ResponseEntity<?> createNovelSection(
-//            @PathVariable Long novelId,
-//            @Validated @RequestBody NovelSectionCreateDTO createDTO,
-//            HttpServletResponse response
-//    ) {
-//        Long memberId = getMemberId();
-//        NovelSectionResponseDTO novelSectionResponseDTO = novelSectionService.createNovelSection(novelId, memberId, createDTO);
-//        return makeResponseEntity(novelSectionResponseDTO, HttpStatus.CREATED);
-//    }
 }

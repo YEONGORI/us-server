@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.commentLike.CommentLike;
+import us.usserver.like.comment.ChCommentLike;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,6 @@ public class ChComment extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @OneToMany(mappedBy = "chapter_comment_id", cascade = CascadeType.ALL)
-    private List<CommentLike> commentLikeList = new ArrayList<>();
+    @OneToMany(mappedBy = "chComment", cascade = CascadeType.ALL)
+    private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
 }

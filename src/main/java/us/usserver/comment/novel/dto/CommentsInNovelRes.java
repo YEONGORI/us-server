@@ -1,4 +1,4 @@
-package us.usserver.chapter.dto;
+package us.usserver.comment.novel.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChaptersOfNovel {
+public class CommentsInNovelRes {
     private Long id;
-    private String title;
-    private Integer part;
+    private String content;
+    private String authorName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

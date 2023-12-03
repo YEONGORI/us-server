@@ -1,4 +1,4 @@
-package us.usserver.commentLike;
+package us.usserver.like.comment;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import us.usserver.comment.chapter.ChComment;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentLike {
+public class ChCommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chapter_comment_like_id")
