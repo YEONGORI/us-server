@@ -15,6 +15,7 @@ import us.usserver.comment.novel.NoComment;
 import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
+import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
@@ -74,5 +75,8 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Novel> readNovels = new ArrayList<>();
 }
 

@@ -21,7 +21,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NovelCreateDto {
+public class CreateNovelReq {
     @Size(max = 16, min = 2)
     @NotBlank
     String title;

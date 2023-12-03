@@ -1,9 +1,7 @@
 package us.usserver.novel;
 
 import org.springframework.stereotype.Service;
-import us.usserver.novel.dto.DetailInfoResponse;
-import us.usserver.novel.dto.NovelCreateDto;
-import us.usserver.novel.dto.NovelInfoResponse;
+import us.usserver.novel.dto.*;
 
 @Service
 public interface NovelService {
@@ -11,5 +9,9 @@ public interface NovelService {
 
     DetailInfoResponse getNovelDetailInfo(Long novelId);
 
-    Novel createNovel(NovelCreateDto novelCreateDto);
+    Novel createNovel(CreateNovelReq createNovelReq);
+
+    HomeNovelListResponse homeNovelInfo(Long memberId);
+
+    NovelPageInfoResponse moreNovel(MoreInfoOfNovel novelMoreDto);
 }
