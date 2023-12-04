@@ -16,6 +16,7 @@ import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
 import us.usserver.comment.novel.NoCommentRepository;
 import us.usserver.novel.dto.NovelSynopsis;
+import us.usserver.stake.Stake;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;
 
@@ -51,7 +52,7 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel).stream();
+        List<Stake> allByNovel = stakeRepository.findAllByNovel(novel);
 
         return DetailInfoResponse.builder()
                 .title(novel.getTitle())
