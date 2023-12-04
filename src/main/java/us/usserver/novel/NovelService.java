@@ -3,6 +3,8 @@ package us.usserver.novel;
 import org.springframework.stereotype.Service;
 import us.usserver.novel.dto.*;
 
+import java.util.List;
+
 @Service
 public interface NovelService {
     NovelInfoResponse getNovelInfo(Long novelId);
@@ -11,9 +13,11 @@ public interface NovelService {
 
     Novel createNovel(CreateNovelReq createNovelReq);
 
-    HomeNovelListResponse homeNovelInfo(Long memberId);
+    HomeNovelListResponse homeNovelInfo();
 
-    NovelPageInfoResponse moreNovel(MoreInfoOfNovel novelMoreDto);
+    NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel);
+
+    NovelPageInfoResponse readMoreNovel(ReadInfoOfNovel readInfoOfNovel);
 
     NovelPageInfoResponse searchNovel(SearchNovelReq searchNovelReq);
 

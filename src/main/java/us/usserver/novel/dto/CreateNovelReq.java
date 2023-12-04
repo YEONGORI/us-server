@@ -49,12 +49,13 @@ public class CreateNovelReq {
                 .thumbnail(thumbnail)
                 .synopsis(synopsis)
                 .authorDescription(authorDescription)
-                .hashtag(hashtag)
+                .hashtags(hashtag)
                 .genre(genre)
                 .ageRating(ageRating)
+                .novelSize(novelSize)
                 .hit(0)
                 .author(author)
-                .status(NovelStatus.IN_PROGRESS)
+                .novelStatus(NovelStatus.IN_PROGRESS)
                 .build();
     }
 }

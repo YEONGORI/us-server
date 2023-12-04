@@ -51,9 +51,7 @@ public class NovelController {
     @GetMapping("/main")
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
     public ResponseEntity<ApiResponse<?>> getHomeNovelListInfo() {
-        Long authorId = 1L;
-
-        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo(authorId);
+        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo();
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -64,8 +62,19 @@ public class NovelController {
 
     //TODO: 경로 고민중..
     @GetMapping("/main/more")
-    public ResponseEntity<ApiResponse<?>> moreNovel(@Valid MoreInfoOfNovel novelMoreDto) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.moreNovel(novelMoreDto);
+    public ResponseEntity<ApiResponse<?>> moreNovel(@Valid MoreInfoOfNovel moreInfoOfNovel) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.moreNovel(moreInfoOfNovel);
+        ApiResponse<Object> response = ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(novelPageInfoResponse)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/main/more/read")
+    public ResponseEntity<ApiResponse<?>> readNovel(@Valid ReadInfoOfNovel readInfoOfNovel) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.readMoreNovel(readInfoOfNovel);
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())

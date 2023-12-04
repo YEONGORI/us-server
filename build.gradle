@@ -56,3 +56,9 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+def generatedDir = 'src/main/generated'
+
+clean {
+    delete file (generatedDir)
+}

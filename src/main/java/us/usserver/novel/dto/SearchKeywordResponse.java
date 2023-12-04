@@ -1,12 +1,10 @@
 package us.usserver.novel.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
+@Getter
 @Builder
 @ToString
 @NoArgsConstructor

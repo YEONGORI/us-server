@@ -50,6 +50,13 @@ public class Author {
     private Member member;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Novel> novels = new ArrayList<>();
+
+    //TODO[고민]: author에 비중이 너무 커져서 읽은 소설 같은 경우에는 member에 추가를 하면 안될까..?
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Novel> readNovels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
@@ -75,8 +82,5 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<Novel> readNovels = new ArrayList<>();
 }
 

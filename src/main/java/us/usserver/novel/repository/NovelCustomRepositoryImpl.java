@@ -78,11 +78,11 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
     }
 
     private BooleanExpression containsHashtag(Hashtag hashtag) {
-        return hasText(String.valueOf(hashtag)) ? novel.hashtag.contains(hashtag) : null;
+        return hashtag == null ? null : novel.hashtags.contains(hashtag);
     }
 
     private BooleanExpression eqNovelStatus(NovelStatus status) {
-        return hasText(String.valueOf(status)) ? novel.status.eq(status) : null;
+        return status == null ? null : novel.novelStatus.eq(status);
     }
 
     private OrderSpecifier<?> novelSort(SortDto sortDto) {
@@ -93,8 +93,12 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
                 return new OrderSpecifier<>(direction, novel.hit);
             }
             case LATEST -> {
-                //최신순
+                //최신 업데이트순
                 return new OrderSpecifier<>(direction, novel.updatedAt);
+            }
+            case NEW -> {
+                //신작순
+                return new OrderSpecifier<>(direction, novel.createdAt);
             }
             default -> {
                 //사전순

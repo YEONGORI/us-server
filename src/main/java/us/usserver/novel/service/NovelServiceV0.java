@@ -1,10 +1,12 @@
 package us.usserver.novel.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -19,12 +21,15 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
 import us.usserver.novel.dto.*;
 import us.usserver.comment.novel.NoCommentRepository;
+import us.usserver.novel.novelEnum.Orders;
+import us.usserver.novel.novelEnum.Sorts;
 import us.usserver.novel.repository.NovelCustomRepository;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,7 +69,7 @@ public class NovelServiceV0 implements NovelService {
                 .title(novel.getTitle())
                 .createdAuthor(novel.getAuthor())
                 .genre(novel.getGenre())
-                .hashtag(novel.getHashtag())
+                .hashtag(novel.getHashtags())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
                 .commentCnt(noCommentRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
@@ -85,34 +90,83 @@ public class NovelServiceV0 implements NovelService {
                 .authorIntroduction(novel.getAuthorDescription())
                 .ageRating(novel.getAgeRating())
                 .genre(novel.getGenre())
-                .hashtags(novel.getHashtag())
+                .hashtags(novel.getHashtags())
                 .stakeInfos(stakeInfos)
                 .build();
     }
 
+    @Transactional
     @Override
     //TODO: authorId 임시
-    public HomeNovelListResponse homeNovelInfo(Long authorId) {
+    public HomeNovelListResponse homeNovelInfo() {
+        Long authorId = 2L;
         Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+        MoreInfoOfNovel realTimeNovels = MoreInfoOfNovel.builder()
+                .lastNovelId(0L)
+                .size(6)
+                .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
+                .build();
+
+        MoreInfoOfNovel newNovels = MoreInfoOfNovel.builder()
+                .lastNovelId(0L)
+                .size(6)
+                .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
+                .build();
 
         HomeNovelListResponse homeInfoResponse = HomeNovelListResponse.builder()
-                .realTimeNovels(novelRepository.getRealTimeNovels())
-                .newNovels(novelRepository.getNewNovels())
+                .realTimeNovels(novelCustomRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels)).toList())
+                .newNovels(novelCustomRepository.moreNovelList(newNovels, getPageRequest(newNovels)).toList())
                 .readNovels(author.getReadNovels()
                         .stream()
-                        .sorted(Comparator.comparing(Novel::getTitle))
-                        .toList()
-                        .subList(0, 8))
+                        .limit(8)
+                        .sorted(Comparator.comparing(Novel::getId))
+                        .toList())
                 .build();
         return homeInfoResponse;
     }
-
+    
     @Override
-    public NovelPageInfoResponse moreNovel(MoreInfoOfNovel novelMoreDto) {
-        PageRequest pageable = PageRequest.ofSize(novelMoreDto.getSize());
-        Slice<Novel> novelSlice = novelCustomRepository.moreNovelList(novelMoreDto, pageable);
+    public NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel) {
 
-        return getNovelPageInfoResponse(novelSlice, novelMoreDto.getSortDto());
+        PageRequest pageable = getPageRequest(moreInfoOfNovel);
+        Slice<Novel> novelSlice = novelCustomRepository.moreNovelList(moreInfoOfNovel, pageable);
+
+        return getNovelPageInfoResponse(novelSlice, moreInfoOfNovel.getSortDto());
+    }
+    //TODO: 메인 페이지에서 소설 더보기 버튼을 누를 때 실시간 업데이트나 신작은 로그인을 하지 않아도 볼 수 있어야 하지만 읽은 소설은 로그인을 해야만 볼 수 있는 영역이다
+    // jwtToken을 활용하여 분기처리를 할 때, 위와같은 상황을 회피하기 위해서 [실시간 업데이트, 신작], [읽은소설] 2가지 method를 작성해야 하는가..? 에 대한 고민중
+    @Override
+    public NovelPageInfoResponse readMoreNovel(ReadInfoOfNovel readInfoOfNovel){
+        Long authorId = 2L;
+        Optional<Author> findAuthorId = authorRepository.findById(authorId);
+
+        if (!findAuthorId.isEmpty()) {
+            int author_readNovel_cnt = findAuthorId.get().getReadNovels().size();
+            int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
+            int endPoint = author_readNovel_cnt < getSize ? author_readNovel_cnt : getSize;
+
+            List<Novel> novelList = findAuthorId.get()
+                    .getReadNovels()
+                    .stream()
+                    .sorted(Comparator.comparing(Novel::getId))
+                    .toList()
+                    .subList(readInfoOfNovel.getGetNovelSize(), endPoint);
+            boolean hasNext = (getSize == endPoint) ? true : false;
+
+            return NovelPageInfoResponse.builder()
+                    .novelList(novelList)
+                    .lastNovelId(novelList.get(novelList.size()-1).getId())
+                    .hasNext(hasNext)
+                    .sorts(null)
+                    .build();
+        } else {
+            return null;
+        }
+    }
+
+    private static PageRequest getPageRequest(MoreInfoOfNovel novelMoreDto) {
+        PageRequest pageable = PageRequest.ofSize(novelMoreDto.getSize());
+        return pageable;
     }
 
     private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
@@ -120,6 +174,7 @@ public class NovelServiceV0 implements NovelService {
 
         return NovelPageInfoResponse
                 .builder()
+                .novelList(novelSlice.getContent())
                 .lastNovelId(newLastNovelId)
                 .hasNext(novelSlice.hasNext())
                 .sorts(novelMoreDto.getSorts())
@@ -146,7 +201,7 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public SearchKeywordResponse searchKeyword() {
         //Token 값으로 변경
-        Long memberId = 1L;
+        Long authorId = 1L;
 
         //최신 검색어
         ListOperations<String, String> opsForList = redisTemplate.opsForList();
@@ -157,16 +212,16 @@ public class NovelServiceV0 implements NovelService {
         Set<ZSetOperations.TypedTuple<String>> rankingTuples = opsForZSet.reverseRangeWithScores(hot_keyword, 0, 9);
 
         return SearchKeywordResponse.builder()
-                .recentSearch(opsForList.range(String.valueOf(memberId), 0, 9))
-                .hotSearch(rankingTuples.stream().map(set -> String.valueOf(set)).collect(Collectors.toList()))
+                .recentSearch(opsForList.range(String.valueOf(authorId), 0, 9))
+                .hotSearch(rankingTuples.stream().map(set -> set.getValue()).collect(Collectors.toList()))
                 .build();
     }
 
     @Override
     public void deleteSearchKeyword() {
         //TODO memberId 토큰에서 꺼내올 예정
-        Long memberId = 1L;
-        String key = String.valueOf(memberId);
+        Long authorId = 1L;
+        String key = String.valueOf(authorId);
         Long size = redisTemplate.opsForList().size(key);
 
         redisTemplate.opsForList().rightPop(key, size);
@@ -183,14 +238,29 @@ public class NovelServiceV0 implements NovelService {
         redisTemplate.opsForZSet().incrementScore("ranking", keyword, score);
     }
 
-    private void recentKeyword(Long memberId, String keyword) {
+    private void recentKeyword(Long authorId, String keyword) {
         //security 도입 후 Long memberId -> 현재 로그인 중인 MemberId
-        String key = String.valueOf(memberId);
+        String key = String.valueOf(authorId);
+        String equalWord = null;
+        ListOperations<String, String> list = redisTemplate.opsForList();
 
-        Long size = redisTemplate.opsForList().size(key);
-        if (size == (long) RECENT_KEYWORD_SIZE) {
-            redisTemplate.opsForList().rightPop(key);
+        for (int i = 0; i < list.size(key); i++) {
+            String frontWord = list.leftPop(key);
+            if (frontWord.equals(keyword)) {
+                equalWord = frontWord;
+            } else{
+                list.rightPush(key, frontWord);
+            }
         }
-        redisTemplate.opsForList().leftPush(key, keyword);
+        if (equalWord != null) {
+            list.leftPush(key, equalWord);
+            return;
+        }
+
+        Long size = list.size(key);
+        if (size == (long) RECENT_KEYWORD_SIZE) {
+            list.rightPop(key);
+        }
+        list.leftPush(key, keyword);
     }
 }

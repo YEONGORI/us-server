@@ -5,18 +5,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
 import us.usserver.comment.novel.NoComment;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
-import us.usserver.novel.novelEnum.NovelStatus;
+import us.usserver.novel.novelEnum.*;
 import us.usserver.stake.Stake;
 
 import java.util.ArrayList;
@@ -25,6 +19,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,13 +42,12 @@ public class Novel extends BaseEntity {
 
     @NotBlank
     @Size(max = 300)
-    @Column(name = "authordescription")
     private String authorDescription;
 
-    @NotNull
+//    @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
-//    @ElementCollection(fetch = FetchType.LAZY)
-    private Set<Hashtag> hashtag;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<Hashtag> hashtags;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -65,13 +59,17 @@ public class Novel extends BaseEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private NovelStatus status;
-    @NotBlank
+    private NovelStatus novelStatus;
+    @NotNull
     private Integer hit;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private NovelSize novelSize;
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Chapter> chapters = new ArrayList<>();
