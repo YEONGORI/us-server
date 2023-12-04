@@ -56,7 +56,7 @@ class ChapterServiceV0Test {
                 .synopsis("SYNOPSIS")
                 .author(author)
                 .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtag(hashtags)
+                .hashtags(hashtags)
                 .genre(Genre.FANTASY)
                 .ageRating(AgeRating.GENERAL)
                 .build();
