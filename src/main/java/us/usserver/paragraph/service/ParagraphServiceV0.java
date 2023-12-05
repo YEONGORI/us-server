@@ -76,7 +76,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
-        int maxLikeCount = 0, likeCount;
+        int maxLikeCount = 0, likeCount; // TODO: 이부분 수정 필요git p
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
