@@ -4,31 +4,49 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
+import us.usserver.authority.Authority;
+import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
+import us.usserver.global.EntityService;
 import us.usserver.novel.Novel;
 import us.usserver.stake.Stake;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.StakeService;
+import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class StakeServiceV0 implements StakeService {
     private final StakeRepository stakeRepository;
+    private final AuthorityRepository authorityRepository;
 
-    private static final float ZERO = 0.0f;
+    private final EntityService entityService;
 
     @Override
-    public void setStakeInfoOfNovel(Novel novel, Author author) {
+    public void setStakeInfoOfNovel(Novel novel) {
         List<Chapter> chapters = novel.getChapters();
-        int totalParagraphs = getTotalParagraphs(chapters);
-        int authorParagraphs = getAuthorParagraphs(chapters, author);
+        float totalParagraphs = (float) getTotalParagraphs(chapters);
 
-        Float percentage = (totalParagraphs == 0) ? ZERO : authorParagraphs / (float)totalParagraphs;
-        updateStake(novel, author, percentage);
+        List<Authority> authorities = authorityRepository.findAllByNovel(novel);
+        Set<Author> authors = authorities.stream().map(Authority::getAuthor).collect(Collectors.toSet());
+
+        for (Author author : authors) {
+            float authorParagraphs = (float) getAuthorParagraphs(chapters, author);
+            updateStake(novel, author, authorParagraphs / totalParagraphs);
+        }
+    }
+
+    @Override
+    public List<StakeInfo> getStakeInfoOfNovel(Long novelId) {
+        Novel novel = entityService.getNovel(novelId);
+
+        return stakeRepository.findAllByNovel(novel);
     }
 
     private int getTotalParagraphs(List<Chapter> chapters) {

@@ -1,5 +1,7 @@
 package us.usserver.novel.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -7,5 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDescription {
+    @Size(max = 300)
+    @NotBlank
     private String description;
 }

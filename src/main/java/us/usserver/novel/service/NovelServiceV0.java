@@ -16,6 +16,7 @@ import us.usserver.novel.dto.DetailInfoResponse;
 import us.usserver.novel.dto.NovelInfoResponse;
 import us.usserver.comment.novel.NoCommentRepository;
 import us.usserver.novel.dto.NovelSynopsis;
+import us.usserver.stake.Stake;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;
 
@@ -38,7 +39,7 @@ public class NovelServiceV0 implements NovelService {
         // TODO : url 은 상의가 좀 필요함
         return NovelInfoResponse.builder()
                 .title(novel.getTitle())
-                .createdAuthor(novel.getAuthor())
+                .createdAuthor(novel.getMainAuthor())
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtag())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
@@ -51,13 +52,13 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<StakeInfo> stakeInfos = stakeRepository.findAllByNovel(novel);
+        List<Stake> allByNovel = stakeRepository.findAllByNovel(novel);
 
         return DetailInfoResponse.builder()
                 .title(novel.getTitle())
                 .thumbnail(novel.getThumbnail())
                 .synopsis(novel.getSynopsis())
-                .authorName(novel.getAuthor().getNickname())
+                .authorName(novel.getMainAuthor().getNickname())
                 .authorIntroduction(novel.getAuthorDescription())
                 .ageRating(novel.getAgeRating())
                 .genre(novel.getGenre())
@@ -71,7 +72,7 @@ public class NovelServiceV0 implements NovelService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (!novel.getAuthor().getId().equals(author.getId())) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 
@@ -84,7 +85,7 @@ public class NovelServiceV0 implements NovelService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (!novel.getAuthor().getId().equals(author.getId())) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 

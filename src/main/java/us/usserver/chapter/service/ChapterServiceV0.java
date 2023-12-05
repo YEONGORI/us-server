@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
-import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
@@ -13,14 +12,10 @@ import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.novel.Novel;
-import us.usserver.novel.NovelRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,9 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChapterServiceV0 implements ChapterService {
     private final EntityService entityService;
-    private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
-    private final AuthorRepository authorRepository;
 
     @Override
     public List<ChaptersOfNovel> getChaptersOfNovel(Long novelId) {
@@ -54,7 +47,7 @@ public class ChapterServiceV0 implements ChapterService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (!novel.getAuthor().getId().equals(author.getId())) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.author.Author;
+import us.usserver.authority.Authority;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
 import us.usserver.comment.novel.NoComment;
@@ -65,7 +66,7 @@ public class Novel extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "author_id")
-    private Author author;
+    private Author mainAuthor;
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Chapter> chapters = new ArrayList<>();
@@ -75,4 +76,11 @@ public class Novel extends BaseEntity {
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<NoComment> noComments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
+    private List<Authority> authorities = new ArrayList<>();
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }

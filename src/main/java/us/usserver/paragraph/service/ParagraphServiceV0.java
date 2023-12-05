@@ -1,9 +1,12 @@
 package us.usserver.paragraph.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
+import us.usserver.authority.Authority;
+import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
@@ -25,14 +28,17 @@ import us.usserver.stake.StakeService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ParagraphServiceV0 implements ParagraphService {
     private final EntityService entityService;
     private final ParagraphRepository paragraphRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
+    private final AuthorityRepository authorityRepository;
 
     private final StakeService stakeService;
 
@@ -146,11 +152,13 @@ public class ParagraphServiceV0 implements ParagraphService {
         Chapter chapter = entityService.getChapter(chapterId);
         Paragraph paragraph = entityService.getParagraph(paragraphId);
         Author author = entityService.getAuthor(authorId);
-        
 
-        if (!novel.getAuthor().getId().equals(authorId)) {
+        if (!novel.getMainAuthor().getId().equals(authorId)) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
+//        if (novel.getChapters().stream().noneMatch(ch -> ch.getId().equals(chapterId))) {
+//            throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
+//        }
         if (!novel.getChapters().contains(chapter)) {
             throw new ChapterNotFoundException(ExceptionMessage.Chapter_NOT_FOUND);
         }
@@ -158,8 +166,10 @@ public class ParagraphServiceV0 implements ParagraphService {
             throw new ParagraphNotFoundException(ExceptionMessage.Paragraph_NOT_FOUND);
         }
 
+        addAuthority(author, novel);
+
         paragraph.setParagraphStatus(ParagraphStatus.SELECTED);
-        stakeService.setStakeInfoOfNovel(novel, author);
+        stakeService.setStakeInfoOfNovel(novel);
 
         // 선택 되지 않은 paragraph 들의 status 변경
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
@@ -170,5 +180,15 @@ public class ParagraphServiceV0 implements ParagraphService {
         }
     }
 
+    private void addAuthority(Author author, Novel novel) {
+        List<Authority> authorities = authorityRepository.findAllByAuthor(author);
+        boolean isAuthorized = authorities.stream().anyMatch(authority -> Objects.equals(authority.getNovel().getId(), novel.getId()));
 
+        if (!isAuthorized) {
+            Authority authority = new Authority();
+            author.addAuthorNovel(authority);
+            authority.takeNovel(novel);
+            authorityRepository.save(authority);
+        }
+    }
 }
