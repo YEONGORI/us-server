@@ -52,7 +52,8 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public DetailInfoResponse getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<Stake> allByNovel = stakeRepository.findAllByNovel(novel);
+        List<Stake> stakes = stakeRepository.findAllByNovel(novel);
+        List<StakeInfo> stakeInfos = stakes.stream().map(StakeInfo::fromStake).toList();
 
         return DetailInfoResponse.builder()
                 .title(novel.getTitle())

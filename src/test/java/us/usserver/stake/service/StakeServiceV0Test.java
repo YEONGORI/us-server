@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
+import us.usserver.authority.Authority;
+import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
-import us.usserver.global.EntityService;
 import us.usserver.member.Member;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
@@ -22,13 +23,13 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.ParagraphService;
+import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.paragraph.service.ParagraphServiceV0;
-import us.usserver.stake.StakeRepository;
 import us.usserver.stake.dto.StakeInfo;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 @SpringBootTest
@@ -38,10 +39,7 @@ class StakeServiceV0Test {
     @Autowired
     ParagraphServiceV0 paragraphServiceV0;
     @Autowired
-    private EntityService entityService;
-
-    @Autowired
-    private StakeRepository stakeRepository;
+    private AuthorityRepository authorityRepository;
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
@@ -54,7 +52,6 @@ class StakeServiceV0Test {
     private MemberRepository memberRepository;
 
     Author mainAuthor, author1, author2, author3;
-    Member mainMember, member1, member2, member3;
     Novel novel;
     Chapter chapter1, chapter2, chapter3;
     Paragraph paragraph1_1, paragraph2_1, paragraph2_2, paragraph3_1, paragraph3_2, paragraph3_3;
@@ -84,6 +81,13 @@ class StakeServiceV0Test {
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
         novelRepository.save(novel);
+
+        authorityRepository.save(Authority.builder()
+                .novel(novel).author(author1).build());
+        authorityRepository.save(Authority.builder()
+                .novel(novel).author(author2).build());
+        authorityRepository.save(Authority.builder()
+                .novel(novel).author(author3).build());
 
         paragraph1_1 = ParagraphMother.generateParagraph(author1, chapter1);
         paragraph2_1 = ParagraphMother.generateParagraph(author1, chapter2);
@@ -127,35 +131,63 @@ class StakeServiceV0Test {
     @DisplayName("작가 한명만 계속 해서 소설을 업데이트 할 때 지분 100이 유지되는지 확인")
     void checkOneAuthorStake() {
         // given
+        Novel novelForOne = NovelMother.generateNovel(author1);
+        Chapter chapterForOne = ChapterMother.generateChapter(novelForOne);
+        Paragraph p1 = ParagraphMother.generateParagraph(author1, chapterForOne);
+        p1.setParagraphStatus(ParagraphStatus.SELECTED);
+        Paragraph p2 = ParagraphMother.generateParagraph(author1, chapterForOne);
+        p2.setParagraphStatus(ParagraphStatus.SELECTED);
+        Paragraph p3 = ParagraphMother.generateParagraph(author1, chapterForOne);
+        p3.setParagraphStatus(ParagraphStatus.SELECTED);
 
         // when
+        novelForOne.getChapters().add(chapterForOne);
+        novelRepository.save(novelForOne);
+
+        chapterForOne.getParagraphs().add(p1);
+        chapterForOne.getParagraphs().add(p2);
+        chapterRepository.save(chapterForOne);
+
+        paragraphRepository.save(p1);
+        paragraphRepository.save(p2);
+        paragraphRepository.save(p3);
+
+        authorityRepository.save(Authority.builder()
+                .novel(novelForOne).author(author1).build());
+        stakeServiceV0.setStakeInfoOfNovel(novelForOne);
 
         // then
+        List<StakeInfo> stakeInfos = stakeServiceV0.getStakeInfoOfNovel(novelForOne.getId());
+        assertThat(stakeInfos.size()).isEqualTo(1);
+        assertThat(stakeInfos.get(0).getAuthor().getId()).isEqualTo(author1.getId());
+        assertThat(stakeInfos.get(0).getPercentage()).isEqualTo(1F);
     }
 
     @Test
     @DisplayName("여러 작가가 추가 되었을 때 지분 정보 확인")
     void getStakeInfoOfNovel() {
         // given
-        System.out.println("StakeServiceV0Test.getStakeInfoOfNovel");
-        System.out.println("novel.getChapters().size() = " + novel.getChapters().size());
-        for (Chapter chapter : novel.getChapters()) {
-            System.out.println("chapter = " + chapter.getId());
-        }
+        List<StakeInfo> prevInfo = stakeServiceV0.getStakeInfoOfNovel(novel.getId());
+        Author newAuthor = AuthorMother.generateAuthor();
+        setMember(newAuthor);
+        Authority authority = Authority.builder().author(newAuthor).novel(novel).build();
+        Paragraph newParagraph = ParagraphMother.generateParagraph(newAuthor, chapter3);
+
         // when
-        List<StakeInfo> stakeInfos = stakeServiceV0.getStakeInfoOfNovel(novel.getId());
+        authorRepository.save(newAuthor);
+        authorityRepository.save(authority);
+        chapter3.getParagraphs().add(newParagraph);
+        paragraphRepository.save(newParagraph);
+        stakeServiceV0.setStakeInfoOfNovel(novel);
 
         // then
-        System.out.println("stakeInfos.size() = " + stakeInfos.size());
-        for (StakeInfo stakeInfo : stakeInfos) {
-            System.out.println("stakeInfo = " + stakeInfo);
+        List<StakeInfo> currInfo = stakeServiceV0.getStakeInfoOfNovel(novel.getId());
+        assertThat(currInfo.size()).isEqualTo(prevInfo.size() + 1);
+        for (int i=0; i<prevInfo.size(); i++) {
+            assertThat(prevInfo.get(i).getPercentage()).isGreaterThanOrEqualTo(currInfo.get(i).getPercentage());
         }
     }
 
-    @Test
-    @DisplayName("작가가 한명 추가 되었을 때 지분 정보 최신화")
-    void setStakeInfoOfNovel() {
-    }
 
     private void setMember(Author author) {
         Member member = Member.builder().age(1).gender(Gender.MALE).build();

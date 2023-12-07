@@ -46,7 +46,8 @@ public class StakeServiceV0 implements StakeService {
     public List<StakeInfo> getStakeInfoOfNovel(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
 
-        return stakeRepository.findAllByNovel(novel);
+        List<Stake> stakes = stakeRepository.findAllByNovel(novel);
+        return stakes.stream().map(StakeInfo::fromStake).toList();
     }
 
     private int getTotalParagraphs(List<Chapter> chapters) {
