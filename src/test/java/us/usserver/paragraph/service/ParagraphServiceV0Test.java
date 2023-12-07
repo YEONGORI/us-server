@@ -43,17 +43,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class ParagraphServiceV0Test {
-    @InjectMocks
+    @Autowired
     private ParagraphServiceV0 paragraphServiceV0;
-    @Mock
+    @Autowired
     private EntityService entityService;
-    @Mock
+    @Autowired
     private ParagraphRepository paragraphRepository;
-    @Mock
+    @Autowired
     private ParagraphLikeRepository paragraphLikeRepository;
-    @Mock
+    @Autowired
     private StakeService stakeService;
 
     private Author author;
@@ -64,75 +64,16 @@ class ParagraphServiceV0Test {
     private Paragraph paragraph1;
     private Paragraph paragraph2;
 
-    private int paragraphLikeCnt;
-
     @BeforeEach
     public void setUp() {
-//        author = Author.builder()
-//                .id(1L)
-//                .nickname("NICKNAME")
-//                .introduction("INTRODUCTION")
-//                .profileImg("PROFILE_IMG")
-//                .build();
         author = AuthorMother.generateAuthor();
-
-//        novel = Novel.builder()
-//                .id(1L)
-//                .title("NOVEL_TITLE")
-//                .thumbnail("THUMBNAIL")
-//                .synopsis("SYNOPSIS")
-//                .authorDescription("AUTHOR_DESCRIPTION")
-//                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-//                .genre(Genre.FANTASY)
-//                .ageRating(AgeRating.GENERAL)
-//                .author(author)
-//                .build();
-
         novel = NovelMother.generateNovel(author);
-
-        chapter1 = Chapter.builder()
-                .id(1L)
-                .title("PARAGRAPH_TITLE_1")
-                .part(1)
-                .status(ChapterStatus.IN_PROGRESS)
-                .novel(novel)
-                .build();
-
-        chapter2 = Chapter.builder()
-                .id(2L)
-                .title("PARAGRAPH_TITLE_2")
-                .part(2)
-                .status(ChapterStatus.COMPLETED)
-                .novel(novel)
-                .build();
-
-        chapter3 = Chapter.builder()
-                .id(3L)
-                .title("PARAGRAPH_TITLE_3")
-                .part(3)
-                .status(ChapterStatus.IN_PROGRESS)
-                .novel(novel)
-                .build();
+        chapter1 = ChapterMother.generateChapter(novel);
+        chapter2 = ChapterMother.generateChapter(novel);
+        chapter3 = ChapterMother.generateChapter(novel);
 
         paragraph1 = ParagraphMother.generateParagraph(author, chapter1);
         paragraph2 = ParagraphMother.generateParagraph(author, chapter1);
-//        paragraph1 = Paragraph.builder()
-//                .id(1L)
-//                .paragraphStatus(ParagraphStatus.IN_VOTING)
-//                .content("PARAGRAPH_CONTENT_1")
-//                .chapter(chapter1)
-//                .author(author)
-//                .sequence(0)
-//                .build();
-//
-//        paragraph2 = Paragraph.builder()
-//                .id(2L)
-//                .paragraphStatus(ParagraphStatus.IN_VOTING)
-//                .content("PARAGRAPH_CONTENT_2")
-//                .chapter(chapter1)
-//                .author(author)
-//                .sequence(1)
-//                .build();
 
         Mockito.lenient().when(entityService.getAuthor(anyLong())).thenReturn(author);
         Mockito.lenient().when(entityService.getNovel(anyLong())).thenReturn(novel);
