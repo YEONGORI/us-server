@@ -8,6 +8,7 @@ import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
@@ -82,7 +83,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
-        int maxLikeCount = 0, likeCount;
+        int maxLikeCount = 0, likeCount; // TODO: 이부분 수정 필요git p
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
@@ -94,6 +95,7 @@ public class ParagraphServiceV0 implements ParagraphService {
             if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
                             likeCount >= maxLikeCount) {
                 bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
+                maxLikeCount = likeCount;
             }
             if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
                 selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
