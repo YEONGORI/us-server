@@ -1,9 +1,9 @@
 package us.usserver.paragraph.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
@@ -28,6 +28,7 @@ import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.stake.StakeService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,6 +50,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         Chapter chapter = entityService.getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
+        log.info("chapter.getStatus() = " + chapter.getStatus());
         if (paragraphs.isEmpty()) {
             return getInitialChParagraph();
         } else if (chapter.getStatus() == ChapterStatus.COMPLETED) {
@@ -60,7 +62,7 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     private GetParagraphsRes getInitialChParagraph() {
         return GetParagraphsRes.builder()
-                .selectedParagraphs(null)
+                .selectedParagraphs(Collections.emptyList())
                 .myParagraph(null)
                 .bestParagraph(null)
                 .build();
@@ -71,7 +73,6 @@ public class ParagraphServiceV0 implements ParagraphService {
                 .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
                 .map(ParagraphSelected::fromParagraph)
                 .toList();
-
         return GetParagraphsRes.builder()
                 .selectedParagraphs(selectedParagraphs)
                 .myParagraph(null)
@@ -83,7 +84,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
-        int maxLikeCount = 0, likeCount; // TODO: 이부분 수정 필요git p
+        int maxLikeCount = 0, likeCount;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
@@ -93,7 +94,7 @@ public class ParagraphServiceV0 implements ParagraphService {
                 myParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
             }
             if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
-                            likeCount >= maxLikeCount) {
+                            likeCount > maxLikeCount) {
                 bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
                 maxLikeCount = likeCount;
             }

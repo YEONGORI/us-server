@@ -47,4 +47,8 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private List<ChComment> chComments = new ArrayList<>();
+
+    public void setStatusForTest(ChapterStatus status) {
+        this.status = status;
+    }
 }
