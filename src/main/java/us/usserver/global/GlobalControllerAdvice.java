@@ -43,4 +43,11 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Main_Author_NOT_MATCHED);
         return new ApiResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(ExceedParagraphLengthException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiResponse<Object> exceedParagraphLengthHandler(Exception e) {
+        log.error(ExceptionMessage.Exceed_Paragraph_Length);
+        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

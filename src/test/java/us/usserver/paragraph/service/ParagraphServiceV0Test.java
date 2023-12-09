@@ -1,10 +1,6 @@
 package us.usserver.paragraph.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +11,7 @@ import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
+import us.usserver.global.exception.ExceedParagraphLengthException;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.member.Member;
@@ -28,23 +25,19 @@ import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.paragraph.dto.GetParagraphsRes;
 import us.usserver.paragraph.dto.ParagraphInVoting;
+import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class ParagraphServiceV0Test {
-    @PersistenceContext
-    private EntityManager em;
-
     @Autowired
     private ParagraphServiceV0 paragraphServiceV0;
     @Autowired
@@ -163,7 +156,6 @@ class ParagraphServiceV0Test {
     }
 
     @Test
-    @Transactional
     @DisplayName("작성이 완료된 회차 보기")
     void getCompletedChParagraph() {
         // given
@@ -184,40 +176,38 @@ class ParagraphServiceV0Test {
         assertThat(paragraphs.getSelectedParagraphs().size()).isEqualTo(2);
         paragraphs.getSelectedParagraphs().forEach(p ->
                 assertThat(p.getId()).isIn(idList));
-
-        // after
-        chapter.setStatusForTest(ChapterStatus.IN_PROGRESS);
-        paragraph1.setParagraphStatus(ParagraphStatus.IN_VOTING);
-        paragraph2.setParagraphStatus(ParagraphStatus.IN_VOTING);
     }
-
+    
     @Test
-    void testing() {
-        chapter.setStatusForTest(ChapterStatus.COMPLETED);
-        em.refresh(chapter);
-
-        Chapter ch = chapterRepository.getChapterById(chapter.getId()).get();
-        System.out.println("ch.getStatus() = " + ch.getStatus()); // 왜 이게 COMPLETED가 아니죠?
-    }
-
-    @Test
+    @DisplayName("한줄 쓰기 등록")
     void postParagraph() {
-        // TODO: MOCK 객체의 한계로 인해 테스트 코드가 너무 복잡해 짐, @Autowired 로 생성자 주입 받아 다시 작성 예정
-//        // given
-//        PostParagraphReq req = PostParagraphReq.builder()
-//                .content("TEST")
-//                .build();
-//        Mockito.lenient().when(paragraphRepository.save(paragraph1)).thenReturn(paragraph1);
-//        List<Paragraph> paragraphs = Arrays.asList(paragraph1, paragraph2);
-//
-//        // when
-//        ParagraphInVoting paragraphInVoting = paragraphServiceV0.postParagraph(1L, 1L, req);
-//
-//        List<Integer> sequences = paragraphs.stream().map(Paragraph::getSequence).toList();
-//        Integer maxSequence = Collections.max(sequences);
-//
-//        // then
-//        Assertions.assertThat(paragraphInVoting.getSequence()).isEqualTo(maxSequence + 1);
+        // given
+        PostParagraphReq req = PostParagraphReq.builder().content("TEST_CONTENT").build();
+
+        // when
+        ParagraphInVoting paragraphInVoting = assertDoesNotThrow(() -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
+        List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
+
+        // then
+        assertThat(paragraphInVoting.getContent()).isEqualTo("TEST_CONTENT");
+        assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
+        assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
+        assertThat(paragraphInVoting.getLikeCnt()).isZero();
+        assertThat(paragraphInVoting.getAuthorName()).isEqualTo(author.getNickname());
+        assertThat(paragraphs.stream().anyMatch(p ->
+                p.getContent().equals(req.getContent()))).isTrue();
+    }
+
+    @Test
+    @DisplayName("300줄 이상 한줄 쓰기 등록")
+    void postParagraphException() {
+        // given
+        String longContent = paragraph1.getContent() + paragraph1.getContent() + paragraph1.getContent();
+        PostParagraphReq req = PostParagraphReq.builder().content(longContent).build();
+
+        // when // then
+        Assertions.assertThrows(ExceedParagraphLengthException.class,
+                () -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
     }
 
     @Test

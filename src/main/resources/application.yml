@@ -8,7 +8,7 @@ spring:
     username: sa
     password: ""
     url: jdbc:h2:mem:US_FOR_TEST
-  jpa:
+#  jpa:
 #    show-sql: true
 #    properties:
 #      hibernate:

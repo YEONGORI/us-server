@@ -13,6 +13,7 @@ import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.ChapterNotFoundException;
+import us.usserver.global.exception.ExceedParagraphLengthException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.ParagraphNotFoundException;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
@@ -125,6 +126,10 @@ public class ParagraphServiceV0 implements ParagraphService {
         Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
+
+        if (req.getContent().length() > 300) {
+            throw new ExceedParagraphLengthException(ExceptionMessage.Exceed_Paragraph_Length);
+        }
 
         Paragraph paragraph = paragraphRepository.save(
                 Paragraph.builder()

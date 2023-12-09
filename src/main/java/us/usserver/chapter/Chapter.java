@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.comment.chapter.ChComment;
@@ -36,6 +33,7 @@ public class Chapter extends BaseEntity {
     @NotNull
     private Integer part;
 
+    @Setter
     private ChapterStatus status;
 
     @ManyToOne
