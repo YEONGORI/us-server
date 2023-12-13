@@ -9,4 +9,7 @@ public final class ExceptionMessage {
     public static final String Paragraph_NOT_FOUND = "해당 한줄이 존재 하지 않습니다.";
     public static final String Author_NOT_FOUND = "해당 작가가 존재 하지 않습니다.";
     public static final String Main_Author_NOT_MATCHED = "해당 작가와 메인 작가가 일치하지 않습니다.";
+
+    public static final String Valid_ModelAttribute_NOT_FOUND = "ModelAttribute 값이 유효하지 않습니다.";
+    public static final String Valid_RequestBody_NOT_FOUND = "RequestBody 값이 유효하지 않습니다.";
 }
