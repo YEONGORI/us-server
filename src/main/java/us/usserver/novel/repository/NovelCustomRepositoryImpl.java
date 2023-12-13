@@ -86,12 +86,13 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
     }
 
     private OrderSpecifier<?> novelSort(SortDto sortDto) {
+        if (sortDto == null) {
+            //Default:사전순
+            return new OrderSpecifier<>(Order.ASC, novel.title);
+        }
+
         Order direction = (sortDto.getOrders() == Orders.DESC) ? Order.DESC : Order.ASC;
         switch (sortDto.getSorts()) {
-            case HIT -> {
-                //조회순
-                return new OrderSpecifier<>(direction, novel.hit);
-            }
             case LATEST -> {
                 //최신 업데이트순
                 return new OrderSpecifier<>(direction, novel.updatedAt);
@@ -101,8 +102,8 @@ public class NovelCustomRepositoryImpl implements NovelCustomRepository{
                 return new OrderSpecifier<>(direction, novel.createdAt);
             }
             default -> {
-                //사전순
-                return new OrderSpecifier<>(Order.ASC, novel.title);
+                //조회순
+                return new OrderSpecifier<>(direction, novel.hit);
             }
         }
     }

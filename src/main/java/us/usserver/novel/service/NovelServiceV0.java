@@ -102,18 +102,14 @@ public class NovelServiceV0 implements NovelService {
         Long authorId = 2L;
         Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
         MoreInfoOfNovel realTimeNovels = MoreInfoOfNovel.builder()
-                .lastNovelId(0L)
-                .size(6)
                 .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
                 .build();
 
         MoreInfoOfNovel newNovels = MoreInfoOfNovel.builder()
-                .lastNovelId(0L)
-                .size(6)
                 .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
                 .build();
 
-        HomeNovelListResponse homeInfoResponse = HomeNovelListResponse.builder()
+        return HomeNovelListResponse.builder()
                 .realTimeNovels(novelCustomRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels)).toList())
                 .newNovels(novelCustomRepository.moreNovelList(newNovels, getPageRequest(newNovels)).toList())
                 .readNovels(author.getReadNovels()
@@ -122,7 +118,6 @@ public class NovelServiceV0 implements NovelService {
                         .sorted(Comparator.comparing(Novel::getId))
                         .toList())
                 .build();
-        return homeInfoResponse;
     }
     
     @Override
@@ -133,8 +128,6 @@ public class NovelServiceV0 implements NovelService {
 
         return getNovelPageInfoResponse(novelSlice, moreInfoOfNovel.getSortDto());
     }
-    //TODO: 메인 페이지에서 소설 더보기 버튼을 누를 때 실시간 업데이트나 신작은 로그인을 하지 않아도 볼 수 있어야 하지만 읽은 소설은 로그인을 해야만 볼 수 있는 영역이다
-    // jwtToken을 활용하여 분기처리를 할 때, 위와같은 상황을 회피하기 위해서 [실시간 업데이트, 신작], [읽은소설] 2가지 method를 작성해야 하는가..? 에 대한 고민중
     @Override
     public NovelPageInfoResponse readMoreNovel(ReadInfoOfNovel readInfoOfNovel){
         Long authorId = 2L;
@@ -164,9 +157,11 @@ public class NovelServiceV0 implements NovelService {
         }
     }
 
-    private static PageRequest getPageRequest(MoreInfoOfNovel novelMoreDto) {
-        PageRequest pageable = PageRequest.ofSize(novelMoreDto.getSize());
-        return pageable;
+    private PageRequest getPageRequest(MoreInfoOfNovel moreInfoOfNovel) {
+        if (moreInfoOfNovel.getSize() == null) {
+            moreInfoOfNovel.setSize(6);
+        }
+        return PageRequest.ofSize(moreInfoOfNovel.getSize());
     }
 
     private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
