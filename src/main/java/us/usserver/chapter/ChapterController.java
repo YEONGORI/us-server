@@ -17,9 +17,13 @@ import java.util.List;
 public class ChapterController {
     private final ChapterService chapterService;
 
-    @GetMapping("/{chapterId}")
-    public ResponseEntity<ApiResponse<?>> getChapterDetailInfo(@PathVariable Long chapterId) {
-        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(chapterId);
+    @GetMapping("/{novelId}/{chapterId}")
+    public ResponseEntity<ApiResponse<?>> getChapterDetailInfo(
+            @PathVariable Long novelId,
+            @PathVariable Long chapterId
+    ) {
+        Long authorId = 0L; // TODO 토큰으로 교체 예정
+        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, authorId, chapterId);
 
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())

@@ -8,7 +8,6 @@ import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
-import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
@@ -21,7 +20,7 @@ import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.paragraph.ParagraphService;
-import us.usserver.paragraph.dto.GetParagraphsRes;
+import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.ParagraphSelected;
 import us.usserver.paragraph.dto.PostParagraphReq;
@@ -46,12 +45,11 @@ public class ParagraphServiceV0 implements ParagraphService {
     private final StakeService stakeService;
 
     @Override
-    public GetParagraphsRes getParagraphs(Long authorId, Long chapterId) {
+    public ParagraphsOfChapter getParagraphs(Long authorId, Long chapterId) {
         Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-        log.info("chapter.getStatus() = " + chapter.getStatus());
         if (paragraphs.isEmpty()) {
             return getInitialChParagraph();
         } else if (chapter.getStatus() == ChapterStatus.COMPLETED) {
@@ -61,27 +59,27 @@ public class ParagraphServiceV0 implements ParagraphService {
         }
     }
 
-    private GetParagraphsRes getInitialChParagraph() {
-        return GetParagraphsRes.builder()
+    private ParagraphsOfChapter getInitialChParagraph() {
+        return ParagraphsOfChapter.builder()
                 .selectedParagraphs(Collections.emptyList())
                 .myParagraph(null)
                 .bestParagraph(null)
                 .build();
     }
 
-    private GetParagraphsRes getCompletedChParagraph(List<Paragraph> paragraphs) {
+    private ParagraphsOfChapter getCompletedChParagraph(List<Paragraph> paragraphs) {
         List<ParagraphSelected> selectedParagraphs = paragraphs.stream()
                 .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
                 .map(ParagraphSelected::fromParagraph)
                 .toList();
-        return GetParagraphsRes.builder()
+        return ParagraphsOfChapter.builder()
                 .selectedParagraphs(selectedParagraphs)
                 .myParagraph(null)
                 .bestParagraph(null)
                 .build();
     }
 
-    private GetParagraphsRes getInProgressChParagraph(List<Paragraph> paragraphs, Author author) {
+    private ParagraphsOfChapter getInProgressChParagraph(List<Paragraph> paragraphs, Author author) {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
@@ -104,7 +102,7 @@ public class ParagraphServiceV0 implements ParagraphService {
             }
         }
 
-        return GetParagraphsRes.builder()
+        return ParagraphsOfChapter.builder()
                 .selectedParagraphs(selectedParagraphs)
                 .myParagraph(myParagraph)
                 .bestParagraph(bestParagraph)

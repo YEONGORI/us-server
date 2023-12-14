@@ -13,11 +13,6 @@ import static org.jeasy.random.FieldPredicates.named;
 import static org.jeasy.random.FieldPredicates.ofType;
 
 public class AuthorMother {
-    private final MemberRepository memberRepository;
-
-    public AuthorMother(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
 
     public static Author generateAuthor() {
         EasyRandomParameters randomParameters = new EasyRandomParameters()
@@ -29,4 +24,5 @@ public class AuthorMother {
         EasyRandom easyRandom = new EasyRandom(randomParameters);
         return easyRandom.nextObject(Author.class);
     }
+
 }

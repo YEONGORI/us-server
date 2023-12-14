@@ -6,10 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
+import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.dto.ChapterInfo;
 import us.usserver.chapter.dto.CreateChapterReq;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
@@ -25,53 +32,44 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @SpringBootTest
 class ChapterServiceV0Test {
     @Autowired
+    private ChapterServiceV0 chapterServiceV0;
+
+    @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
-    private ChapterServiceV0 chapterServiceV0;
+    private ChapterRepository chapterRepository;
 
     private Novel novel;
     private Author author;
 
     @BeforeEach
     void setUp() {
-        Set<Hashtag> hashtags = new HashSet<>();
-        hashtags.add(Hashtag.HASHTAG1);
-        hashtags.add(Hashtag.HASHTAG2);
-        hashtags.add(Hashtag.MONCHKIN);
-
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
+        author = AuthorMother.generateAuthor();
+        setMember(author);
         authorRepository.save(author);
 
-        novel = Novel.builder()
-                .id(1L)
-                .title("TITLE")
-                .thumbnail("THUMBNAIL")
-                .synopsis("SYNOPSIS")
-                .mainAuthor(author)
-                .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtag(hashtags)
-                .genre(Genre.FANTASY)
-                .ageRating(AgeRating.GENERAL)
-                .build();
+        novel = NovelMother.generateNovel(author);
         novelRepository.save(novel);
     }
 
     @Test
     @DisplayName("회차 생성")
     void createChapter() {
-        CreateChapterReq createChapterReq1 = CreateChapterReq.builder()
-                .title("첫번 째 이야기")
-                .build();
+        // given
+        String testTitle = "TITLE";
+        CreateChapterReq createChapterReq = CreateChapterReq.builder().title(testTitle).build();
 
+        // when
         assertDoesNotThrow(
-                () -> chapterServiceV0.createChapter(1L, 1L));
+                () -> chapterServiceV0.createChapter(novel.getId(), author.getId()));
+        List<Chapter> chapters = chapterRepository.findAllByNovel(novel);
+
+        // then
+        assertThat(chapters.get(0).getTitle()).isEqualTo(testTitle);
     }
 
     @Test
@@ -89,5 +87,11 @@ class ChapterServiceV0Test {
                 () -> chapterServiceV0.getChaptersOfNovel(novel));
 
         assertThat(chapterInfos.size()).isEqualTo(prevSize + 2);
+    }
+
+    private void setMember(Author author) {
+        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member);
+        author.setMember(member);
     }
 }

@@ -23,7 +23,7 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.dto.GetParagraphsRes;
+import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
@@ -85,7 +85,7 @@ class ParagraphServiceV0Test {
         // given
 
         // when
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
 
         // then
         assertNotNull(paragraphs.getMyParagraph());
@@ -102,7 +102,7 @@ class ParagraphServiceV0Test {
         // when
         novel.getChapters().add(SecondChapter);
         chapterRepository.save(SecondChapter);
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(author.getId(), SecondChapter.getId());
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), SecondChapter.getId());
 
         // then
         assertNull(paragraphs.getMyParagraph());
@@ -135,7 +135,7 @@ class ParagraphServiceV0Test {
         paragraphLikeRepository.save(like3);
         paragraphLikeRepository.save(like4);
 
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(author1.getId(), chapter.getId());
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author1.getId(), chapter.getId());
 
         // then
         assertNull(paragraphs.getMyParagraph());
@@ -168,7 +168,7 @@ class ParagraphServiceV0Test {
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
 
         // then
         assertNull(paragraphs.getMyParagraph());
