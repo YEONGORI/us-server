@@ -12,7 +12,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class NovelInfoResponse {
+public class NovelInfo {
     private String title;
     private Genre genre;
     private Set<Hashtag> hashtag;
@@ -20,5 +20,4 @@ public class NovelInfoResponse {
     private Integer joinedAuthorCnt;
     private Integer commentCnt;
     private String novelSharelUrl;
-    private String detailNovelInfoUrl;
 }

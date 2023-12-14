@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
+import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterMother;
+import us.usserver.chapter.ChapterRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.member.Member;
@@ -18,8 +21,8 @@ import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.dto.AuthorDescription;
-import us.usserver.novel.dto.DetailInfoResponse;
-import us.usserver.novel.dto.NovelInfoResponse;
+import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.novel.dto.NovelInfo;
 import us.usserver.novel.dto.NovelSynopsis;
 
 import java.util.Collections;
@@ -37,6 +40,8 @@ class NovelServiceV0Test {
     private AuthorRepository authorRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private ChapterRepository chapterRepository;
     @Autowired
     private NovelServiceV0 novelServiceV0;
 
@@ -71,16 +76,15 @@ class NovelServiceV0Test {
     @Test
     @DisplayName("소설 정보 확인")
     void getNovelInfo() {
-        NovelInfoResponse novelInfoResponse = assertDoesNotThrow(
+        NovelInfo novelInfo = assertDoesNotThrow(
                 () -> novelServiceV0.getNovelInfo(novel.getId()));
 
-        assertThat(novelInfoResponse.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelInfoResponse.getCreatedAuthor().getId()).isEqualTo(novel.getMainAuthor().getId());
-        assertThat(novelInfoResponse.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelInfoResponse.getHashtag()).isEqualTo(novel.getHashtag());
+        assertThat(novelInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelInfo.getCreatedAuthor().getId()).isEqualTo(novel.getMainAuthor().getId());
+        assertThat(novelInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelInfo.getHashtag()).isEqualTo(novel.getHashtag());
 
-        assertThat(novelInfoResponse.getNovelSharelUrl()).contains("/novel/" + novel.getId());
-        assertThat(novelInfoResponse.getDetailNovelInfoUrl()).contains("novel/" + novel.getId() + "/detail");
+        assertThat(novelInfo.getNovelSharelUrl()).contains("/novel/" + novel.getId());
     }
 
     @Test
@@ -93,18 +97,49 @@ class NovelServiceV0Test {
     @Test
     @DisplayName("소설 상세 정보 확인")
     void getNovelDetailInfo() {
-        DetailInfoResponse detailInfoResponse = assertDoesNotThrow(
+        NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
                 () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
 
-        assertThat(detailInfoResponse.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(detailInfoResponse.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(detailInfoResponse.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(detailInfoResponse.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
-        assertThat(detailInfoResponse.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(detailInfoResponse.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(detailInfoResponse.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(detailInfoResponse.getHashtags()).isEqualTo(novel.getHashtag());
-        assertThat(detailInfoResponse.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getChapterInfos()).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    @DisplayName("소설 상세 정보 확인 - Chapter 정보 추가")
+    void getNovelDetailInfo2() {
+        // given
+        Chapter chapter1 = ChapterMother.generateChapter(novel);
+        Chapter chapter2 = ChapterMother.generateChapter(novel);
+
+        // when
+        chapterRepository.save(chapter1);
+        chapterRepository.save(chapter2);
+        novel.getChapters().add(chapter1);
+        novel.getChapters().add(chapter2);
+        novelRepository.save(novel);
+
+        NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
+                () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
+
+        // then
+        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getChapterInfos().size()).isEqualTo(2);
     }
 
     @Test

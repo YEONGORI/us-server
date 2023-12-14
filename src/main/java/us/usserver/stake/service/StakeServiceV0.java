@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class StakeServiceV0 implements StakeService {
     private final StakeRepository stakeRepository;
     private final AuthorityRepository authorityRepository;
-
     private final EntityService entityService;
 
     @Override

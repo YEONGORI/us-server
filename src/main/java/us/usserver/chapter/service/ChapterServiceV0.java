@@ -8,8 +8,9 @@ import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.ChapterService;
+import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.chapter.dto.ChapterInfo;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -26,19 +27,17 @@ public class ChapterServiceV0 implements ChapterService {
     private final ChapterRepository chapterRepository;
 
     @Override
-    public List<ChaptersOfNovel> getChaptersOfNovel(Long novelId) {
-        Novel novel = entityService.getNovel(novelId);
+    public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
+        List<Chapter> chapters = chapterRepository.findAllByNovel(novel);
 
-        return chapterRepository.findAllByNovel(novel)
-                .stream().map(chapter -> ChaptersOfNovel.builder()
-                        .id(chapter.getId())
-                        .title(chapter.getTitle())
-                        .part(chapter.getPart())
-                        .status(chapter.getStatus())
-                        .createdAt(chapter.getCreatedAt())
-                        .updatedAt(chapter.getUpdatedAt())
-                        .build())
+        return chapters.stream()
+                .map(ChapterInfo::fromChapter)
                 .toList();
+    }
+
+    @Override
+    public ChapterDetailInfo getChapterDetailInfo(Long chapterId) {
+        return null;
     }
 
     // TODO: 챕터(회차) 생성 시 제목은 받아야 할 듯.

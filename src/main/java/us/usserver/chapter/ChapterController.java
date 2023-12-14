@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.global.ApiResponse;
-import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.chapter.dto.ChapterInfo;
 
 import java.util.List;
 
@@ -16,13 +17,14 @@ import java.util.List;
 public class ChapterController {
     private final ChapterService chapterService;
 
-    @GetMapping("/{novelId}")
-    public ResponseEntity<ApiResponse<?>> getChapters(@PathVariable Long novelId) {
-        List<ChaptersOfNovel> chapters = chapterService.getChaptersOfNovel(novelId);
+    @GetMapping("/{chapterId}")
+    public ResponseEntity<ApiResponse<?>> getChapterDetailInfo(@PathVariable Long chapterId) {
+        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(chapterId);
+
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(chapters)
+                .data(chapterDetailInfo)
                 .build();
         return ResponseEntity.ok(response);
     }

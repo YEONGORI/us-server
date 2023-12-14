@@ -1,6 +1,8 @@
 package us.usserver.novel.dto;
 
 import lombok.*;
+import us.usserver.chapter.dto.ChapterInfo;
+import us.usserver.novel.Novel;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
@@ -14,7 +16,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailInfoResponse {
+public class NovelDetailInfo {
     private String title;
     private String thumbnail;
     private String synopsis;
@@ -24,4 +26,5 @@ public class DetailInfoResponse {
     private Genre genre;
     private Set<Hashtag> hashtags;
     private List<StakeInfo> stakeInfos;
+    private List<ChapterInfo> chapterInfos;
 }

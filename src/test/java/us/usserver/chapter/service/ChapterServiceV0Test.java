@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.chapter.dto.ChapterInfo;
 import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
@@ -77,7 +77,7 @@ class ChapterServiceV0Test {
     @Test
     @DisplayName("소설 회차 정보 조회")
     void getChaptersOfNovel() {
-        int prevSize = chapterServiceV0.getChaptersOfNovel(1L).size();
+        int prevSize = chapterServiceV0.getChaptersOfNovel(novel).size();
         assertDoesNotThrow(
                 () -> {
                     chapterServiceV0.createChapter(1L, 1L);
@@ -85,9 +85,9 @@ class ChapterServiceV0Test {
                 }
         );
 
-        List<ChaptersOfNovel> chaptersOfNovels = assertDoesNotThrow(
-                () -> chapterServiceV0.getChaptersOfNovel(1L));
+        List<ChapterInfo> chapterInfos = assertDoesNotThrow(
+                () -> chapterServiceV0.getChaptersOfNovel(novel));
 
-        assertThat(chaptersOfNovels.size()).isEqualTo(prevSize + 2);
+        assertThat(chapterInfos.size()).isEqualTo(prevSize + 2);
     }
 }

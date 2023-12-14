@@ -5,19 +5,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
+import us.usserver.authority.AuthorityRepository;
+import us.usserver.chapter.ChapterService;
+import us.usserver.chapter.dto.ChapterInfo;
+import us.usserver.comment.novel.NoCommentRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
-import us.usserver.authority.AuthorityRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelService;
 import us.usserver.novel.dto.AuthorDescription;
-import us.usserver.novel.dto.DetailInfoResponse;
-import us.usserver.novel.dto.NovelInfoResponse;
-import us.usserver.comment.novel.NoCommentRepository;
+import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.novel.dto.NovelInfo;
 import us.usserver.novel.dto.NovelSynopsis;
-import us.usserver.stake.Stake;
-import us.usserver.stake.StakeRepository;
+import us.usserver.stake.StakeService;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
@@ -28,16 +29,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NovelServiceV0 implements NovelService {
     private final EntityService entityService;
+    private final StakeService stakeService;
+    private final ChapterService chapterService;
+
     private final AuthorityRepository authorityRepository;
     private final NoCommentRepository noCommentRepository;
-    private final StakeRepository stakeRepository;
 
     @Override
-    public NovelInfoResponse getNovelInfo(Long novelId) {
+    public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
 
         // TODO : url 은 상의가 좀 필요함
-        return NovelInfoResponse.builder()
+        return NovelInfo.builder()
                 .title(novel.getTitle())
                 .createdAuthor(novel.getMainAuthor())
                 .genre(novel.getGenre())
@@ -45,17 +48,16 @@ public class NovelServiceV0 implements NovelService {
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
                 .commentCnt(noCommentRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
-                .detailNovelInfoUrl("http://localhost:8080/novel/" + novel.getId() + "/detail")
                 .build();
     }
 
     @Override
-    public DetailInfoResponse getNovelDetailInfo(Long novelId) {
+    public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<Stake> stakes = stakeRepository.findAllByNovel(novel);
-        List<StakeInfo> stakeInfos = stakes.stream().map(StakeInfo::fromStake).toList();
+        List<StakeInfo> stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
+        List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
-        return DetailInfoResponse.builder()
+        return NovelDetailInfo.builder()
                 .title(novel.getTitle())
                 .thumbnail(novel.getThumbnail())
                 .synopsis(novel.getSynopsis())
@@ -65,6 +67,7 @@ public class NovelServiceV0 implements NovelService {
                 .genre(novel.getGenre())
                 .hashtags(novel.getHashtag())
                 .stakeInfos(stakeInfos)
+                .chapterInfos(chapterInfos)
                 .build();
     }
 

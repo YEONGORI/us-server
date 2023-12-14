@@ -7,11 +7,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiResponse;
 import us.usserver.novel.dto.AuthorDescription;
-import us.usserver.novel.dto.DetailInfoResponse;
-import us.usserver.novel.dto.NovelInfoResponse;
+import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.novel.dto.NovelInfo;
 import us.usserver.novel.dto.NovelSynopsis;
-
-import java.net.URI;
 
 @ResponseBody
 @RestController
@@ -22,7 +20,7 @@ public class NovelController {
 
     @GetMapping("/{novelId}")
     public ResponseEntity<ApiResponse<?>> getNovelInfo(@PathVariable Long novelId) {
-        NovelInfoResponse novelInfo = novelService.getNovelInfo(novelId);
+        NovelInfo novelInfo = novelService.getNovelInfo(novelId);
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -33,7 +31,8 @@ public class NovelController {
 
     @GetMapping("/{novelId}/detail")
     public ResponseEntity<ApiResponse<?>> getNovelDetailInfo(@PathVariable Long novelId) {
-        DetailInfoResponse detailInfo = novelService.getNovelDetailInfo(novelId);
+        NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
+
         ApiResponse<Object> response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
