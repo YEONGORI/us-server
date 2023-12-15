@@ -82,7 +82,10 @@ class ChapterServiceV0Test {
         Author newAuthor = AuthorMother.generateAuthor();
         setMember(newAuthor);
 
-        // when then
+        // when
+        authorRepository.save(newAuthor);
+
+        // then
         assertThrows(MainAuthorIsNotMatchedException.class,
                 () -> chapterServiceV0.createChapter(novel.getId(), newAuthor.getId()));
     }

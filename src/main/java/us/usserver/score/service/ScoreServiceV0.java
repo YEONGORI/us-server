@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
 import us.usserver.global.EntityService;
+import us.usserver.global.ExceptionMessage;
+import us.usserver.global.exception.ExceedScoreRangeException;
 import us.usserver.score.Score;
 import us.usserver.score.ScoreRepository;
 import us.usserver.score.ScoreService;
@@ -28,6 +30,9 @@ public class ScoreServiceV0 implements ScoreService {
         Chapter chapter = entityService.getChapter(chapterId);
 
         Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
+        if (postScore.getScore() > 10 || postScore.getScore() < 1) {
+            throw new ExceedScoreRangeException(ExceptionMessage.Exceed_Score_Range);
+        }
         if (scoreByAuthorAndChapter.isEmpty()) {
             Score score = Score.builder()
                     .score(postScore.getScore())

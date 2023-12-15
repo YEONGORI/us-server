@@ -50,4 +50,11 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Exceed_Paragraph_Length);
         return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(ExceedScoreRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiResponse<Object> exceedScoreRangeHandler(Exception e) {
+        log.error(ExceptionMessage.Exceed_Score_Range);
+        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

@@ -1,5 +1,6 @@
 package us.usserver.paragraph.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -202,7 +203,7 @@ class ParagraphServiceV0Test {
     @DisplayName("300줄 이상 한줄 쓰기 등록")
     void postParagraphException() {
         // given
-        String longContent = paragraph1.getContent() + paragraph1.getContent() + paragraph1.getContent();
+        String longContent = RandomStringUtils.random(301);
         PostParagraphReq req = PostParagraphReq.builder().content(longContent).build();
 
         // when // then

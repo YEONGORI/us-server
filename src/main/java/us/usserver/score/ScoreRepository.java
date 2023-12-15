@@ -13,5 +13,5 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
     Optional<Score> findScoreByAuthorAndChapter(Author author, Chapter chapter);
 
     @Query("SELECT AVG(s.score) FROM Score s WHERE s.chapter = :chapter")
-    double findAverageScoreByChapter(Chapter chapter);
+    Double findAverageScoreByChapter(Chapter chapter);
 }

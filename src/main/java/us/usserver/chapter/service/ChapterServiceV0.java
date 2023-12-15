@@ -51,7 +51,7 @@ public class ChapterServiceV0 implements ChapterService {
         Novel novel = entityService.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
-        double score = scoreRepository.findAverageScoreByChapter(chapter);
+        Double score = scoreRepository.findAverageScoreByChapter(chapter);
 
         String prevChapterUrl = null, nextChapterUrl = null;
 
