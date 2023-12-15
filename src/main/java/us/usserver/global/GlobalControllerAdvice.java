@@ -12,49 +12,49 @@ import us.usserver.global.exception.*;
 public class GlobalControllerAdvice {
     @ExceptionHandler(NovelNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> novelNotFoundHandler(Exception e) {
+    protected ApiCsResponse<Object> novelNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Novel_NOT_FOUND);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
     @ExceptionHandler(AuthorNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> authorNotFoundHandler(Exception e) {
+    protected ApiCsResponse<Object> authorNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Author_NOT_FOUND);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(ChapterNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> chapterNotFoundHandler(Exception e) {
+    protected ApiCsResponse<Object> chapterNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Chapter_NOT_FOUND);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(ParagraphNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> paragraphNotFoundHandler(Exception e) {
+    protected ApiCsResponse<Object> paragraphNotFoundHandler(Exception e) {
         log.error(ExceptionMessage.Paragraph_NOT_FOUND);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(MainAuthorIsNotMatchedException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    protected ApiResponse<Object> mainAuthorIsNotMatchedHandler(Exception e) {
+    protected ApiCsResponse<Object> mainAuthorIsNotMatchedHandler(Exception e) {
         log.error(ExceptionMessage.Main_Author_NOT_MATCHED);
-        return new ApiResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(ExceedParagraphLengthException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> exceedParagraphLengthHandler(Exception e) {
+    protected ApiCsResponse<Object> exceedParagraphLengthHandler(Exception e) {
         log.error(ExceptionMessage.Exceed_Paragraph_Length);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(ExceedScoreRangeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiResponse<Object> exceedScoreRangeHandler(Exception e) {
+    protected ApiCsResponse<Object> exceedScoreRangeHandler(Exception e) {
         log.error(ExceptionMessage.Exceed_Score_Range);
-        return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 }

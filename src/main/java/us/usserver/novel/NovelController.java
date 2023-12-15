@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import us.usserver.global.ApiResponse;
+import us.usserver.global.ApiCsResponse;
 import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.NovelDetailInfo;
 import us.usserver.novel.dto.NovelInfo;
@@ -19,9 +19,9 @@ public class NovelController {
     private final NovelService novelService;
 
     @GetMapping("/{novelId}")
-    public ResponseEntity<ApiResponse<?>> getNovelInfo(@PathVariable Long novelId) {
+    public ResponseEntity<ApiCsResponse<?>> getNovelInfo(@PathVariable Long novelId) {
         NovelInfo novelInfo = novelService.getNovelInfo(novelId);
-        ApiResponse<Object> response = ApiResponse.builder()
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(novelInfo)
@@ -30,10 +30,10 @@ public class NovelController {
     }
 
     @GetMapping("/{novelId}/detail")
-    public ResponseEntity<ApiResponse<?>> getNovelDetailInfo(@PathVariable Long novelId) {
+    public ResponseEntity<ApiCsResponse<?>> getNovelDetailInfo(@PathVariable Long novelId) {
         NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
 
-        ApiResponse<Object> response = ApiResponse.builder()
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(detailInfo)
@@ -42,14 +42,14 @@ public class NovelController {
     }
 
     @PatchMapping("/{novelId}/synopsis")
-    public ResponseEntity<ApiResponse<?>> modifyNovelSynopsis(
+    public ResponseEntity<ApiCsResponse<?>> modifyNovelSynopsis(
             @PathVariable Long novelId,
             @Validated @RequestBody NovelSynopsis req
     ) {
         Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
         NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
 
-        ApiResponse<Object> response = ApiResponse.builder()
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())
                 .data(synopsis)
@@ -58,14 +58,14 @@ public class NovelController {
     }
 
     @PatchMapping("/{novelId}/author-description")
-    public ResponseEntity<ApiResponse<?>> modifyAuthorDescription(
+    public ResponseEntity<ApiCsResponse<?>> modifyAuthorDescription(
             @PathVariable Long novelId,
             @Validated @RequestBody AuthorDescription req
     ) {
         Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
         AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
 
-        ApiResponse<Object> response = ApiResponse.builder()
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(description)
