@@ -61,4 +61,18 @@ public class ParagraphController {
                 .build();
         return ResponseEntity.created(URI.create("http://localhost:8080/paragraph/" + chapterId)).body(response);
     }
+
+    @PostMapping("/{paragraphId}")
+    @PatchMapping("/{novelId}/{chapterId}/{paragraphId}")
+    public ResponseEntity<ApiCsResponse<?>> selectParagraph(@PathVariable Long paragraphId) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        paragraphService.reportParagraph(authorId, paragraphId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }

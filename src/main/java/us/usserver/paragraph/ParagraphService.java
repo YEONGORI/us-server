@@ -16,4 +16,6 @@ public interface ParagraphService {
     ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req);
 
     void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId);
+
+    void reportParagraph(Long authorId, Long paragraphId);
 }

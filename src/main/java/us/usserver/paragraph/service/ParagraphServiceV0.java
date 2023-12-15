@@ -59,56 +59,6 @@ public class ParagraphServiceV0 implements ParagraphService {
         }
     }
 
-    private ParagraphsOfChapter getInitialChParagraph() {
-        return ParagraphsOfChapter.builder()
-                .selectedParagraphs(Collections.emptyList())
-                .myParagraph(null)
-                .bestParagraph(null)
-                .build();
-    }
-
-    private ParagraphsOfChapter getCompletedChParagraph(List<Paragraph> paragraphs) {
-        List<ParagraphSelected> selectedParagraphs = paragraphs.stream()
-                .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
-                .map(ParagraphSelected::fromParagraph)
-                .toList();
-        return ParagraphsOfChapter.builder()
-                .selectedParagraphs(selectedParagraphs)
-                .myParagraph(null)
-                .bestParagraph(null)
-                .build();
-    }
-
-    private ParagraphsOfChapter getInProgressChParagraph(List<Paragraph> paragraphs, Author author) {
-        List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
-        ParagraphInVoting myParagraph = null, bestParagraph = null;
-
-        int maxLikeCount = 0, likeCount;
-        for (Paragraph paragraph : paragraphs) {
-            ParagraphStatus status = paragraph.getParagraphStatus();
-            likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
-
-            if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
-                            paragraph.getAuthor().getId().equals(author.getId())) {
-                myParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
-            }
-            if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
-                            likeCount > maxLikeCount) {
-                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
-                maxLikeCount = likeCount;
-            }
-            if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
-                selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
-            }
-        }
-
-        return ParagraphsOfChapter.builder()
-                .selectedParagraphs(selectedParagraphs)
-                .myParagraph(myParagraph)
-                .bestParagraph(bestParagraph)
-                .build();
-    }
-
     @Override
     public List<ParagraphInVoting> getInVotingParagraphs(Long chapterId) {
         Chapter chapter = entityService.getChapter(chapterId);
@@ -181,6 +131,64 @@ public class ParagraphServiceV0 implements ParagraphService {
                 para.setParagraphStatus(ParagraphStatus.UNSELECTED);
             }
         }
+    }
+
+    @Override
+    public void reportParagraph(Long authorId, Long paragraphId) {
+        Author author = entityService.getAuthor(authorId);
+        Paragraph paragraph = entityService.getParagraph(paragraphId);
+
+
+    }
+
+    private ParagraphsOfChapter getInitialChParagraph() {
+        return ParagraphsOfChapter.builder()
+                .selectedParagraphs(Collections.emptyList())
+                .myParagraph(null)
+                .bestParagraph(null)
+                .build();
+    }
+
+    private ParagraphsOfChapter getCompletedChParagraph(List<Paragraph> paragraphs) {
+        List<ParagraphSelected> selectedParagraphs = paragraphs.stream()
+                .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
+                .map(ParagraphSelected::fromParagraph)
+                .toList();
+        return ParagraphsOfChapter.builder()
+                .selectedParagraphs(selectedParagraphs)
+                .myParagraph(null)
+                .bestParagraph(null)
+                .build();
+    }
+
+    private ParagraphsOfChapter getInProgressChParagraph(List<Paragraph> paragraphs, Author author) {
+        List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
+        ParagraphInVoting myParagraph = null, bestParagraph = null;
+
+        int maxLikeCount = 0, likeCount;
+        for (Paragraph paragraph : paragraphs) {
+            ParagraphStatus status = paragraph.getParagraphStatus();
+            likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
+
+            if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
+                            paragraph.getAuthor().getId().equals(author.getId())) {
+                myParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
+            }
+            if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
+                            likeCount > maxLikeCount) {
+                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, likeCount);
+                maxLikeCount = likeCount;
+            }
+            if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
+                selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
+            }
+        }
+
+        return ParagraphsOfChapter.builder()
+                .selectedParagraphs(selectedParagraphs)
+                .myParagraph(myParagraph)
+                .bestParagraph(bestParagraph)
+                .build();
     }
 
     private void addAuthority(Author author, Novel novel) {
