@@ -1,14 +1,13 @@
 package us.usserver.chapter.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.ParagraphSelected;
 
 import java.util.List;
 
+@Getter
 @Builder
 @ToString
 @NoArgsConstructor
@@ -16,6 +15,7 @@ import java.util.List;
 public class ChapterDetailInfo {
     private int part;
     private String title;
+    private ChapterStatus status;
     private List<ParagraphSelected> selectedParagraphs;
     private ParagraphInVoting myParagraph;
     private ParagraphInVoting bestParagraph;

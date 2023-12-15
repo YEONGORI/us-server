@@ -49,4 +49,8 @@ public class Chapter extends BaseEntity {
     public void setStatusForTest(ChapterStatus status) {
         this.status = status;
     }
+
+    public void setPartForTest(Integer part) {
+        this.part = part;
+    }
 }

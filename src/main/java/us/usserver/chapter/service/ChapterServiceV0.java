@@ -55,22 +55,27 @@ public class ChapterServiceV0 implements ChapterService {
         Integer part = chapter.getPart();
         for (Chapter c : chapters) {
             if (c.getPart() == part + 1) {
-                nextChapterUrl = "http://localhost:8000/chapter/" + novelId + "/" + c.getId();
+                nextChapterUrl = createChapterUrl(novelId, c.getId());
             }
             if (c.getPart() == part - 1) {
-                prevChapterUrl = "http://localhost:8000/chapter/" + novelId + "/" + c.getId();
+                prevChapterUrl = createChapterUrl(novelId, c.getId());
             }
         }
 
         return ChapterDetailInfo.builder()
                 .part(part)
                 .title(chapter.getTitle())
+                .status(chapter.getStatus())
                 .myParagraph(paragraphs.getMyParagraph())
                 .bestParagraph(paragraphs.getBestParagraph())
                 .selectedParagraphs(paragraphs.getSelectedParagraphs())
                 .prevChapterUrl(prevChapterUrl)
                 .nextChapterUrl(nextChapterUrl)
                 .build();
+    }
+
+    private static String createChapterUrl(Long novelId, Long chapterId) {
+        return "http://localhost:8000/chapter/" + novelId + "/" + chapterId;
     }
 
     @Override
