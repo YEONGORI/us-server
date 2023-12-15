@@ -16,6 +16,7 @@ public class ChapterDetailInfo {
     private int part;
     private String title;
     private ChapterStatus status;
+    private Double score;
     private List<ParagraphSelected> selectedParagraphs;
     private ParagraphInVoting myParagraph;
     private ParagraphInVoting bestParagraph;

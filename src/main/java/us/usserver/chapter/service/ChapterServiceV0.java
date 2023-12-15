@@ -17,6 +17,7 @@ import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.ParagraphService;
 import us.usserver.paragraph.dto.ParagraphsOfChapter;
+import us.usserver.score.ScoreRepository;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class ChapterServiceV0 implements ChapterService {
     private final ParagraphService paragraphService;
 
     private final ChapterRepository chapterRepository;
+    private final ScoreRepository scoreRepository;
 
     @Override
     public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
@@ -49,6 +51,7 @@ public class ChapterServiceV0 implements ChapterService {
         Novel novel = entityService.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
+        double score = scoreRepository.findAverageScoreByChapter(chapter);
 
         String prevChapterUrl = null, nextChapterUrl = null;
 
@@ -66,6 +69,7 @@ public class ChapterServiceV0 implements ChapterService {
                 .part(part)
                 .title(chapter.getTitle())
                 .status(chapter.getStatus())
+                .score(score)
                 .myParagraph(paragraphs.getMyParagraph())
                 .bestParagraph(paragraphs.getBestParagraph())
                 .selectedParagraphs(paragraphs.getSelectedParagraphs())
