@@ -8,3 +8,24 @@ spring:
     username: sa
     password: ""
     url: jdbc:h2:mem:US_FOR_TEST
+
+  redis:
+    host: localhost
+    port: 6379
+
+
+# Swagger springdoc-ui Configuration
+springdoc:
+  packages-to-scan: us.usserver
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: swagger.html            # Swagger UI 경로 => localhost:8000/demo-ui.html
+    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  cache:
+    disabled: true

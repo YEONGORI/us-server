@@ -56,7 +56,7 @@ class NovelLikeServiceV0Test {
                 .thumbnail("THUMBNAIL")
                 .synopsis("SYNOPSIS")
                 .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtag(hashtags)
+                .hashtags(hashtags)
                 .genre(Genre.FANTASY)
                 .ageRating(AgeRating.GENERAL)
                 .build();
