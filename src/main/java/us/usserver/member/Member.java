@@ -18,7 +18,7 @@ import us.usserver.member.memberEnum.Gender;
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "member_id")
     private Long id;
 
     @NotNull

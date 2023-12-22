@@ -2,10 +2,13 @@ package us.usserver.global;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import us.usserver.global.exception.*;
+
+import java.net.BindException;
 
 @Slf4j
 @RestControllerAdvice
@@ -16,6 +19,7 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Novel_NOT_FOUND);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
     @ExceptionHandler(AuthorNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiCsResponse<Object> authorNotFoundHandler(Exception e) {
@@ -55,6 +59,18 @@ public class GlobalControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiCsResponse<Object> exceedScoreRangeHandler(Exception e) {
         log.error(ExceptionMessage.Exceed_Score_Range);
+
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> ValidRequestModelHandler(BindException e) {
+        log.error(ExceptionMessage.Valid_ModelAttribute_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> ValidRequestBodyHandler(MethodArgumentNotValidException e) {
+        log.error(ExceptionMessage.Valid_RequestBody_NOT_FOUND);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 }
