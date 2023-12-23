@@ -11,6 +11,7 @@ import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.member.Member;
+import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
@@ -45,6 +46,13 @@ public class Author {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    //TODO[고민]: author에 비중이 너무 커져서 읽은 소설 같은 경우에는 member에 추가를 하면 안될까..?
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Novel> readNovels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "mainAuthor", cascade = CascadeType.ALL)
+    private List<Novel> createNovels = new ArrayList<>();
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
 
@@ -71,7 +79,6 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
-
 
     public void addAuthorNovel(Authority authority) {
         authority.setAuthor(this);
