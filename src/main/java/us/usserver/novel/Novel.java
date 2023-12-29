@@ -87,13 +87,6 @@ public class Novel extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Author mainAuthor;
 
-    @Schema(description = "작가", nullable = true, example = "author1")
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private Author author; log
-
-
-
     @Schema(description = "소설 분류", nullable = true, example = "장편소설")
     @NotNull
     @Enumerated(EnumType.STRING)
