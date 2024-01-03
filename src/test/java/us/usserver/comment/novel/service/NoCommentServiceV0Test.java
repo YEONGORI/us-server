@@ -7,13 +7,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
 import us.usserver.comment.novel.dto.CommentsInNovelRes;
 import us.usserver.comment.novel.dto.PostCommentReq;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.like.novel.service.NovelLikeServiceV0;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
@@ -34,37 +39,21 @@ class NoCommentServiceV0Test {
     private NovelRepository novelRepository;
     @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     private Novel novel;
     private Author author;
 
     @BeforeEach
     void setUp() {
-        Set<Hashtag> hashtags = new HashSet<>();
-        hashtags.add(Hashtag.HASHTAG1);
-        hashtags.add(Hashtag.HASHTAG2);
-        hashtags.add(Hashtag.MONCHKIN);
+        author = AuthorMother.generateAuthor();
+        setMember(author);
+        novel = NovelMother.generateNovel(author);
 
-        novel = Novel.builder()
-                .id(1L)
-                .title("TITLE")
-                .thumbnail("THUMBNAIL")
-                .synopsis("SYNOPSIS")
-                .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtags(hashtags)
-                .genre(Genre.FANTASY)
-                .ageRating(AgeRating.GENERAL)
-                .build();
 
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
-
-        novelRepository.save(novel);
         authorRepository.save(author);
+        novelRepository.save(novel);
     }
 
     @Test
@@ -79,46 +68,66 @@ class NoCommentServiceV0Test {
     @Test
     @DisplayName("존재 하지 않는 소설 댓글 불러오기")
     void getCommentsInNotExistNovel() {
+        // given
+        Long randomNovelId = 99L;
+
+        // when then
         assertThrows(NovelNotFoundException.class,
-                () -> noCommentServiceV0.getCommentsInNovel(11L));
+                () -> noCommentServiceV0.getCommentsInNovel(randomNovelId));
     }
 
     @Test
     @DisplayName("소설 댓글 작성하기")
     void postCommentInNovel() {
+        // given
         PostCommentReq testComment = PostCommentReq.builder()
                 .content("TEST COMMENT")
                 .build();
+
+        // when
         List<CommentsInNovelRes> commentsInNovel = assertDoesNotThrow(() ->
                 noCommentServiceV0.postCommentInNovel(
-                        novel.getId(),
-                        author.getId(),
-                        testComment
-                )
+                        novel.getId(), author.getId(), testComment)
         );
 
+        // then
         assertThat(commentsInNovel.size()).isGreaterThan(0);
     }
 
     @Test
     @DisplayName("존재 하지 않는 소설 댓글 작성하기")
     void postCommentInNotExistNovel() {
+        // given
+        Long randomNovelId = 99L;
+        PostCommentReq req = PostCommentReq.builder().content("").build();
+
+        // when then
         assertThrows(NovelNotFoundException.class,
                 () -> noCommentServiceV0.postCommentInNovel(
-                        11L,
-                        1L,
-                        PostCommentReq.builder().content("").build())
+                        randomNovelId,
+                        author.getId(),
+                        req)
         );
     }
 
     @Test
     @DisplayName("존재 하지 않는 작가의 댓글 작성")
     void postCommentInNotExistAuthor() {
+        // given
+        Long randomAuthorId = 99L;
+        PostCommentReq req = PostCommentReq.builder().content("").build();
+
+        // when then
         assertThrows(AuthorNotFoundException.class,
                 () -> noCommentServiceV0.postCommentInNovel(
-                        1L,
-                        11L,
-                        PostCommentReq.builder().content("").build()
-                ));
+                        novel.getId(),
+                        randomAuthorId,
+                        req));
+    }
+
+    private void setMember(Author author) {
+        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member);
+        author.setMember(member);
     }
 }

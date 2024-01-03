@@ -7,7 +7,6 @@ import us.usserver.novel.dto.NovelInfo;
 import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.novel.dto.*;
 
-import java.util.List;
 
 @Service
 public interface NovelService {
@@ -18,8 +17,6 @@ public interface NovelService {
     NovelSynopsis modifyNovelSynopsis(Long novelId, Long authorId, NovelSynopsis req);
 
     AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req);
-
-    DetailInfoResponse getNovelDetailInfo(Long novelId);
 
     Novel createNovel(CreateNovelReq createNovelReq);
 

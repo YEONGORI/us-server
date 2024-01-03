@@ -10,9 +10,7 @@ import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.novel.Novel;
 import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.NovelSynopsis;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.novelEnum.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -33,6 +31,9 @@ public class NovelMother {
                 .randomize(named("hashtag").and(ofType(Set.class)), () -> EnumSet.of(Hashtag.HASHTAG1))
                 .randomize(Genre.class, new EnumRandomizer<>(Genre.class))
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
+                .randomize(NovelStatus.class, new EnumRandomizer<>(NovelStatus.class))
+                .randomize(named("hit").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 100))
+                .randomize(NovelSize.class, new EnumRandomizer<>(NovelSize.class))
                 .randomize(Author.class, () -> author);
 
         EasyRandom easyRandom = new EasyRandom(randomParameters);

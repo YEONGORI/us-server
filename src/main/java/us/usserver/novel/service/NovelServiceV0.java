@@ -6,17 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorRepository;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterInfo;
 import us.usserver.comment.novel.NoCommentRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
+import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.author.AuthorRepository;
 import us.usserver.global.EntityService;
@@ -24,11 +25,12 @@ import us.usserver.global.ExceptionMessage;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
-import us.usserver.novel.dto.AuthorDescription;
-import us.usserver.novel.dto.NovelDetailInfo;
-import us.usserver.novel.dto.NovelInfo;
-import us.usserver.novel.dto.NovelSynopsis;
+import us.usserver.novel.dto.*;
+import us.usserver.novel.novelEnum.Orders;
+import us.usserver.novel.novelEnum.Sorts;
+import us.usserver.novel.repository.NovelCustomRepository;
 import us.usserver.stake.StakeService;
 import us.usserver.novel.dto.*;
 import us.usserver.comment.novel.NoCommentRepository;
@@ -40,6 +42,9 @@ import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import java.util.Optional;
 import java.util.Set;
@@ -56,6 +61,24 @@ public class NovelServiceV0 implements NovelService {
 
     private final AuthorityRepository authorityRepository;
     private final NoCommentRepository noCommentRepository;
+    private final AuthorRepository authorRepository;
+    private final NovelRepository novelRepository;
+    private final NovelCustomRepository novelCustomRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    private static final Integer RECENT_KEYWORD_SIZE = 10;
+
+    @Override
+    public Novel createNovel(CreateNovelReq createNovelReq) {
+        //TODO: 토큰 값 변경 예정
+        Long authorId = 1L;
+        Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+
+        Novel novel = createNovelReq.toEntity(author);
+        Novel saveNovel = novelRepository.save(novel);
+
+        return saveNovel;
+    }
 
     private final StakeRepository stakeRepository;
     private final NovelRepository novelRepository;

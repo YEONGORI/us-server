@@ -73,4 +73,17 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Valid_RequestBody_NOT_FOUND);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> ValidRequestModelHandler(BindException e) {
+        log.error(ExceptionMessage.Valid_ModelAttribute_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> ValidRequestBodyHandler(MethodArgumentNotValidException e) {
+        log.error(ExceptionMessage.Valid_RequestBody_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

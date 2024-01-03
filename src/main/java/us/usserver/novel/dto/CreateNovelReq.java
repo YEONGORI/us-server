@@ -63,7 +63,6 @@ public class CreateNovelReq {
                 .ageRating(ageRating)
                 .novelSize(novelSize)
                 .hit(0)
-                .author(author)
                 .novelStatus(NovelStatus.IN_PROGRESS)
                 .build();
     }
