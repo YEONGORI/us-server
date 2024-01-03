@@ -1,233 +1,230 @@
 package us.usserver.paragraph.service;
 
-import org.aspectj.lang.annotation.Before;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
+import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
+import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.global.EntityService;
+import us.usserver.global.exception.ExceedParagraphLengthException;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.dto.GetParagraphsRes;
+import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-import us.usserver.stake.StakeService;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 
-@ExtendWith(MockitoExtension.class)
+@Transactional
+@SpringBootTest
 class ParagraphServiceV0Test {
-    @InjectMocks
+    @Autowired
     private ParagraphServiceV0 paragraphServiceV0;
-    @Mock
-    private EntityService entityService;
-    @Mock
+    @Autowired
     private ParagraphRepository paragraphRepository;
-    @Mock
+    @Autowired
     private ParagraphLikeRepository paragraphLikeRepository;
-    @Mock
-    private StakeService stakeService;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
+    @Autowired
+    private NovelRepository novelRepository;
+    @Autowired
+    private ChapterRepository chapterRepository;
 
     private Author author;
     private Novel novel;
-    private Chapter chapter1;
-    private Chapter chapter2;
-    private Chapter chapter3;
+    private Chapter chapter;
     private Paragraph paragraph1;
     private Paragraph paragraph2;
 
-    private int paragraphLikeCnt;
-
     @BeforeEach
     public void setUp() {
-//        author = Author.builder()
-//                .id(1L)
-//                .nickname("NICKNAME")
-//                .introduction("INTRODUCTION")
-//                .profileImg("PROFILE_IMG")
-//                .build();
         author = AuthorMother.generateAuthor();
-
-//        novel = Novel.builder()
-//                .id(1L)
-//                .title("NOVEL_TITLE")
-//                .thumbnail("THUMBNAIL")
-//                .synopsis("SYNOPSIS")
-//                .authorDescription("AUTHOR_DESCRIPTION")
-//                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-//                .genre(Genre.FANTASY)
-//                .ageRating(AgeRating.GENERAL)
-//                .author(author)
-//                .build();
-
+        setMember(author);
         novel = NovelMother.generateNovel(author);
+        chapter = ChapterMother.generateChapter(novel);
+        paragraph1 = ParagraphMother.generateParagraph(author, chapter);
+        paragraph2 = ParagraphMother.generateParagraph(author, chapter);
+        paragraph1.setSequenceForTest(0);
+        paragraph2.setSequenceForTest(0);
 
-        chapter1 = Chapter.builder()
-                .id(1L)
-                .title("PARAGRAPH_TITLE_1")
-                .part(1)
-                .status(ChapterStatus.IN_PROGRESS)
-                .novel(novel)
-                .build();
+        novel.getChapters().add(chapter);
 
-        chapter2 = Chapter.builder()
-                .id(2L)
-                .title("PARAGRAPH_TITLE_2")
-                .part(2)
-                .status(ChapterStatus.COMPLETED)
-                .novel(novel)
-                .build();
-
-        chapter3 = Chapter.builder()
-                .id(3L)
-                .title("PARAGRAPH_TITLE_3")
-                .part(3)
-                .status(ChapterStatus.IN_PROGRESS)
-                .novel(novel)
-                .build();
-
-        paragraph1 = ParagraphMother.generateParagraph(author, chapter1);
-        paragraph2 = ParagraphMother.generateParagraph(author, chapter1);
-//        paragraph1 = Paragraph.builder()
-//                .id(1L)
-//                .paragraphStatus(ParagraphStatus.IN_VOTING)
-//                .content("PARAGRAPH_CONTENT_1")
-//                .chapter(chapter1)
-//                .author(author)
-//                .sequence(0)
-//                .build();
-//
-//        paragraph2 = Paragraph.builder()
-//                .id(2L)
-//                .paragraphStatus(ParagraphStatus.IN_VOTING)
-//                .content("PARAGRAPH_CONTENT_2")
-//                .chapter(chapter1)
-//                .author(author)
-//                .sequence(1)
-//                .build();
-
-        Mockito.lenient().when(entityService.getAuthor(anyLong())).thenReturn(author);
-        Mockito.lenient().when(entityService.getNovel(anyLong())).thenReturn(novel);
-        Mockito.lenient().when(entityService.getChapter(1L)).thenReturn(chapter1);
-        Mockito.lenient().when(entityService.getChapter(2L)).thenReturn(chapter2);
-        Mockito.lenient().when(entityService.getChapter(3L)).thenReturn(chapter3);
-        Mockito.lenient().when(entityService.getParagraph(1L)).thenReturn(paragraph1);
-        Mockito.lenient().when(entityService.getParagraph(2L)).thenReturn(paragraph2);
-        Mockito.lenient().when(paragraphLikeRepository.countAllByParagraph(paragraph1))
-                .thenReturn(paragraphLikeCnt);
+        authorRepository.save(author);
+        novelRepository.save(novel);
+        chapterRepository.save(chapter);
+        paragraphRepository.save(paragraph1);
+        paragraphRepository.save(paragraph2);
     }
 
     @Test
     @DisplayName("회차 보기")
     void getParagraphs() {
         // given
-        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
-                .thenReturn(Collections.singletonList(paragraph1));
-        Mockito.when(paragraphRepository.findAllByChapter(chapter2))
-                .thenReturn(Collections.singletonList(paragraph1));
 
         // when
-        GetParagraphsRes paragraphs1 = paragraphServiceV0.getParagraphs(1L, 1L);
-        GetParagraphsRes paragraphs2 = paragraphServiceV0.getParagraphs(1L, 2L);
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
 
         // then
-        assertNotNull(paragraphs1.getMyParagraph());
-        assertNotNull(paragraphs1.getBestParagraph());
-        assertNull(paragraphs2.getMyParagraph());
-        assertNull(paragraphs2.getBestParagraph());
-
-        Mockito.verify(paragraphRepository).findAllByChapter(chapter1);
-        Mockito.verify(paragraphRepository).findAllByChapter(chapter2);
+        assertNotNull(paragraphs.getMyParagraph());
+        assertNull(paragraphs.getBestParagraph());
+        assertThat(paragraphs.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
     }
 
     @Test
-    @DisplayName("처음 시작된 회차 보기")
+    @DisplayName("어떤 한줄도 등록되지 않은 회차 보기")
     void getInitialChParagraph() {
         // given
-        Mockito.when(paragraphRepository.findAllByChapter(chapter3))
-                .thenReturn(Collections.emptyList());
+        Chapter SecondChapter = ChapterMother.generateChapter(novel);
 
         // when
-        GetParagraphsRes paragraphs = paragraphServiceV0.getParagraphs(1L, 3L);
+        novel.getChapters().add(SecondChapter);
+        chapterRepository.save(SecondChapter);
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), SecondChapter.getId());
 
         // then
-        assertNull(paragraphs.getSelectedParagraphs());
         assertNull(paragraphs.getMyParagraph());
         assertNull(paragraphs.getBestParagraph());
-        assertNotNull(paragraphs);
+        assertThat(paragraphs.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    @DisplayName("내가 쓴 한줄은 없고, 베스트 한줄은 있는 회차 보기")
+    void getParagraph0() {
+        // given
+        Author author1 = AuthorMother.generateAuthor();
+        Author author2 = AuthorMother.generateAuthor();
+        Author author3 = AuthorMother.generateAuthor();
+        setMember(author1);
+        setMember(author2);
+        setMember(author3);
+
+        ParagraphLike like1 = ParagraphLike.builder().paragraph(paragraph1).author(author1).build();
+        ParagraphLike like2 = ParagraphLike.builder().paragraph(paragraph1).author(author2).build();
+        ParagraphLike like3 = ParagraphLike.builder().paragraph(paragraph1).author(author3).build();
+        ParagraphLike like4 = ParagraphLike.builder().paragraph(paragraph2).author(author3).build();
+
+        // when
+        authorRepository.save(author1);
+        authorRepository.save(author2);
+        authorRepository.save(author3);
+        paragraphLikeRepository.save(like1);
+        paragraphLikeRepository.save(like2);
+        paragraphLikeRepository.save(like3);
+        paragraphLikeRepository.save(like4);
+
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author1.getId(), chapter.getId());
+
+        // then
+        assertNull(paragraphs.getMyParagraph());
+        assertThat(paragraphs.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
+        assertThat(paragraphs.getBestParagraph().getContent()).isEqualTo(paragraph1.getContent());
     }
 
     @Test
     @DisplayName("투표 중인 한줄들 보기")
     void getInVotingParagraphs() {
         // given
-        List<Paragraph> paragraphs = Arrays.asList(paragraph1, paragraph2);
-        List<ParagraphInVoting> paragraphInVotings = paragraphs.stream()
-                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, 0)).toList();
-
-        Mockito.when(paragraphRepository.findAllByChapter(chapter1))
-                .thenReturn(paragraphs);
 
         // when
-        List<ParagraphInVoting> inVotingParagraphs = paragraphServiceV0.getInVotingParagraphs(1L);
+        List<ParagraphInVoting> paragraphs = paragraphServiceV0.getInVotingParagraphs(chapter.getId());
 
         // then
-        assertEquals(paragraphInVotings.size(), inVotingParagraphs.size());
-        for (int i = 0; i < paragraphInVotings.size(); i++) {
-            assertEquals(paragraphInVotings.get(i).getContent(), inVotingParagraphs.get(i).getContent());
-        }
-
+        assertThat(paragraphs.size()).isEqualTo(2);
     }
 
     @Test
+    @DisplayName("작성이 완료된 회차 보기")
+    void getCompletedChParagraph() {
+        // given
+        List<Long> idList = Arrays.asList(paragraph1.getId(), paragraph2.getId());
+
+        // when
+        chapter.setStatusForTest(ChapterStatus.COMPLETED);
+        paragraph1.setParagraphStatus(ParagraphStatus.SELECTED);
+        paragraph2.setParagraphStatus(ParagraphStatus.SELECTED);
+        chapterRepository.save(chapter);
+        paragraphRepository.save(paragraph1);
+        paragraphRepository.save(paragraph2);
+        ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author.getId(), chapter.getId());
+
+        // then
+        assertNull(paragraphs.getMyParagraph());
+        assertNull(paragraphs.getBestParagraph());
+        assertThat(paragraphs.getSelectedParagraphs().size()).isEqualTo(2);
+        paragraphs.getSelectedParagraphs().forEach(p ->
+                assertThat(p.getId()).isIn(idList));
+    }
+    
+    @Test
+    @DisplayName("한줄 쓰기 등록")
     void postParagraph() {
-        // TODO: MOCK 객체의 한계로 인해 테스트 코드가 너무 복잡해 짐, @Autowired 로 생성자 주입 받아 다시 작성 예정
-//        // given
-//        PostParagraphReq req = PostParagraphReq.builder()
-//                .content("TEST")
-//                .build();
-//        Mockito.lenient().when(paragraphRepository.save(paragraph1)).thenReturn(paragraph1);
-//        List<Paragraph> paragraphs = Arrays.asList(paragraph1, paragraph2);
-//
-//        // when
-//        ParagraphInVoting paragraphInVoting = paragraphServiceV0.postParagraph(1L, 1L, req);
-//
-//        List<Integer> sequences = paragraphs.stream().map(Paragraph::getSequence).toList();
-//        Integer maxSequence = Collections.max(sequences);
-//
-//        // then
-//        Assertions.assertThat(paragraphInVoting.getSequence()).isEqualTo(maxSequence + 1);
+        // given
+        PostParagraphReq req = PostParagraphReq.builder().content("TEST_CONTENT").build();
+
+        // when
+        ParagraphInVoting paragraphInVoting = assertDoesNotThrow(() -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
+        List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
+
+        // then
+        assertThat(paragraphInVoting.getContent()).isEqualTo("TEST_CONTENT");
+        assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
+        assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
+        assertThat(paragraphInVoting.getLikeCnt()).isZero();
+        assertThat(paragraphInVoting.getAuthorName()).isEqualTo(author.getNickname());
+        assertThat(paragraphs.stream().anyMatch(p ->
+                p.getContent().equals(req.getContent()))).isTrue();
     }
 
     @Test
-    void selectParagraph() {
+    @DisplayName("300줄 이상 한줄 쓰기 등록")
+    void postParagraphException() {
+        // given
+        String longContent = RandomStringUtils.random(301);
+        PostParagraphReq req = PostParagraphReq.builder().content(longContent).build();
+
+        // when // then
+        Assertions.assertThrows(ExceedParagraphLengthException.class,
+                () -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
+    }
+
+    @Test
+    @DisplayName("메인 작가가 마음에 드는 한줄 선택하기")
+    void selectParagraph1() {
+    }
+
+    @Test
+    @DisplayName("메인 작가가 아닌 사람이 마음에 드는 한줄 선택하기")
+    void selectParagraph2() {
+
+    }
+
+    private void setMember(Author author) {
+        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member);
+        author.setMember(member);
     }
 }

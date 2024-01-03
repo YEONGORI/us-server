@@ -1,13 +1,18 @@
 package us.usserver.chapter;
 
 import org.springframework.stereotype.Service;
-import us.usserver.chapter.dto.ChaptersOfNovel;
+import us.usserver.chapter.dto.ChapterDetailInfo;
+import us.usserver.chapter.dto.ChapterInfo;
+import us.usserver.novel.Novel;
 
 import java.util.List;
 
 @Service
 public interface ChapterService {
-    List<ChaptersOfNovel> getChaptersOfNovel(Long novelId);
+
+    List<ChapterInfo> getChaptersOfNovel(Novel novel);
+
+    ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId);
 
     void createChapter(Long novelId, Long authorId);
 }

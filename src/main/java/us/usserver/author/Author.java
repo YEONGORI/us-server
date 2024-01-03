@@ -1,25 +1,20 @@
 package us.usserver.author;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 import us.usserver.authority.Authority;
 import us.usserver.comment.chapter.ChComment;
 import us.usserver.comment.novel.NoComment;
 import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
+import us.usserver.member.Member;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
-import us.usserver.member.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +38,11 @@ public class Author {
     private String introduction;
 
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
+    @Size(max = 500)
     private String profileImg;
 
-    @OneToOne
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -82,5 +79,10 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
-}
 
+
+    public void addAuthorNovel(Authority authority) {
+        authority.setAuthor(this);
+        this.authorities.add(authority);
+    }
+}

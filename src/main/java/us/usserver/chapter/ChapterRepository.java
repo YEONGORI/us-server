@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     List<Chapter> findAllByNovel(Novel novel);
 
+    List<Chapter> findAllByNovelOrderByPart(Novel novel);
+
     Optional<Chapter> getChapterById(Long chapterId);
 
     Optional<Chapter> getChapterByTitle(String title);

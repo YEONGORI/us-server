@@ -39,4 +39,8 @@ public class Paragraph extends BaseEntity {
     @ManyToOne
     @JoinColumn
     private Author author;
+
+    public void setSequenceForTest(int sequence) {
+        this.sequence = sequence;
+    }
 }

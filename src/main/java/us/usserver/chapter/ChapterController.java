@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.chapter.dto.ChapterDetailInfo;
+import us.usserver.global.ApiCsResponse;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.chapter.dto.ChaptersOfNovel;
 
@@ -16,13 +18,18 @@ import java.util.List;
 public class ChapterController {
     private final ChapterService chapterService;
 
-    @GetMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> getChapters(@PathVariable Long novelId) {
-        List<ChaptersOfNovel> chapters = chapterService.getChaptersOfNovel(novelId);
+    @GetMapping("/{novelId}/{chapterId}")
+    public ResponseEntity<ApiCsResponse<?>> getChapterDetailInfo(
+            @PathVariable Long novelId,
+            @PathVariable Long chapterId
+    ) {
+        Long authorId = 0L; // TODO 토큰으로 교체 예정
+        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, authorId, chapterId);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(chapters)
+                .data(chapterDetailInfo)
                 .build();
         return ResponseEntity.ok(response);
     }

@@ -2,11 +2,10 @@ package us.usserver.author;
 
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
-import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.chapter.Chapter;
-import us.usserver.paragraph.Paragraph;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 
 import java.nio.charset.StandardCharsets;
 
@@ -14,6 +13,7 @@ import static org.jeasy.random.FieldPredicates.named;
 import static org.jeasy.random.FieldPredicates.ofType;
 
 public class AuthorMother {
+
     public static Author generateAuthor() {
         EasyRandomParameters randomParameters = new EasyRandomParameters()
                 .charset(StandardCharsets.UTF_8)
@@ -24,4 +24,5 @@ public class AuthorMother {
         EasyRandom easyRandom = new EasyRandom(randomParameters);
         return easyRandom.nextObject(Author.class);
     }
+
 }

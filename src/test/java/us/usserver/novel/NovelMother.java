@@ -8,11 +8,15 @@ import org.jeasy.random.randomizers.text.StringRandomizer;
 import us.usserver.author.Author;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.novel.Novel;
+import us.usserver.novel.dto.AuthorDescription;
+import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.novel.novelEnum.AgeRating;
 import us.usserver.novel.novelEnum.Genre;
+import us.usserver.novel.novelEnum.Hashtag;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import static org.jeasy.random.FieldPredicates.named;
@@ -26,12 +30,30 @@ public class NovelMother {
                 .randomize(named("thumbnail").and(ofType(String.class)), new StringRandomizer(500)) // URL이 들어갈 예정이라 대충 잡아 놓음
                 .randomize(named("synopsis").and(ofType(String.class)), new StringRandomizer(300))
                 .randomize(named("authorDescription").and(ofType(String.class)), new StringRandomizer(300))
-                .randomize(named("hashtag").and(ofType(Set.class)), Collections::emptySet)
+                .randomize(named("hashtag").and(ofType(Set.class)), () -> EnumSet.of(Hashtag.HASHTAG1))
                 .randomize(Genre.class, new EnumRandomizer<>(Genre.class))
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
                 .randomize(Author.class, () -> author);
 
         EasyRandom easyRandom = new EasyRandom(randomParameters);
         return easyRandom.nextObject(Novel.class);
+    }
+
+    public static NovelSynopsis generateSysnopsis() {
+        EasyRandomParameters randomParameters = new EasyRandomParameters()
+                .charset(StandardCharsets.UTF_8)
+                .randomize(String.class, new StringRandomizer(300));
+
+        EasyRandom easyRandom = new EasyRandom(randomParameters);
+        return easyRandom.nextObject(NovelSynopsis.class);
+    }
+
+    public static AuthorDescription generateDescription() {
+        EasyRandomParameters randomParameters = new EasyRandomParameters()
+                .charset(StandardCharsets.UTF_8)
+                .randomize(String.class, new StringRandomizer(300));
+
+        EasyRandom easyRandom = new EasyRandom(randomParameters);
+        return easyRandom.nextObject(AuthorDescription.class);
     }
 }

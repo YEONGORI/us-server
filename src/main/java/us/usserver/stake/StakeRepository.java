@@ -13,8 +13,7 @@ import java.util.Optional;
 @Repository
 public interface StakeRepository extends JpaRepository<Stake, Long> {
 
-    @Query("SELECT (s.author, s.percentage) FROM Stake s WHERE s.novel = :novel")
-    List<StakeInfo> findAllByNovel(Novel novel);
+    List<Stake> findAllByNovel(Novel novel);
 
     Optional<Stake> findByNovelAndAuthor(Novel novel, Author author);
 }

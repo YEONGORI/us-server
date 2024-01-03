@@ -1,10 +1,7 @@
 package us.usserver.authority;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.novel.Novel;
 
@@ -19,11 +16,18 @@ public class Authority {
     @Column(name = "authority_id")
     private Long id;
 
+    @Setter
     @ManyToOne
     @JoinColumn
     private Novel novel;
 
+    @Setter
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn
     private Author author;
+
+    public void takeNovel(Novel novel) {
+        this.novel = novel;
+        novel.getAuthorities().add(this);
+    }
 }

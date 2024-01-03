@@ -48,6 +48,18 @@ public class GlobalControllerAdvice {
         return new ApiCsResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
 
+    @ExceptionHandler(ExceedParagraphLengthException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> exceedParagraphLengthHandler(Exception e) {
+        log.error(ExceptionMessage.Exceed_Paragraph_Length);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(ExceedScoreRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> exceedScoreRangeHandler(Exception e) {
+        log.error(ExceptionMessage.Exceed_Score_Range);
+
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiCsResponse<Object> ValidRequestModelHandler(BindException e) {

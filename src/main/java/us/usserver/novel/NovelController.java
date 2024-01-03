@@ -9,8 +9,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
+import us.usserver.novel.dto.AuthorDescription;
+import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.novel.dto.NovelInfo;
+import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.novel.dto.*;
 
@@ -43,7 +48,8 @@ public class NovelController {
 
     @GetMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> getNovelInfo(@PathVariable Long novelId) {
-        NovelInfoResponse novelInfo = novelService.getNovelInfo(novelId);
+        NovelInfo novelInfo = novelService.getNovelInfo(novelId);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -54,7 +60,8 @@ public class NovelController {
 
     @GetMapping("/{novelId}/detail")
     public ResponseEntity<ApiCsResponse<?>> getNovelDetailInfo(@PathVariable Long novelId) {
-        DetailInfoResponse detailInfo = novelService.getNovelDetailInfo(novelId);
+        NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -62,6 +69,19 @@ public class NovelController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{novelId}/synopsis")
+    public ResponseEntity<ApiCsResponse<?>> modifyNovelSynopsis(
+            @PathVariable Long novelId,
+            @Validated @RequestBody NovelSynopsis req
+    ) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(synopsis)
 
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponses(value = {
@@ -131,6 +151,18 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{novelId}/author-description")
+    public ResponseEntity<ApiCsResponse<?>> modifyAuthorDescription(
+            @PathVariable Long novelId,
+            @Validated @RequestBody AuthorDescription req
+    ) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(description)
     @Operation(summary = "검색 페이지 Keyword", description = "인기검색어, 최근 검색어 목록 조회 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색 Keyword load 성공",

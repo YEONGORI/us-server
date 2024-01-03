@@ -6,21 +6,38 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.redis.core.RedisTemplate;
 import us.usserver.author.Author;
+import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
+import us.usserver.chapter.Chapter;
+import us.usserver.chapter.ChapterMother;
+import us.usserver.chapter.ChapterRepository;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
+import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
+import us.usserver.novel.dto.AuthorDescription;
+import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.novel.dto.NovelInfo;
+import us.usserver.novel.dto.NovelSynopsis;
+
+import java.util.Collections;
 import us.usserver.novel.dto.*;
 import us.usserver.novel.novelEnum.*;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Transactional
 @SpringBootTest
 class NovelServiceV0Test {
     @Autowired
@@ -28,240 +45,148 @@ class NovelServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private ChapterRepository chapterRepository;
+    @Autowired
     private NovelServiceV0 novelServiceV0;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     private Novel novel;
-    private Novel novel2;
-    private Novel novel3;
-    private Novel novel4;
-    private Novel novel5;
-    private Novel novel6;
-    private Novel novel7;
-    private Novel novel8;
+    private Novel dummyNovel;
     private Author author;
-    private Author author2;
+    private Author dummyAuthor;
 
     @BeforeEach
-    void setup() throws InterruptedException {
-        Set<Hashtag> hashtags = new HashSet<>();
-        hashtags.add(Hashtag.HASHTAG1);
-        hashtags.add(Hashtag.HASHTAG2);
-        hashtags.add(Hashtag.MONCHKIN);
+    void setup() {
+        Member member1 = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member1);
 
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
+        Member member2 = Member.builder().age(1).gender(Gender.MALE).build();
+        memberRepository.save(member2);
+
+        author = AuthorMother.generateAuthor();
+        author.setMember(member1);
         authorRepository.save(author);
 
-        novel = Novel.builder()
-                .id(1L)
-                .title("TITLE")
-                .thumbnail("THUMBNAIL")
-                .synopsis("SYNOPSIS")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION")
-                .hashtags(hashtags)
-                .genre(Genre.FANTASY)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(1)
-                .build();
+        dummyAuthor = AuthorMother.generateAuthor();
+        dummyAuthor.setMember(member2);
+        authorRepository.save(dummyAuthor);
+
+        novel = NovelMother.generateNovel(author);
         novelRepository.save(novel);
 
-        novel2 = Novel.builder()
-                .id(2L)
-                .title("TITLE2")
-                .thumbnail("THUMBNAIL2")
-                .synopsis("SYNOPSIS2")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION2")
-                .hashtags(hashtags)
-                .genre(Genre.MYSTERY)
-                .ageRating(AgeRating.TWELVE_PLUS)
-                .novelSize(NovelSize.SHORT)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(2)
-                .build();
-        novelRepository.save(novel2);
-        novel3 = Novel.builder()
-                .id(3L)
-                .title("TITLE3")
-                .thumbnail("THUMBNAIL3")
-                .synopsis("SYNOPSIS3")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION3")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(3)
-                .build();
-        novelRepository.save(novel3);
+        dummyNovel = NovelMother.generateNovel(dummyAuthor);
+        novelRepository.save(dummyNovel);
 
-        novel4 = Novel.builder()
-                .id(4L)
-                .title("TITLE4")
-                .thumbnail("THUMBNAIL4")
-                .synopsis("SYNOPSIS4")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION4")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(4)
-                .build();
-        novelRepository.save(novel4);
-
-        novel5 = Novel.builder()
-                .id(5L)
-                .title("TITLE5")
-                .thumbnail("THUMBNAIL5")
-                .synopsis("SYNOPSIS5")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION5")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(5)
-                .build();
-        novelRepository.save(novel5);
-
-        novel6 = Novel.builder()
-                .id(6L)
-                .title("TITLE6")
-                .thumbnail("THUMBNAIL6")
-                .synopsis("SYNOPSIS6")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION6")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(6)
-                .build();
-        novelRepository.save(novel6);
-
-        novel7 = Novel.builder()
-                .id(7L)
-                .title("TITLE7")
-                .thumbnail("THUMBNAIL7")
-                .synopsis("SYNOPSIS7")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION7")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(7)
-                .build();
-        novelRepository.save(novel7);
-
-        novel8 = Novel.builder()
-                .id(8L)
-                .title("TITLE8")
-                .thumbnail("THUMBNAIL8")
-                .synopsis("SYNOPSIS8")
-                .author(author)
-                .authorDescription("AUTHOR_DESCRIPTION8")
-                .hashtags(hashtags)
-                .genre(Genre.HISTORICAL)
-                .ageRating(AgeRating.GENERAL)
-                .novelSize(NovelSize.LONG)
-                .novelStatus(NovelStatus.IN_PROGRESS)
-                .hit(8)
-                .build();
-        novelRepository.save(novel8);
-
-        author = Author.builder()
-                .id(1L)
-                .nickname("NICKNAME")
-                .introduction("INTRODUCTION")
-                .profileImg("PROFILE_IMG")
-                .build();
-
-        List<Novel> readNovels = new ArrayList<>();
-        readNovels.add(novel);
-        readNovels.add(novel2);
-
-        author2 = Author.builder()
-                .id(2L)
-                .nickname("NICKNAME2")
-                .introduction("INTRODUCTION2")
-                .profileImg("PROFILE_IMG")
-                .readNovels(readNovels)
-                .build();
-        authorRepository.save(author2);
-    }
-
-    @BeforeEach
-    void clear() {
-        redisTemplate.keys("*").stream().forEach(k -> {
-            redisTemplate.delete(k);
-        });
     }
 
     @Test
     @DisplayName("소설 정보 확인")
     void getNovelInfo() {
-        NovelInfoResponse novelInfoResponse = assertDoesNotThrow(
-                () -> novelServiceV0.getNovelInfo(1L));
+        NovelInfo novelInfo = assertDoesNotThrow(
+                () -> novelServiceV0.getNovelInfo(novel.getId()));
 
-        assertThat(novelInfoResponse.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelInfoResponse.getCreatedAuthor().getId()).isEqualTo(novel.getAuthor().getId());
-        assertThat(novelInfoResponse.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelInfoResponse.getHashtag()).isEqualTo(novel.getHashtags());
+        assertThat(novelInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelInfo.getCreatedAuthor().getId()).isEqualTo(novel.getMainAuthor().getId());
+        assertThat(novelInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelInfo.getHashtag()).isEqualTo(novel.getHashtag());
 
-        assertThat(novelInfoResponse.getNovelSharelUrl()).contains("/novel/" + (1L));
-        assertThat(novelInfoResponse.getDetailNovelInfoUrl()).contains("novel/" + (1L) + "/detail");
+
+        assertThat(novelInfo.getNovelSharelUrl()).contains("/novel/" + novel.getId());
     }
 
     @Test
     @DisplayName("존재하지 않는 소설 정보 확인")
     void getNotExistNovel() {
         assertThrows(NovelNotFoundException.class,
-                () -> novelServiceV0.getNovelInfo(2L));
-    }
-
-    @Test
-    @DisplayName("소설에 참여한 작가 확인")
-    void getNovelJoinedAuthor() {
-
-    }
-
-    @Test
-    @DisplayName("소설에 달린 댓글 확인")
-    void getNovelComment() {
-
+                () -> novelServiceV0.getNovelInfo(novel.getId() + 9999));
     }
 
     @Test
     @DisplayName("소설 상세 정보 확인")
     void getNovelDetailInfo() {
-        DetailInfoResponse detailInfoResponse = assertDoesNotThrow(
-                () -> novelServiceV0.getNovelDetailInfo(1L));
+        NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
+                () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
 
-        assertThat(detailInfoResponse.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(detailInfoResponse.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(detailInfoResponse.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(detailInfoResponse.getAuthorName()).isEqualTo(novel.getAuthor().getNickname());
-        assertThat(detailInfoResponse.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(detailInfoResponse.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(detailInfoResponse.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(detailInfoResponse.getHashtags()).isEqualTo(novel.getHashtags());
-        assertThat(detailInfoResponse.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getChapterInfos()).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    @DisplayName("소설 상세 정보 확인 - Chapter 정보 추가")
+    void getNovelDetailInfo2() {
+        // given
+        Chapter chapter1 = ChapterMother.generateChapter(novel);
+        Chapter chapter2 = ChapterMother.generateChapter(novel);
+
+        // when
+        chapterRepository.save(chapter1);
+        chapterRepository.save(chapter2);
+        novel.getChapters().add(chapter1);
+        novel.getChapters().add(chapter2);
+        novelRepository.save(novel);
+
+        NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
+                () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
+
+        // then
+        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.getChapterInfos().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("쇼셜 소개 수정")
+    void modifyNovelSynopsis() {
+        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        NovelSynopsis synopsisResponse = assertDoesNotThrow(
+                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest));
+
+        assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse.getSynopsis());
+    }
+    
+    @Test
+    @DisplayName("권한 없는 작가의 소설 소개 수정")
+    void modifySysnopsisNotAuthority() {
+        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        assertThrows(MainAuthorIsNotMatchedException.class,
+                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest));
+    }
+
+    @Test
+    @DisplayName("작가 소개 수정")
+    void modifyAuthorDescription() {
+        AuthorDescription descriptionRequest = NovelMother.generateDescription();
+        AuthorDescription desriptionResponse = assertDoesNotThrow(
+                () -> novelServiceV0.modifyAuthorDescription(novel.getId(), author.getId(), descriptionRequest));
+
+        assertThat(descriptionRequest.getDescription()).isEqualTo(desriptionResponse.getDescription());
+    }
+
+    @Test
+    @DisplayName("권한 없는 작가의 작가 소개 수정")
+    void modifyDescriptionNotAuthority() {
+        AuthorDescription authorDescription = NovelMother.generateDescription();
+        assertThrows(MainAuthorIsNotMatchedException.class,
+                () -> novelServiceV0.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
+
     }
 
     @Test
