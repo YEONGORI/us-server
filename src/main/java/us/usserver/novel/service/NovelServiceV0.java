@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
+import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterInfo;
@@ -61,6 +62,9 @@ public class NovelServiceV0 implements NovelService {
 
         Novel novel = createNovelReq.toEntity(author);
         Novel saveNovel = novelRepository.save(novel);
+
+        author.getCreatedNovels().add(novel);
+        authorityRepository.save(Authority.builder().author(author).novel(novel).build());
 
         return saveNovel;
     }
@@ -144,7 +148,7 @@ public class NovelServiceV0 implements NovelService {
         return HomeNovelListResponse.builder()
                 .realTimeNovels(novelCustomRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels)).toList())
                 .newNovels(novelCustomRepository.moreNovelList(newNovels, getPageRequest(newNovels)).toList())
-                .readNovels(author.getReadNovels()
+                .readNovels(author.getViewedNovels()
                         .stream()
                         .limit(8)
                         .sorted(Comparator.comparing(Novel::getId))
@@ -166,12 +170,12 @@ public class NovelServiceV0 implements NovelService {
         Optional<Author> findAuthorId = authorRepository.findById(authorId);
 
         if (!findAuthorId.isEmpty()) {
-            int author_readNovel_cnt = findAuthorId.get().getReadNovels().size();
+            int author_readNovel_cnt = findAuthorId.get().getViewedNovels().size();
             int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
             int endPoint = author_readNovel_cnt < getSize ? author_readNovel_cnt : getSize;
 
             List<Novel> novelList = findAuthorId.get()
-                    .getReadNovels()
+                    .getViewedNovels()
                     .stream()
                     .sorted(Comparator.comparing(Novel::getId))
                     .toList()

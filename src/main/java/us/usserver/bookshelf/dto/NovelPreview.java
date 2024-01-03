@@ -2,6 +2,7 @@ package us.usserver.bookshelf.dto;
 
 import lombok.*;
 import us.usserver.author.dto.AuthorInfo;
+import us.usserver.novel.Novel;
 
 @Getter
 @Builder
@@ -14,4 +15,14 @@ public class NovelPreview {
     private Integer joinedAuthor;
     private String thumbnail;
     private String shortcuts;
+
+    public static NovelPreview fromNovel(Novel novel, Integer joinedAuthor, String shortcuts) {
+        return NovelPreview.builder()
+                .title(novel.getTitle())
+                .mainAuthor(AuthorInfo.fromAuthor(novel.getMainAuthor()))
+                .joinedAuthor(joinedAuthor)
+                .thumbnail(novel.getThumbnail())
+                .shortcuts(shortcuts)
+                .build();
+    }
 }

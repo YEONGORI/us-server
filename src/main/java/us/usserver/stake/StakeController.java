@@ -17,7 +17,7 @@ public class StakeController {
     private final StakeService stakeService;
 
     @GetMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> getChapters(@PathVariable Long novelId) {
+    public ResponseEntity<ApiCsResponse<?>> getStakes(@PathVariable Long novelId) {
         List<StakeInfo> stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

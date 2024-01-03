@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/authority")
 @RequiredArgsConstructor
-public class AuthorController {
+public class AuthorityController {
 
 }

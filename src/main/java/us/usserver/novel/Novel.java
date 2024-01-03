@@ -12,6 +12,7 @@ import us.usserver.authority.Authority;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
 import us.usserver.comment.novel.NoComment;
+import us.usserver.like.novel.NovelLike;
 import us.usserver.novel.novelEnum.*;
 import us.usserver.stake.Stake;
 
@@ -34,7 +35,7 @@ public class Novel extends BaseEntity {
 
     @Schema(description = "소설 제목", nullable = true, example = "주술회전")
     @NotBlank
-    @Size(max = 16) // Length(max=30)으로 설정 하면 한글은 10자 까지 입력 가능
+    @Size(max = 16)
     private String title;
 
     @Setter
@@ -56,9 +57,7 @@ public class Novel extends BaseEntity {
     private String authorDescription;
 
     @Schema(description = "소설 해시태그", example = "MONCHKIN, HASHTAG1, ...")
-//    @NotNull
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
-//    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Hashtag> hashtag;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Hashtag> hashtags;
@@ -104,10 +103,9 @@ public class Novel extends BaseEntity {
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<NoComment> noComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Authority> authorities = new ArrayList<>();
 
-    public void setIdForTest(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NovelLike> novelLikes = new ArrayList<>();
 }

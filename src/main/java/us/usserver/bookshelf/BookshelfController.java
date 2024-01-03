@@ -32,7 +32,7 @@ public class BookshelfController {
     @GetMapping("/created") // 내가 생성한 소설
     public ResponseEntity<ApiCsResponse<?>> createdNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.recentViewedNovels(authorId);
+        List<NovelPreview> novelPreviews = bookshelfService.createdNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -45,7 +45,7 @@ public class BookshelfController {
     @GetMapping("/joined") // 내가 참여한 소설
     public ResponseEntity<ApiCsResponse<?>> joinedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.recentViewedNovels(authorId);
+        List<NovelPreview> novelPreviews = bookshelfService.joinedNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -58,7 +58,7 @@ public class BookshelfController {
     @GetMapping("/liked") // 내가 좋아요 한 소설
     public ResponseEntity<ApiCsResponse<?>> likedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.recentViewedNovels(authorId);
+        List<NovelPreview> novelPreviews = bookshelfService.likedNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
