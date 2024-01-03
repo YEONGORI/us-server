@@ -51,6 +51,7 @@ class NoCommentServiceV0Test {
         setMember(author);
         novel = NovelMother.generateNovel(author);
 
+
         authorRepository.save(author);
         novelRepository.save(novel);
     }

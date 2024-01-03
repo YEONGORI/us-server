@@ -7,6 +7,7 @@ import us.usserver.novel.dto.NovelInfo;
 import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.novel.dto.*;
 
+
 @Service
 public interface NovelService {
     NovelInfo getNovelInfo(Long novelId);
