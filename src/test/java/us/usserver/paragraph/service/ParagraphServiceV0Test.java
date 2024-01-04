@@ -12,7 +12,7 @@ import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.global.exception.ExceedParagraphLengthException;
+import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.member.Member;
@@ -183,14 +183,15 @@ class ParagraphServiceV0Test {
     @DisplayName("한줄 쓰기 등록")
     void postParagraph() {
         // given
-        PostParagraphReq req = PostParagraphReq.builder().content("TEST_CONTENT").build();
+        String content = RandomStringUtils.random(200);
+        PostParagraphReq req = PostParagraphReq.builder().content(content).build();
 
         // when
         ParagraphInVoting paragraphInVoting = assertDoesNotThrow(() -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         // then
-        assertThat(paragraphInVoting.getContent()).isEqualTo("TEST_CONTENT");
+        assertThat(paragraphInVoting.getContent()).isEqualTo(content);
         assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
         assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
         assertThat(paragraphInVoting.getLikeCnt()).isZero();
@@ -201,13 +202,25 @@ class ParagraphServiceV0Test {
 
     @Test
     @DisplayName("300줄 이상 한줄 쓰기 등록")
-    void postParagraphException() {
+    void postParagraphException1() {
         // given
         String longContent = RandomStringUtils.random(301);
         PostParagraphReq req = PostParagraphReq.builder().content(longContent).build();
 
         // when // then
-        Assertions.assertThrows(ExceedParagraphLengthException.class,
+        Assertions.assertThrows(ParagraphLengthOutOfRangeException.class,
+                () -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
+    }
+
+    @Test
+    @DisplayName("50줄 이하 한줄 쓰기 등록")
+    void postParagraphException2() {
+        // given
+        String content = RandomStringUtils.random(49);
+        PostParagraphReq req = PostParagraphReq.builder().content(content).build();
+
+        // when // then
+        Assertions.assertThrows(ParagraphLengthOutOfRangeException.class,
                 () -> paragraphServiceV0.postParagraph(author.getId(), chapter.getId(), req));
     }
 

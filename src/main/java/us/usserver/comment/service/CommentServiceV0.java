@@ -13,6 +13,10 @@ import us.usserver.comment.CommentService;
 import us.usserver.comment.dto.CommentContent;
 import us.usserver.comment.dto.CommentInfo;
 import us.usserver.global.EntityService;
+import us.usserver.global.ExceptionMessage;
+import us.usserver.global.exception.AuthorNotAuthorizedException;
+import us.usserver.global.exception.CommentLengthOutOfRangeException;
+import us.usserver.global.exception.CommentNotFoundException;
 import us.usserver.novel.Novel;
 
 import java.util.List;
@@ -51,7 +55,11 @@ public class CommentServiceV0 implements CommentService {
     public CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent) {
         Author author = entityService.getAuthor(authorId);
         Novel novel = entityService.getNovel(novelId);
-        Integer likeCnt = 0;
+        Integer ZeroLikeCnt = 0;
+
+        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+            throw new CommentLengthOutOfRangeException(ExceptionMessage.Comment_Length_OUT_OF_RANGE);
+        }
 
         Comment comment = commentRepository.save(Comment.builder()
                 .content(commentContent.getContent())
@@ -61,7 +69,7 @@ public class CommentServiceV0 implements CommentService {
                 .build());
         novel.getComments().add(comment);
 
-        return CommentInfo.fromComment(comment, novel.getTitle(), likeCnt);
+        return CommentInfo.fromComment(comment, novel.getTitle(), ZeroLikeCnt);
     }
 
     @Override
@@ -69,7 +77,11 @@ public class CommentServiceV0 implements CommentService {
         Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
         Novel novel = chapter.getNovel();
-        Integer likeCnt = 0;
+        Integer ZeroLikeCnt = 0;
+
+        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+            throw new CommentLengthOutOfRangeException(ExceptionMessage.Comment_Length_OUT_OF_RANGE);
+        }
 
         Comment comment = commentRepository.save(Comment.builder()
                 .content(commentContent.getContent())
@@ -82,7 +94,8 @@ public class CommentServiceV0 implements CommentService {
         return CommentInfo.fromComment(
                 comment,
                 chapter.getTitle(),
-                likeCnt);
+                ZeroLikeCnt
+        );
     }
 
     @Override
@@ -98,5 +111,17 @@ public class CommentServiceV0 implements CommentService {
                                 comment.getMyLikes().size()
                         ))
                 .toList();
+    }
+
+    @Override
+    public void deleteComment(Long commentId, Long authorId) {
+        Comment comment = entityService.getComment(commentId);
+        Author author = entityService.getAuthor(authorId);
+
+        if (!comment.getAuthor().getId().equals(author.getId())) {
+            throw new AuthorNotAuthorizedException(ExceptionMessage.Author_NOT_AUTHORIZED);
+        }
+
+        commentRepository.delete(comment);
     }
 }

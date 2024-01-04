@@ -6,8 +6,11 @@ import us.usserver.chapter.Chapter;
 import us.usserver.novel.Novel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+    Optional<Comment> getCommentById(Long commentId);
+
     Integer countAllByNovel(Novel novel);
 
     List<Comment> findAllByNovel(Novel novel);

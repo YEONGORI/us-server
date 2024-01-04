@@ -92,4 +92,32 @@ public class CommentController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ApiCsResponse<?>> deleteComment(@PathVariable Long commentId) {
+        Long authorId = 0L;
+        commentService.deleteComment(commentId, authorId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/chapter/{chapterId}")
+    public ResponseEntity<ApiCsResponse<?>> deleteCommentOnChapter(@PathVariable Long chapterId) {
+        Long authorId = 0L;
+        commentService.deleteComment(chapterId, authorId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }

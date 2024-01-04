@@ -15,4 +15,6 @@ public interface CommentService {
     CommentInfo writeCommentOnChapter(Long chapterId, Long authorId, CommentContent commentContent);
 
     List<CommentInfo> getCommentsByAuthor(Long authorId);
+
+    void deleteComment(Long commentId, Long authorId);
 }

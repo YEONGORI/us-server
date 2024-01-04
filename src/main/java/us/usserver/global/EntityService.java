@@ -6,10 +6,9 @@ import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.ChapterNotFoundException;
-import us.usserver.global.exception.NovelNotFoundException;
-import us.usserver.global.exception.ParagraphNotFoundException;
+import us.usserver.comment.Comment;
+import us.usserver.comment.CommentRepository;
+import us.usserver.global.exception.*;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
@@ -24,6 +23,7 @@ public class EntityService {
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
+    private final CommentRepository commentRepository;
 
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);
@@ -55,5 +55,13 @@ public class EntityService {
             throw new ParagraphNotFoundException(ExceptionMessage.Paragraph_NOT_FOUND);
         }
         return paragraphById.get();
+    }
+
+    public Comment getComment(Long commentId) {
+        Optional<Comment> commentById = commentRepository.getCommentById(commentId);
+        if (commentById.isEmpty()) {
+            throw new CommentNotFoundException(ExceptionMessage.Comment_NOT_FOUND);
+        }
+        return commentById.get();
     }
 }

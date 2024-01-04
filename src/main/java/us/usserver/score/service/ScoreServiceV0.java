@@ -8,7 +8,7 @@ import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.ExceedScoreRangeException;
+import us.usserver.global.exception.ScoreOutOfRangeException;
 import us.usserver.score.Score;
 import us.usserver.score.ScoreRepository;
 import us.usserver.score.ScoreService;
@@ -31,7 +31,7 @@ public class ScoreServiceV0 implements ScoreService {
 
         Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
         if (postScore.getScore() > 10 || postScore.getScore() < 1) {
-            throw new ExceedScoreRangeException(ExceptionMessage.Exceed_Score_Range);
+            throw new ScoreOutOfRangeException(ExceptionMessage.Score_OUT_OF_RANGE);
         }
         if (scoreByAuthorAndChapter.isEmpty()) {
             Score score = Score.builder()
