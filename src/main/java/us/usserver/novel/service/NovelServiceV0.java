@@ -66,6 +66,8 @@ public class NovelServiceV0 implements NovelService {
         author.getCreatedNovels().add(novel);
         authorityRepository.save(Authority.builder().author(author).novel(novel).build());
 
+        chapterService.createChapter(saveNovel.getId(), authorId);
+
         return saveNovel;
     }
 
