@@ -61,6 +61,8 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Score_OUT_OF_RANGE);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiCsResponse<Object> ValidRequestModelHandler(BindException e) {

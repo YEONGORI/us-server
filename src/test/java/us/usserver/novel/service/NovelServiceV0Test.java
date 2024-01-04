@@ -1,12 +1,12 @@
 package us.usserver.novel.service;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
@@ -72,6 +72,7 @@ class NovelServiceV0Test {
 
         dummyNovel = NovelMother.generateNovel(dummyAuthor);
         novelRepository.save(dummyNovel);
+
     }
 
     @Test
@@ -172,7 +173,9 @@ class NovelServiceV0Test {
         AuthorDescription authorDescription = NovelMother.generateDescription();
         assertThrows(MainAuthorIsNotMatchedException.class,
                 () -> novelServiceV0.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
+
     }
+
 
     @Test
     @DisplayName("소설 생성")

@@ -19,6 +19,8 @@ import us.usserver.novel.dto.NovelSynopsis;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.novel.dto.*;
 
+import java.net.URI;
+
 @ResponseBody
 @RestController
 @RequestMapping("/novel")
@@ -84,25 +86,9 @@ public class NovelController {
                 .message(HttpStatus.CREATED.getReasonPhrase())
                 .data(synopsis)
                 .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.created(URI.create("")).body(response);
     }
 
-    @PatchMapping("/{novelId}/author-description")
-    public ResponseEntity<ApiCsResponse<?>> modifyAuthorDescription(
-            @PathVariable Long novelId,
-            @Validated @RequestBody AuthorDescription req
-    ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
-        AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(description)
-                .build();
-
-        return ResponseEntity.ok(response);
-    }
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
@@ -167,6 +153,22 @@ public class NovelController {
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(novelPageInfoResponse)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{novelId}/author-description")
+    public ResponseEntity<ApiCsResponse<?>> modifyAuthorDescription(
+            @PathVariable Long novelId,
+            @Validated @RequestBody AuthorDescription req
+    ) {
+        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(description)
                 .build();
         return ResponseEntity.ok(response);
     }
