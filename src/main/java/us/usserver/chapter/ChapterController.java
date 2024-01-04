@@ -6,10 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.global.ApiCsResponse;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.chapter.dto.ChaptersOfNovel;
-
-import java.util.List;
 
 
 @ResponseBody
