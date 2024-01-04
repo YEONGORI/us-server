@@ -38,6 +38,7 @@ public class NovelController {
     @PostMapping
     public ResponseEntity<ApiCsResponse<?>> createNovel(@Valid @RequestBody CreateNovelReq createNovelReq) {
         Novel novel = novelService.createNovel(createNovelReq);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())

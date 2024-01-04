@@ -36,10 +36,6 @@ public class ChapterServiceV0 implements ChapterService {
     public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
 
-//        return chapters.stream()
-//                .map(ChapterInfo::fromChapter)
-//                .sorted(Comparator.comparing(ChapterInfo::getPart, Comparator.nullsLast(Comparator.naturalOrder())))
-//                .toList();
         return chapters.stream()
                 .map(ChapterInfo::fromChapter)
                 .toList();
@@ -47,6 +43,7 @@ public class ChapterServiceV0 implements ChapterService {
 
     @Override
     public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId) {
+        Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
         Novel novel = entityService.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
@@ -54,6 +51,9 @@ public class ChapterServiceV0 implements ChapterService {
         Double score = scoreRepository.findAverageScoreByChapter(chapter);
 
         String prevChapterUrl = null, nextChapterUrl = null;
+
+        // TODO: 최근 본 소설 기능을 클라이언트에서 내부 DB에 저장하는 방식으로 처리할까.. 에 대한 고민중
+        author.getViewedNovels().add(novel);
 
         Integer part = chapter.getPart();
         for (Chapter c : chapters) {

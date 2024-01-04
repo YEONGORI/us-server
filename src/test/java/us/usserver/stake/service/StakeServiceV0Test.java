@@ -38,6 +38,7 @@ class StakeServiceV0Test {
     StakeServiceV0 stakeServiceV0;
     @Autowired
     ParagraphServiceV0 paragraphServiceV0;
+
     @Autowired
     private AuthorityRepository authorityRepository;
     @Autowired
@@ -72,7 +73,6 @@ class StakeServiceV0Test {
         authorRepository.save(author3);
 
         novel = NovelMother.generateNovel(mainAuthor);
-        novel.setIdForTest(1L);
 
         chapter1 = ChapterMother.generateChapter(novel);
         chapter2 = ChapterMother.generateChapter(novel);
