@@ -1,4 +1,4 @@
-package us.usserver.like.paragraph;
+package us.usserver.vote;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import us.usserver.paragraph.Paragraph;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParagraphLike {
+public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "paragraph_like_id")

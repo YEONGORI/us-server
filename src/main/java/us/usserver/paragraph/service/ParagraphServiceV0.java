@@ -15,7 +15,7 @@ import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.ParagraphNotFoundException;
-import us.usserver.like.paragraph.ParagraphLikeRepository;
+import us.usserver.vote.VoteRepository;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
@@ -39,7 +39,7 @@ import java.util.Objects;
 public class ParagraphServiceV0 implements ParagraphService {
     private final EntityService entityService;
     private final ParagraphRepository paragraphRepository;
-    private final ParagraphLikeRepository paragraphLikeRepository;
+    private final VoteRepository voteRepository;
     private final AuthorityRepository authorityRepository;
 
     private final StakeService stakeService;
@@ -65,7 +65,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         return paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
-                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, paragraphLikeRepository.countAllByParagraph(paragraph)))
+                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, voteRepository.countAllByParagraph(paragraph)))
                 .toList();
     }
 
@@ -168,7 +168,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         int maxLikeCount = 0, likeCount;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
-            likeCount = paragraphLikeRepository.countAllByParagraph(paragraph);
+            likeCount = voteRepository.countAllByParagraph(paragraph);
 
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {

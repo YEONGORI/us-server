@@ -8,7 +8,7 @@ import us.usserver.authority.Authority;
 import us.usserver.comment.Comment;
 import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
-import us.usserver.like.paragraph.ParagraphLike;
+import us.usserver.vote.Vote;
 import us.usserver.member.Member;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
@@ -68,7 +68,7 @@ public class Author {
     private List<NovelLike> novelLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ParagraphLike> paragraphLikes = new ArrayList<>();
+    private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();

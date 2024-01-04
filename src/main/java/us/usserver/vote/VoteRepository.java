@@ -1,4 +1,4 @@
-package us.usserver.like.paragraph;
+package us.usserver.vote;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -7,7 +7,6 @@ import us.usserver.paragraph.Paragraph;
 import java.util.List;
 
 @Repository
-public interface ParagraphLikeRepository extends JpaRepository<ParagraphLike, Long> {
-    List<ParagraphLike> findAllByParagraph(Paragraph paragraph);
+public interface VoteRepository extends JpaRepository<Vote, Long> {
     int countAllByParagraph(Paragraph paragraph);
 }

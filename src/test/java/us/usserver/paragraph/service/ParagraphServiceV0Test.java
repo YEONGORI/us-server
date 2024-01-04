@@ -13,8 +13,8 @@ import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
-import us.usserver.like.paragraph.ParagraphLike;
-import us.usserver.like.paragraph.ParagraphLikeRepository;
+import us.usserver.vote.Vote;
+import us.usserver.vote.VoteRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
@@ -44,7 +44,7 @@ class ParagraphServiceV0Test {
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
-    private ParagraphLikeRepository paragraphLikeRepository;
+    private VoteRepository voteRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -122,19 +122,19 @@ class ParagraphServiceV0Test {
         setMember(author2);
         setMember(author3);
 
-        ParagraphLike like1 = ParagraphLike.builder().paragraph(paragraph1).author(author1).build();
-        ParagraphLike like2 = ParagraphLike.builder().paragraph(paragraph1).author(author2).build();
-        ParagraphLike like3 = ParagraphLike.builder().paragraph(paragraph1).author(author3).build();
-        ParagraphLike like4 = ParagraphLike.builder().paragraph(paragraph2).author(author3).build();
+        Vote like1 = Vote.builder().paragraph(paragraph1).author(author1).build();
+        Vote like2 = Vote.builder().paragraph(paragraph1).author(author2).build();
+        Vote like3 = Vote.builder().paragraph(paragraph1).author(author3).build();
+        Vote like4 = Vote.builder().paragraph(paragraph2).author(author3).build();
 
         // when
         authorRepository.save(author1);
         authorRepository.save(author2);
         authorRepository.save(author3);
-        paragraphLikeRepository.save(like1);
-        paragraphLikeRepository.save(like2);
-        paragraphLikeRepository.save(like3);
-        paragraphLikeRepository.save(like4);
+        voteRepository.save(like1);
+        voteRepository.save(like2);
+        voteRepository.save(like3);
+        voteRepository.save(like4);
 
         ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author1.getId(), chapter.getId());
 
