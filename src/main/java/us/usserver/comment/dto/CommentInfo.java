@@ -17,14 +17,16 @@ public class CommentInfo {
     private String content;
     private String authorName;
     private String location;
+    private Integer likeCnt;
     private LocalDateTime createdAt;
 
-    public static CommentInfo fromComment(Comment comment, String location) {
+    public static CommentInfo fromComment(Comment comment, String location, Integer likeCnt) {
         return CommentInfo.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .authorName(comment.getAuthor().getNickname())
                 .location(location)
+                .likeCnt(likeCnt)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

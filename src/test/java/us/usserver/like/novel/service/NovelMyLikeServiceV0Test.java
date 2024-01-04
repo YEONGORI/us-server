@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class NovelLikeServiceV0Test {
+class NovelMyLikeServiceV0Test {
     @Autowired
     private NovelRepository novelRepository;
     @Autowired

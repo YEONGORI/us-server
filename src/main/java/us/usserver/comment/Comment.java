@@ -7,15 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.like.Like;
+import us.usserver.like.MyLike;
 import us.usserver.novel.Novel;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +30,10 @@ public class Comment extends BaseEntity {
     @Length(max = 300)
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private Author author;
+
     @ManyToOne
     @JoinColumn(name = "novel_id")
     private Novel novel;
@@ -41,17 +42,6 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
+    private List<MyLike> myLikes = new ArrayList<>();
 }

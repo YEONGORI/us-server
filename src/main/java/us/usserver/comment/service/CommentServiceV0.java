@@ -4,6 +4,7 @@ package us.usserver.comment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
 import us.usserver.comment.Comment;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommentServiceV0 implements CommentService {
     private final EntityService entityService;
@@ -30,7 +32,7 @@ public class CommentServiceV0 implements CommentService {
 
         String novelTitle = novel.getTitle();
         return commentsOfNovel.stream()
-                .map(comment -> CommentInfo.fromComment(comment, novelTitle))
+                .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getMyLikes().size()))
                 .toList();
     }
 
@@ -41,7 +43,7 @@ public class CommentServiceV0 implements CommentService {
 
         String chapterTitle = chapter.getTitle();
         return commentsOfChapter.stream()
-                .map(comment -> CommentInfo.fromComment(comment, chapterTitle))
+                .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getMyLikes().size()))
                 .toList();
     }
 
@@ -49,15 +51,17 @@ public class CommentServiceV0 implements CommentService {
     public CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent) {
         Author author = entityService.getAuthor(authorId);
         Novel novel = entityService.getNovel(novelId);
+        Integer likeCnt = 0;
 
-        return CommentInfo.fromComment(
-                commentRepository.save(Comment.builder()
-                    .content(commentContent.getContent())
-                    .author(author)
-                    .novel(novel)
-                    .chapter(null)
-                    .build()),
-                novel.getTitle());
+        Comment comment = commentRepository.save(Comment.builder()
+                .content(commentContent.getContent())
+                .author(author)
+                .novel(novel)
+                .chapter(null)
+                .build());
+        novel.getComments().add(comment);
+
+        return CommentInfo.fromComment(comment, novel.getTitle(), likeCnt);
     }
 
     @Override
@@ -65,15 +69,20 @@ public class CommentServiceV0 implements CommentService {
         Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
         Novel novel = chapter.getNovel();
+        Integer likeCnt = 0;
+
+        Comment comment = commentRepository.save(Comment.builder()
+                .content(commentContent.getContent())
+                .author(author)
+                .novel(novel)
+                .chapter(chapter)
+                .build());
+        novel.getComments().add(comment);
 
         return CommentInfo.fromComment(
-                commentRepository.save(Comment.builder()
-                        .content(commentContent.getContent())
-                        .author(author)
-                        .novel(novel)
-                        .chapter(chapter)
-                        .build()),
-                chapter.getTitle());
+                comment,
+                chapter.getTitle(),
+                likeCnt);
     }
 
     @Override
@@ -85,7 +94,8 @@ public class CommentServiceV0 implements CommentService {
                 .map(comment -> CommentInfo
                         .fromComment(
                                 comment,
-                                comment.getChapter() == null ? comment.getNovel().getTitle() : comment.getChapter().getTitle()
+                                comment.getChapter() == null ? comment.getNovel().getTitle() : comment.getChapter().getTitle(),
+                                comment.getMyLikes().size()
                         ))
                 .toList();
     }
