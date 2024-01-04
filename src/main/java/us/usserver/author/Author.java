@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.authority.Authority;
-import us.usserver.comment.chapter.ChComment;
-import us.usserver.comment.novel.NoComment;
+import us.usserver.comment.Comment;
 import us.usserver.like.comment.ChCommentLike;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.paragraph.ParagraphLike;
@@ -72,10 +71,7 @@ public class Author {
     private List<ParagraphLike> paragraphLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<NoComment> noComments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChComment> chComments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<ChCommentLike> chCommentLikeList = new ArrayList<>();

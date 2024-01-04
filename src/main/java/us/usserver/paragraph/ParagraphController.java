@@ -59,7 +59,9 @@ public class ParagraphController {
                 .message(HttpStatus.CREATED.getReasonPhrase())
                 .data(null)
                 .build();
-        return ResponseEntity.created(URI.create("http://localhost:8080/paragraph/" + chapterId)).body(response);
+        URI redirectUri = URI.create("/paragraph/" + chapterId);
+
+        return ResponseEntity.created(redirectUri).body(response);
     }
 
     @PostMapping("/{paragraphId}") // 신고 하기

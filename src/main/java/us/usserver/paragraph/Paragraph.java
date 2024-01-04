@@ -21,11 +21,10 @@ public class Paragraph extends BaseEntity {
     private Long id;
 
     @NotBlank
-    @Size(max = 300)
+    @Size(max = 300, min = 50)
     private String content;
 
     @Min(0)
-    @Max(15)
     private int sequence;
 
     @NotNull

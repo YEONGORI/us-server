@@ -15,7 +15,7 @@ import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.comment.novel.NoCommentRepository;
+import us.usserver.comment.CommentRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
@@ -46,7 +46,7 @@ public class NovelServiceV0 implements NovelService {
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
-    private final NoCommentRepository noCommentRepository;
+    private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
     private final NovelRepository novelRepository;
     private final NovelCustomRepository novelCustomRepository;
@@ -80,7 +80,7 @@ public class NovelServiceV0 implements NovelService {
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtags())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
-                .commentCnt(noCommentRepository.countAllByNovel(novel))
+                .commentCnt(commentRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
                 .build();
     }

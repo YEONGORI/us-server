@@ -5,13 +5,13 @@ import us.usserver.bookshelf.dto.NovelPreview;
 
 import java.util.List;
 
-@Service
+//@Service
 public interface NoteBookService {
-    List<NovelPreview> recentViewedNovels(Long authorId);
-
-    List<NovelPreview> createdNovels(Long authorId);
-
-    List<NovelPreview> joinedNovels(Long authorId);
-
-    List<NovelPreview> likedNovels(Long authorId);
+//    List<NovelPreview> recentViewedNovels(Long authorId);
+//
+//    List<NovelPreview> createdNovels(Long authorId);
+//
+//    List<NovelPreview> joinedNovels(Long authorId);
+//
+//    List<NovelPreview> likedNovels(Long authorId);
 }

@@ -1,4 +1,4 @@
-package us.usserver.comment.novel.dto;
+package us.usserver.comment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCommentReq {
+public class CommentContent {
     private String content;
 }

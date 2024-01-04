@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.author.Author;
-import us.usserver.comment.chapter.ChComment;
 
 @Entity
 @Getter
@@ -22,8 +21,4 @@ public class ChCommentLike {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
-
-    @ManyToOne
-    @JoinColumn(name = "chapter_comment_id")
-    private ChComment chComment;
 }

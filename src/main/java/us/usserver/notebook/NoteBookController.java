@@ -14,69 +14,37 @@ import java.util.List;
 
 @ResponseBody
 @RestController
-@RequestMapping("/bookshelf")
+@RequestMapping("/notebook")
 @RequiredArgsConstructor
 public class NoteBookController {
-    private final NoteBookService noteBookService;
+//    private final NoteBookService noteBookService;
 
-    @GetMapping("/viewed") // 내가 최근에 본 소설
+    @GetMapping("/viewed") // TODO: 내가 쓴 글
     public ResponseEntity<ApiCsResponse<?>> recentViewedNovels() {
-        Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = noteBookService.recentViewedNovels(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
-                .build();
-        return ResponseEntity.ok(response);
+//        Long authorId = 0L; // TODO: Token 으로 교체 예정
+//        List<NovelPreview> novelPreviews = noteBookService.recentViewedNovels(authorId);
+//
+//        ApiCsResponse<Object> response = ApiCsResponse.builder()
+//                .status(HttpStatus.OK.value())
+//                .message(HttpStatus.OK.getReasonPhrase())
+//                .data(novelPreviews)
+//                .build();
+//        return ResponseEntity.ok(response);
+        return null;
     }
 
-    @GetMapping("/created") // 내가 생성한 소설
-    public ResponseEntity<ApiCsResponse<?>> createdNovels() {
-        Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = noteBookService.createdNovels(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/joined") // 내가 참여한 소설
+    @GetMapping("/joined") // TODO: 내가 투표한 글
     public ResponseEntity<ApiCsResponse<?>> joinedNovels() {
-        Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = noteBookService.joinedNovels(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
-                .build();
-        return ResponseEntity.ok(response);
+//        Long authorId = 0L; // TODO: Token 으로 교체 예정
+//        List<NovelPreview> novelPreviews = noteBookService.joinedNovels(authorId);
+//
+//        ApiCsResponse<Object> response = ApiCsResponse.builder()
+//                .status(HttpStatus.OK.value())
+//                .message(HttpStatus.OK.getReasonPhrase())
+//                .data(novelPreviews)
+//                .build();
+//        return ResponseEntity.ok(response);
+        return null;
     }
 
-    @GetMapping("/liked") // 내가 좋아요 한 소설
-    public ResponseEntity<ApiCsResponse<?>> likedNovels() {
-        Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = noteBookService.likedNovels(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    //-------------------글-----------------//
-    // TODO: 내가 쓴 글
-
-    // TODO: 내가 투표한 글
-
-    // TODO: 내가 좋아요 한 글
-
-    // TODO: 내가 쓴 댓글
 }
