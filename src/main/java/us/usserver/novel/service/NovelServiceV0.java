@@ -84,26 +84,6 @@ public class NovelServiceV0 implements NovelService {
         return saveNovel;
     }
 
-    private final StakeRepository stakeRepository;
-    private final NovelRepository novelRepository;
-    private final AuthorRepository authorRepository;
-    private final NovelCustomRepository novelCustomRepository;
-    private final RedisTemplate<String, String> redisTemplate;
-
-    private static final Integer RECENT_KEYWORD_SIZE = 10;
-
-    @Override
-    public Novel createNovel(CreateNovelReq createNovelReq) {
-        //TODO: 토큰 값 변경 예정
-        Long authorId = 1L;
-        Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
-
-        Novel novel = createNovelReq.toEntity(author);
-        Novel saveNovel = novelRepository.save(novel);
-
-        return saveNovel;
-    }
-
     @Override
     public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);

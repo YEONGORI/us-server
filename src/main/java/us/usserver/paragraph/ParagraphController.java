@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
-import us.usserver.paragraph.dto.GetParagraphsRes;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.PostParagraphReq;
 
