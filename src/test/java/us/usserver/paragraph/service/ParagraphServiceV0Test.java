@@ -1,10 +1,12 @@
 package us.usserver.paragraph.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
@@ -12,9 +14,8 @@ import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
-import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
@@ -24,10 +25,12 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.ParagraphInVoting;
+import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
+import us.usserver.vote.Vote;
+import us.usserver.vote.VoteRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,11 +39,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
 @SpringBootTest
 class ParagraphServiceV0Test {
     @Autowired
     private ParagraphServiceV0 paragraphServiceV0;
+
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
@@ -70,6 +73,8 @@ class ParagraphServiceV0Test {
         paragraph2 = ParagraphMother.generateParagraph(author, chapter);
         paragraph1.setSequenceForTest(0);
         paragraph2.setSequenceForTest(0);
+        chapter.getParagraphs().add(paragraph1);
+        chapter.getParagraphs().add(paragraph2);
 
         novel.getChapters().add(chapter);
 
@@ -227,12 +232,35 @@ class ParagraphServiceV0Test {
     @Test
     @DisplayName("메인 작가가 마음에 드는 한줄 선택하기")
     void selectParagraph1() {
+        // given
+
+        // when
+        paragraphServiceV0.selectParagraph(author.getId(), novel.getId(), chapter.getId(), paragraph1.getId());
+        paragraph1 = paragraphRepository.getParagraphById(this.paragraph1.getId()).get();
+        paragraph2 = paragraphRepository.getParagraphById(this.paragraph2.getId()).get();
+
+        // then
+        assertThat(this.paragraph1.getParagraphStatus()).isEqualTo(ParagraphStatus.SELECTED);
+        assertThat(paragraph2.getParagraphStatus()).isEqualTo(ParagraphStatus.UNSELECTED);
     }
 
     @Test
     @DisplayName("메인 작가가 아닌 사람이 마음에 드는 한줄 선택하기")
     void selectParagraph2() {
+        // given
+        Author newAuthor = AuthorMother.generateAuthor();
+        setMember(newAuthor);
 
+        // when
+        authorRepository.save(newAuthor);
+        assertThrows(MainAuthorIsNotMatchedException.class,
+                () -> paragraphServiceV0.selectParagraph(newAuthor.getId(), novel.getId(), chapter.getId(), paragraph1.getId()));
+        paragraph1 = paragraphRepository.getParagraphById(this.paragraph1.getId()).get();
+        paragraph2 = paragraphRepository.getParagraphById(this.paragraph2.getId()).get();
+
+        // then
+        assertThat(paragraph1.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
+        assertThat(paragraph2.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
     }
 
     private void setMember(Author author) {

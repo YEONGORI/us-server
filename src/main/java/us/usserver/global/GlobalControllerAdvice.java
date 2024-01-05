@@ -97,4 +97,18 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Author_NOT_AUTHORIZED);
         return new ApiCsResponse<>(HttpStatus.UNAUTHORIZED.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(VoteNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> voteNotFoundHandler(Exception e) {
+        log.error(ExceptionMessage.Vote_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(DuplicatedVoteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> duplicatedVoteHandler(Exception e) {
+        log.error(ExceptionMessage.Vote_Only_One_Paragraph);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

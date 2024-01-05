@@ -126,9 +126,9 @@ public class ParagraphServiceV0 implements ParagraphService {
 
         // 선택 되지 않은 paragraph 들의 status 변경
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-        for (Paragraph para : paragraphs) {
-            if (para.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
-                para.setParagraphStatus(ParagraphStatus.UNSELECTED);
+        for (Paragraph p : paragraphs) {
+            if (p.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
+                p.setParagraphStatus(ParagraphStatus.UNSELECTED);
             }
         }
     }

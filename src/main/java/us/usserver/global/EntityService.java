@@ -13,6 +13,8 @@ import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
+import us.usserver.vote.Vote;
+import us.usserver.vote.VoteRepository;
 
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ public class EntityService {
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
     private final CommentRepository commentRepository;
+    private final VoteRepository voteRepository;
 
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);
@@ -63,5 +66,13 @@ public class EntityService {
             throw new CommentNotFoundException(ExceptionMessage.Comment_NOT_FOUND);
         }
         return commentById.get();
+    }
+
+    public Vote getVote(Long voteId) {
+        Optional<Vote> voteById = voteRepository.getVoteById(voteId);
+        if (voteById.isEmpty()) {
+            throw new VoteNotFoundException(ExceptionMessage.Vote_NOT_FOUND);
+        }
+        return voteById.get();
     }
 }

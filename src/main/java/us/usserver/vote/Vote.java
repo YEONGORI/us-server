@@ -16,7 +16,7 @@ import us.usserver.paragraph.Paragraph;
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "paragraph_like_id")
+    @Column(name = "vote_id")
     private Long id;
 
     @ManyToOne
