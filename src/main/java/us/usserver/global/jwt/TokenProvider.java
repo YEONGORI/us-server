@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import us.usserver.author.Author;
 import us.usserver.global.EntityService;
 import us.usserver.global.RedisUtils;
 import us.usserver.global.exception.TokenInvalidException;
@@ -48,11 +49,10 @@ public class TokenProvider {
     /**
      * AccessToken 생성
      */
-    public String createAccessToken(Member member) {
+    public String createAccessToken(Author author) {
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withClaim("id", member.getId())
-                .withClaim("role", member.getRole().toString())
+                .withClaim("id", author.getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
@@ -60,11 +60,10 @@ public class TokenProvider {
     /**
      * RefreshToken 생성
      */
-    public String createRefreshToken(Member member) {
+    public String createRefreshToken(Author author) {
         return JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
-                .withClaim("id", member.getId())
-                .withClaim("role", member.getRole().toString())
+                .withClaim("id", author.getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
@@ -113,24 +112,6 @@ public class TokenProvider {
     }
 
     /**
-     * AccessToken 재발급
-     */
-    public String reissueToken(String refreshToken) {
-        DecodedJWT decodedJWT = isTokenValid(refreshToken);
-        Long id = decodedJWT.getClaim("id").asLong();
-        String findToken = redisUtils.getData(String.valueOf(id));
-
-        if (findToken == null) {
-            throw new TokenInvalidException(Token_NOT_FOUND);
-        } else if (!refreshToken.equals(findToken)) {
-            throw new TokenInvalidException(Token_VERIFICATION);
-        }
-
-        Member member = entityService.getMember(id);
-        return createAccessToken(member);
-    }
-
-    /**
      * token 유효 기간
      */
     public Long getExpiration(String token) {
@@ -155,8 +136,8 @@ public class TokenProvider {
             throw new TokenInvalidException(Token_VERIFICATION);
         }
 
-        Member member = entityService.getMember(id);
-        return createAccessToken(member);
+        Author author = entityService.getAuthor(id);
+        return createAccessToken(author);
     }
 
 }

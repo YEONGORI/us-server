@@ -35,7 +35,6 @@ public class OauthController {
                     .email(loginMemberResponse.getEmail())
                     .age(-1)
                     .gender(Gender.UNKNOWN)
-                    .isAdult(loginMemberResponse.getIsAdult())
                     .role(loginMemberResponse.getRole())
                     .build();
 

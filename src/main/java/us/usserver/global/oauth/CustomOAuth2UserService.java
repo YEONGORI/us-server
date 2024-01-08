@@ -47,9 +47,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Oauth2UserInfo oauth2UserInfo = oauth2Attributes.getOauth2UserInfo();
         String socialId = oauth2UserInfo.getSocialId();
         String email = oauth2UserInfo.getEmail();
-        Boolean isAdult = oauth2UserInfo.getAge();
 
-        Member member = getMember(socialId, email, socialType, isAdult);
+        Member member = getMember(socialId, email, socialType);
 
         return new CustomOauth2User(
                 Collections.singleton(new SimpleGrantedAuthority(member.getRole().toString())),
@@ -59,7 +58,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         );
     }
 
-    private Member getMember(String socialId, String email, SocialType socialType, Boolean isAdult) {
+    private Member getMember(String socialId, String email, SocialType socialType) {
         return memberRepository.findBySocialTypeAndSocialId(socialType, socialId)
                 .orElse(
                         Member.builder()
@@ -68,7 +67,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                                 .email(email)
                                 .age(-1)
                                 .gender(Gender.UNKNOWN)
-                                .isAdult(isAdult != null ? isAdult : false)
                                 .role(Role.GUEST)
                                 .build()
                 );

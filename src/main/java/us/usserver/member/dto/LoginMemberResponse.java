@@ -19,8 +19,6 @@ public class LoginMemberResponse {
     @NotNull
     private String socialId;
     @NotNull
-    private Boolean isAdult;
-    @NotNull
     private Role role;
     private String accessToken;
     private String refreshToken;
