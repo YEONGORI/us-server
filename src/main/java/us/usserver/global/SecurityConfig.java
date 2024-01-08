@@ -16,6 +16,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import us.usserver.global.jwt.JwtAuthenticationFilter;
+import us.usserver.global.oauth.CustomOAuth2UserService;
+import us.usserver.global.oauth.handler.Oauth2LoginFailureHandler;
+import us.usserver.global.oauth.handler.Oauth2LoginSuccessHandler;
 
 import java.util.Arrays;
 import java.util.List;

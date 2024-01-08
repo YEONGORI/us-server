@@ -7,7 +7,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import us.usserver.global.oauth.oauthEnum.SocialType;
 import us.usserver.global.oauth.userinfo.Oauth2UserInfo;
 import us.usserver.member.Member;
@@ -17,7 +16,6 @@ import us.usserver.member.memberEnum.Role;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component

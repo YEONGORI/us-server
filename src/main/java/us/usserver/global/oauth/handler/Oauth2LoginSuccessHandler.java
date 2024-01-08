@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,7 +41,7 @@ public class Oauth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         if (member.getRole().equals(Role.USER)) {
             String accessToken = tokenProvider.createAccessToken(member);
             String refreshToken = tokenProvider.createRefreshToken(member);
-            //TODO: redis 완료 시
+
             tokenProvider.updateRefreshToken(String.valueOf(member.getId()), refreshToken);
 
             redirectURLBuilder
