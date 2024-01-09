@@ -59,4 +59,9 @@ public class MemberServiceV0 implements MemberService {
         return savedMember.getId();
     }
 
+    @Override
+    public Member getMyInfo(String socialId) {
+        return memberRepository.findBySocialId(socialId).orElseThrow(() -> new MemberNotFoundException(Member_NOT_FOUND));
+    }
+
 }

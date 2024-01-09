@@ -1,5 +1,9 @@
 package us.usserver.global.oauth;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
+import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.exception.TokenInvalidException;
 import us.usserver.global.jwt.TokenProvider;
 import us.usserver.member.Member;
 import us.usserver.member.MemberService;
@@ -22,6 +28,8 @@ public class OauthController {
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
+    @ApiResponse(responseCode = "200", description = "로그인 API",
+            content = @Content(schema = @Schema(implementation = Member.class)))
     @GetMapping("/login")
     public ResponseEntity<ApiCsResponse<?>> loadOAuthLogin(HttpServletResponse servletResponse,
                                                            @ModelAttribute LoginMemberResponse loginMemberResponse) {
@@ -54,6 +62,11 @@ public class OauthController {
         return ResponseEntity.ok(response);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "토큰 재발급 API"),
+            @ApiResponse(responseCode = "400", description = "토큰을 찾을 수 없습니다",
+                    content = @Content(schema = @Schema(implementation = TokenInvalidException.class)))
+    })
     @GetMapping("/renew-token")
     public ResponseEntity<ApiCsResponse<?>> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
         String refreshToken = tokenProvider.extractToken(request, "RefreshToken");
