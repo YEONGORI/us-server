@@ -29,6 +29,19 @@ public class BookshelfController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/viewed/{novelId}") // 내가 최근에 본 소설
+    public ResponseEntity<ApiCsResponse<?>> deleteRecentViewedNovels(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: Token 으로 교체 예정
+        bookshelfService.deleteRecentViewedNovels(authorId, novelId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/created") // 내가 생성한 소설
     public ResponseEntity<ApiCsResponse<?>> createdNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
@@ -42,6 +55,20 @@ public class BookshelfController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/created/{novelId}") // 내가 생성한 소설
+    public ResponseEntity<ApiCsResponse<?>> deleteCreatedNovels(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: Token 으로 교체 예정
+        bookshelfService.deleteCreatedNovels(authorId, novelId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping("/joined") // 내가 참여한 소설
     public ResponseEntity<ApiCsResponse<?>> joinedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
@@ -51,6 +78,19 @@ public class BookshelfController {
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(novelPreviews)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/joined/{novelId}") // 내가 참여한 소설
+    public ResponseEntity<ApiCsResponse<?>> deleteJoinedNovels(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: Token 으로 교체 예정
+        bookshelfService.deleteJoinedNovels(authorId, novelId);
+
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -68,12 +108,16 @@ public class BookshelfController {
         return ResponseEntity.ok(response);
     }
 
-    //-------------------글-----------------//
-    // TODO: 내가 쓴 글
+    @DeleteMapping("/liked/{novelId}") // 내가 좋아요 한 소설
+    public ResponseEntity<ApiCsResponse<?>> deleteLikedNovels(@PathVariable Long novelId) {
+        Long authorId = 0L; // TODO: Token 으로 교체 예정
+        bookshelfService.deleteLikedNovels(authorId, novelId);
 
-    // TODO: 내가 투표한 글
-
-    // TODO: 내가 좋아요 한 글
-
-    // TODO: 내가 쓴 댓글
+        ApiCsResponse<Object> response = ApiCsResponse.builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }

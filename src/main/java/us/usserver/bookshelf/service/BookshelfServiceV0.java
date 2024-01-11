@@ -43,6 +43,11 @@ public class BookshelfServiceV0 implements BookshelfService {
     }
 
     @Override
+    public void deleteRecentViewedNovels(Long authorId, Long novelId) {
+
+    }
+
+    @Override
     public List<NovelPreview> createdNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
@@ -53,6 +58,11 @@ public class BookshelfServiceV0 implements BookshelfService {
                         getTotalJoinedAuthor(novel),
                         getShortcuts(novel)
                 )).toList();
+    }
+
+    @Override
+    public void deleteCreatedNovels(Long authorId, Long novelId) {
+
     }
 
     @Override
@@ -69,6 +79,11 @@ public class BookshelfServiceV0 implements BookshelfService {
     }
 
     @Override
+    public void deleteJoinedNovels(Long authorId, Long novelId) {
+
+    }
+
+    @Override
     public List<NovelPreview> likedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
@@ -79,6 +94,11 @@ public class BookshelfServiceV0 implements BookshelfService {
                         getTotalJoinedAuthor(likedNovel.getNovel()),
                         getShortcuts(likedNovel.getNovel())
                 )).toList();
+    }
+
+    @Override
+    public void deleteLikedNovels(Long authorId, Long novelId) {
+
     }
 
     private Integer getTotalJoinedAuthor(Novel novel) {
