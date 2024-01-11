@@ -111,4 +111,11 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Vote_Only_One_Paragraph);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(DuplicatedLikeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> duplicatedlikeHandler(Exception e) {
+        log.error(ExceptionMessage.Like_DUPLICATED);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

@@ -18,4 +18,5 @@ public final class ExceptionMessage {
     public static final String Comment_Length_OUT_OF_RANGE = "해당 댓글의 길이가 범위를 벗어났습니다. (1 ~ 300자)";
     public static final String Score_OUT_OF_RANGE = "1 ~ 10 사이의 평점을 입력해 주세요.";
     public static final String Vote_Only_One_Paragraph = "하나의 한줄에만 투표할 수 있습니다.";
+    public static final String Like_DUPLICATED = "이미 좋아요를 누르셨습니다.";
 }

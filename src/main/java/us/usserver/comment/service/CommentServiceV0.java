@@ -16,7 +16,6 @@ import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.global.exception.CommentLengthOutOfRangeException;
-import us.usserver.global.exception.CommentNotFoundException;
 import us.usserver.novel.Novel;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class CommentServiceV0 implements CommentService {
 
         String novelTitle = novel.getTitle();
         return commentsOfNovel.stream()
-                .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getMyLikes().size()))
+                .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getCommentLikes().size()))
                 .toList();
     }
 
@@ -47,7 +46,7 @@ public class CommentServiceV0 implements CommentService {
 
         String chapterTitle = chapter.getTitle();
         return commentsOfChapter.stream()
-                .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getMyLikes().size()))
+                .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getCommentLikes().size()))
                 .toList();
     }
 
@@ -108,7 +107,7 @@ public class CommentServiceV0 implements CommentService {
                         .fromComment(
                                 comment,
                                 comment.getChapter() == null ? comment.getNovel().getTitle() : comment.getChapter().getTitle(),
-                                comment.getMyLikes().size()
+                                comment.getCommentLikes().size()
                         ))
                 .toList();
     }

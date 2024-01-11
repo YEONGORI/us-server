@@ -1,4 +1,4 @@
-package us.usserver.like.novel;
+package us.usserver.like.paragraph;
 
 
 import lombok.RequiredArgsConstructor;
@@ -9,16 +9,16 @@ import us.usserver.global.ApiCsResponse;
 
 @ResponseBody
 @RestController
-@RequestMapping("/like/novel")
+@RequestMapping("/like/paragraph")
 @RequiredArgsConstructor
-public class NovelLikeController {
-    private final NovelLikeService novelLikeService;
+public class ParagraphLikeController {
+    private final ParagraphLikeService paragraphLikeService;
 
-    @PostMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long novelId) {
+    @PostMapping("/{paragraphId}")
+    public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long paragraphId) {
         Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
 
-        novelLikeService.setNovelLike(novelId, authorId);
+        paragraphLikeService.setParagraphLike(paragraphId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -28,10 +28,11 @@ public class NovelLikeController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long novelId) {
+    @DeleteMapping("/{paragraphId}")
+    public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long paragraphId) {
         Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        novelLikeService.deleteNovelLike(novelId, authorId);
+
+        paragraphLikeService.deleteParagraphLike(paragraphId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.NO_CONTENT.value())

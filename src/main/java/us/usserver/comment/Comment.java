@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import us.usserver.author.Author;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.like.MyLike;
+import us.usserver.like.comment.CommentLike;
 import us.usserver.novel.Novel;
 
 import java.util.ArrayList;
@@ -43,5 +43,5 @@ public class Comment extends BaseEntity {
     private Chapter chapter;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MyLike> myLikes = new ArrayList<>();
+    private List<CommentLike> commentLikes = new ArrayList<>();
 }

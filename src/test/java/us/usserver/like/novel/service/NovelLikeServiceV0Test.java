@@ -4,37 +4,29 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
 import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.exception.DuplicatedLikeException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.novel.NovelLikeRepository;
-import us.usserver.like.novel.NovelLikeService;
 import us.usserver.member.Member;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class NovelMyLikeServiceV0Test {
+class NovelLikeServiceV0Test {
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
@@ -52,11 +44,6 @@ class NovelMyLikeServiceV0Test {
 
     @BeforeEach
     void setUp() {
-        Set<Hashtag> hashtags = new HashSet<>();
-        hashtags.add(Hashtag.HASHTAG1);
-        hashtags.add(Hashtag.HASHTAG2);
-        hashtags.add(Hashtag.MONCHKIN);
-
         author = AuthorMother.generateAuthor();
         setMember(author);
         authorRepository.save(author);
@@ -102,6 +89,36 @@ class NovelMyLikeServiceV0Test {
         // when then
         Assertions.assertThrows(AuthorNotFoundException.class,
                 () -> novelLikeServiceV0.setNovelLike(novel.getId(), notExistAuthorId));
+    }
+
+    @Test
+    @DisplayName("소설 좋아요 중복 불가")
+    void setNovelLikeDuplicated() {
+        // given
+
+        // when
+        Assertions.assertDoesNotThrow(
+                () -> novelLikeServiceV0.setNovelLike(novel.getId(), author.getId()));
+
+        // then
+        Assertions.assertThrows(DuplicatedLikeException.class,
+                () -> novelLikeServiceV0.setNovelLike(novel.getId(), author.getId()));
+    }
+
+    @Test
+    @DisplayName("소설 좋아요 삭제")
+    void deleteNovelLike() {
+        // given
+        NovelLike novelLike = NovelLike.builder().novel(novel).author(author).build();
+
+        // when
+        novelLikeRepository.save(novelLike);
+        Assertions.assertDoesNotThrow(
+                () -> novelLikeServiceV0.deleteNovelLike(novel.getId(), author.getId()));
+        List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
+
+        // then
+        assertThat(novelLikes.size()).isZero();
     }
 
     private void setMember(Author author) {
