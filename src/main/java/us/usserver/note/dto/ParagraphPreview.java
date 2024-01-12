@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParagraphPreview {
+    private Long authorId;
     private String novelTitle;
     private String chapterTitle;
     private String paragraphContent;
@@ -22,11 +23,13 @@ public class ParagraphPreview {
 
     public static ParagraphPreview fromParagraph(Paragraph paragraph, Novel novel, Chapter chapter) {
         return ParagraphPreview.builder()
+                .authorId(paragraph.getAuthor().getId())
                 .novelTitle(novel.getTitle())
                 .chapterTitle(chapter.getTitle())
                 .paragraphContent(paragraph.getContent())
                 .thumbnail(novel.getThumbnail())
                 .shortcuts(getShortcuts(novel.getId(), chapter.getId()))
+                .date(paragraph.getCreatedAt())
                 .build();
     }
 

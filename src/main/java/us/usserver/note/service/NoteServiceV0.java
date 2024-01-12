@@ -10,6 +10,8 @@ import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.note.NoteService;
 import us.usserver.note.dto.ParagraphPreview;
+import us.usserver.paragraph.Paragraph;
+import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
 import us.usserver.vote.VoteRepository;
 
@@ -22,12 +24,20 @@ import java.util.List;
 public class NoteServiceV0 implements NoteService {
     private final EntityService entityService;
 
+    private final ParagraphRepository paragraphRepository;
     private final VoteRepository voteRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override
     public List<ParagraphPreview> wroteParagraphs(Long authorId) {
-        return null;
+        Author author = entityService.getAuthor(authorId);
+
+        List<Paragraph> paragraphs = paragraphRepository.findAllByAuthor(author);
+        return paragraphs.stream().map(paragraph -> ParagraphPreview.fromParagraph(
+                paragraph,
+                paragraph.getChapter().getNovel(),
+                paragraph.getChapter()
+        )).toList();
     }
 
     @Override
