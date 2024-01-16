@@ -9,9 +9,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
+import us.usserver.member.Member;
 import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.NovelDetailInfo;
 import us.usserver.novel.dto.NovelInfo;
@@ -32,14 +34,12 @@ public class NovelController {
 
     @Operation(summary = "소설 생성", description = "작가가 소설을 생성하는 API")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "파티 생성 성공",
-            content = @Content(schema = @Schema(implementation = Novel.class))),
-            @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.",
-            content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
+            @ApiResponse(responseCode = "201", description = "파티 생성 성공", content = @Content(schema = @Schema(implementation = Novel.class))),
+            @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PostMapping
-    public ResponseEntity<ApiCsResponse<?>> createNovel(@Valid @RequestBody CreateNovelReq createNovelReq) {
-        Novel novel = novelService.createNovel(createNovelReq);
+    public ResponseEntity<ApiCsResponse<?>> createNovel(@AuthenticationPrincipal Member member, @Valid @RequestBody CreateNovelReq createNovelReq) {
+        Novel novel = novelService.createNovel(member, createNovelReq);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
@@ -98,8 +98,8 @@ public class NovelController {
     })
     @GetMapping("/main")
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
-    public ResponseEntity<ApiCsResponse<?>> getHomeNovelListInfo() {
-        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo();
+    public ResponseEntity<ApiCsResponse<?>> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
+        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo(member);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -131,8 +131,9 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/main/more/read")
-    public ResponseEntity<ApiCsResponse<?>> readNovel(@Valid ReadInfoOfNovel readInfoOfNovel) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.readMoreNovel(readInfoOfNovel);
+    public ResponseEntity<ApiCsResponse<?>> readNovel(@AuthenticationPrincipal Member member,
+                                                      @Valid ReadInfoOfNovel readInfoOfNovel) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.readMoreNovel(member, readInfoOfNovel);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -147,8 +148,8 @@ public class NovelController {
             content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/search")
-    public ResponseEntity<ApiCsResponse<?>> searchNovel(@Valid SearchNovelReq searchNovelReq) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(searchNovelReq);
+    public ResponseEntity<ApiCsResponse<?>> searchNovel(@AuthenticationPrincipal Member member, @Valid SearchNovelReq searchNovelReq) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(member, searchNovelReq);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -179,8 +180,8 @@ public class NovelController {
             content = @Content(schema = @Schema(implementation = SearchKeywordResponse.class)))
     })
     @GetMapping("/search-keyword")
-    public ResponseEntity<ApiCsResponse<?>> getSearchWord() {
-        SearchKeywordResponse searchWordResponse = novelService.searchKeyword();
+    public ResponseEntity<ApiCsResponse<?>> getSearchWord(@AuthenticationPrincipal Member member) {
+        SearchKeywordResponse searchWordResponse = novelService.searchKeyword(member);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -194,8 +195,8 @@ public class NovelController {
             @ApiResponse(responseCode = "200", description = "검색 Keyword Delete 성공")
     })
     @DeleteMapping("/search-keyword")
-    public ResponseEntity<ApiCsResponse<?>> deleteAllSearchWord() {
-        novelService.deleteSearchKeyword();
+    public ResponseEntity<ApiCsResponse<?>> deleteAllSearchWord(@AuthenticationPrincipal Member member) {
+        novelService.deleteSearchKeyword(member);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())

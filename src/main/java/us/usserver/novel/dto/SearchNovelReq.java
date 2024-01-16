@@ -14,8 +14,6 @@ import us.usserver.novel.novelEnum.NovelStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchNovelReq {
-        //security 도입 시 삭제
-        Long authorId;
         @Schema(description = "소설 제목 검색어", example = "주술")
         String title;
         @Schema(description = "소설 해시태그 필터", example = "#먼치킨")

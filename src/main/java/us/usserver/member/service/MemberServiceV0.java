@@ -30,7 +30,6 @@ import static us.usserver.global.ExceptionMessage.*;
 @Service
 public class MemberServiceV0 implements MemberService {
     private final RedisUtils redisUtils;
-    private final EntityService entityService;
     private final MemberRepository memberRepository;
     private final AuthorRepository authorRepository;
     private final TokenProvider tokenProvider;
