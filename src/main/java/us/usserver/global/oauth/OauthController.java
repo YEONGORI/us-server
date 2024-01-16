@@ -28,8 +28,6 @@ public class OauthController {
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
-    @ApiResponse(responseCode = "200", description = "로그인 API",
-            content = @Content(schema = @Schema(implementation = Member.class)))
     @GetMapping("/login")
     public ResponseEntity<ApiCsResponse<?>> loadOAuthLogin(HttpServletResponse servletResponse,
                                                            @ModelAttribute LoginMemberResponse loginMemberResponse) {
