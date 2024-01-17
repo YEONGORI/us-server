@@ -36,7 +36,4 @@ public class Notification extends BaseEntity {
     @JoinColumn(name = "member_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
-
-
-
 }
