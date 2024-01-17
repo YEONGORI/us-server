@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         emitter.onCompletion(() -> emitterRepository.delete(emitterId));
         emitter.onTimeout(() -> emitterRepository.delete(emitterId));
-        emitter.onError((e) -> emitterRepository.deleteAllEmitterStartWithId(emitterId));
+        emitter.onError((e) -> emitterRepository.delete(emitterId));
 
         // 503 에러 방지를 위한 더미 이벤트 전송
         Long eventId = makeTimeIncludeId(memberId);

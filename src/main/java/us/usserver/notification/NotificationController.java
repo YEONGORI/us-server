@@ -20,7 +20,7 @@ public class NotificationController {
     public ResponseEntity<SseEmitter> subscribe(
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") Long lastEventId,
             HttpServletResponse response
-            ) {
+    ) {
         Long memberId = 0L; // TODO: 변경 예정
         response.setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
         SseEmitter sseEmitter = notificationService.subscribe(memberId, lastEventId);

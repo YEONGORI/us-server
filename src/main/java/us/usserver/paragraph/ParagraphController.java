@@ -19,6 +19,7 @@ import java.util.List;
 public class ParagraphController {
     private final ParagraphService paragraphService;
 
+    // TODO: ? 왜 썻는지 Object가 필요한지 고민하기
     @GetMapping("/{chapterId}/voting")
     public ResponseEntity<ApiCsResponse<?>> getParagraphsInVoting(@PathVariable Long chapterId) {
         List<ParagraphInVoting> paragraphs = paragraphService.getInVotingParagraphs(chapterId);
