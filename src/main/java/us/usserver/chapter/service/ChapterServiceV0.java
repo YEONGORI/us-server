@@ -83,7 +83,7 @@ public class ChapterServiceV0 implements ChapterService {
     }
 
     @Override
-    public void createChapter(Long novelId, Long authorId) {
+    public Chapter createChapter(Long novelId, Long authorId) {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
         int curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
@@ -101,5 +101,6 @@ public class ChapterServiceV0 implements ChapterService {
 
         novel.getChapters().add(chapter);
         chapterRepository.save(chapter);
+        return chapter;
     }
 }

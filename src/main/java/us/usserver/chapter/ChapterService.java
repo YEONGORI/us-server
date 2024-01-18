@@ -14,5 +14,5 @@ public interface ChapterService {
 
     ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId);
 
-    void createChapter(Long novelId, Long authorId);
+    Chapter createChapter(Long novelId, Long authorId);
 }

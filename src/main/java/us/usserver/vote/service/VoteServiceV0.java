@@ -26,7 +26,7 @@ public class VoteServiceV0 implements VoteService {
     private final VoteRepository voteRepository;
 
     @Override
-    public void voting(Long paragraphId, Long authorId) {
+    public Vote voting(Long paragraphId, Long authorId) {
         Paragraph paragraph = entityService.getParagraph(paragraphId);
         Author author = entityService.getAuthor(authorId);
 
@@ -45,6 +45,7 @@ public class VoteServiceV0 implements VoteService {
                 .build();
 
         voteRepository.save(vote);
+        return vote;
     }
 
     @Override

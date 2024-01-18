@@ -5,13 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import us.usserver.member.Member;
+import us.usserver.author.Author;
+import us.usserver.global.EntityService;
 import us.usserver.notification.Enum.NotificationType;
 import us.usserver.notification.Notification;
 import us.usserver.notification.NotificationRepository;
 import us.usserver.notification.NotificationService;
-import us.usserver.notification.dto.NotificationInfo;
+import us.usserver.notification.dto.NotificationMessage;
 import us.usserver.notification.repository.EmitterRepository;
+import us.usserver.novel.Novel;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.Map;
 public class NotificationServiceImpl implements NotificationService {
     private static final long DEFAULT_TIMEOUT = 60L * 1000 * 60;
 
+    private final EntityService entityService;
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
 
@@ -72,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public boolean hasLostData(Long lastEventId) {
-        return !lastEventId.equals(0L);
+        return lastEventId != null;
     }
 
     @Override
@@ -85,24 +88,26 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void send(Member receiver, NotificationType notificationType, String content, String url) {
-        Notification notification = notificationRepository.save(createNotification(receiver, notificationType, content, url));
+    public void send(Long receiverId, Long titleId, String content, String url, NotificationType notificationType) {
+        Author receiver = entityService.getAuthor(receiverId);
+        Novel title = entityService.getNovel(titleId);
+        Notification notification = notificationRepository.save(createNotification(receiver, notificationType, title.getTitle(), content, url));
 
-        Long receiverId = receiver.getId();
         Long eventId = makeTimeIncludeId(receiverId);
         Map<Long, SseEmitter> emitters = emitterRepository.findAllEmitterStartWithByMemeberId(receiverId);
 
         emitters.forEach((key, emitter) -> {
             emitterRepository.saveEventCache(key, notification);
-            sendNotification(emitter, eventId, key, NotificationInfo.fromNotification(notification));
+            sendNotification(emitter, eventId, key, NotificationMessage.fromNotification(notification));
         });
     }
 
     @Override
-    public Notification createNotification(Member receiver, NotificationType notificationType, String content, String url) {
+    public Notification createNotification(Author receiver, NotificationType notificationType, String title, String content, String url) {
         return Notification.builder()
                 .receiver(receiver)
                 .notificationType(notificationType)
+                .title(title)
                 .content(content)
                 .url(url)
                 .isRead(false)

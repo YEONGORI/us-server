@@ -2,6 +2,7 @@ package us.usserver.notification;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import us.usserver.author.Author;
 import us.usserver.member.Member;
 import us.usserver.notification.Enum.NotificationType;
 
@@ -17,7 +18,7 @@ public interface NotificationService {
 
     void sendLostData(SseEmitter emitter, Long lastEventId, Long memberId, Long emitterId);
 
-    void send(Member receiver, NotificationType notificationType, String content, String url);
+    void send(Long receiverId, Long titleId, String content, String url, NotificationType notificationType);
 
-    Notification createNotification(Member receiver, NotificationType notificationType, String content, String url);
+    Notification createNotification(Author receiver, NotificationType notificationType, String title, String content, String url);
 }
