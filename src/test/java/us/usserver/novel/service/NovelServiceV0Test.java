@@ -16,6 +16,7 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.member.Member;
+import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
@@ -53,24 +54,24 @@ class NovelServiceV0Test {
 
     @BeforeEach
     void setup() {
-        Member member1 = Member.builder().age(1).gender(Gender.MALE).build();
-        memberRepository.save(member1);
-
-        Member member2 = Member.builder().age(1).gender(Gender.MALE).build();
-        memberRepository.save(member2);
-
+        Member member1 = MemberMother.generateMember();
+        Member member2 = MemberMother.generateMember();
         author = AuthorMother.generateAuthor();
-        author.setMember(member1);
-        authorRepository.save(author);
-
         dummyAuthor = AuthorMother.generateAuthor();
+
+        author.setMember(member1);
         dummyAuthor.setMember(member2);
+
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        authorRepository.save(author);
         authorRepository.save(dummyAuthor);
 
         novel = NovelMother.generateNovel(author);
-        novelRepository.save(novel);
-
         dummyNovel = NovelMother.generateNovel(dummyAuthor);
+
+        novelRepository.save(novel);
         novelRepository.save(dummyNovel);
 
     }
@@ -104,7 +105,7 @@ class NovelServiceV0Test {
         assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
         assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
         assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
         assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
         assertThat(novelDetailInfo.getChapterInfos()).isEqualTo(Collections.emptyList());
     }
@@ -134,7 +135,7 @@ class NovelServiceV0Test {
         assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
         assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
         assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtag());
+        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
         assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
         assertThat(novelDetailInfo.getChapterInfos().size()).isEqualTo(2);
     }

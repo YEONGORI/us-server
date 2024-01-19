@@ -15,6 +15,7 @@ import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.like.novel.service.NovelLikeServiceV0;
 import us.usserver.member.Member;
+import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
@@ -126,7 +127,7 @@ class NoCommentServiceV0Test {
     }
 
     private void setMember(Author author) {
-        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        Member member = MemberMother.generateMember();
         memberRepository.save(member);
         author.setMember(member);
     }

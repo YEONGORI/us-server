@@ -58,7 +58,6 @@ public class Novel extends BaseEntity {
 
     @Schema(description = "소설 해시태그", example = "MONCHKIN, HASHTAG1, ...")
     @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
-    private Set<Hashtag> hashtag;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Hashtag> hashtags;
 

@@ -18,6 +18,7 @@ import us.usserver.like.novel.NovelLike;
 import us.usserver.like.novel.NovelLikeRepository;
 import us.usserver.like.novel.NovelLikeService;
 import us.usserver.member.Member;
+import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
@@ -105,7 +106,7 @@ class NovelLikeServiceV0Test {
     }
 
     private void setMember(Author author) {
-        Member member = Member.builder().age(1).gender(Gender.MALE).build();
+        Member member = MemberMother.generateMember();
         memberRepository.save(member);
         author.setMember(member);
     }
