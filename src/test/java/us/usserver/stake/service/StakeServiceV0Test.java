@@ -159,7 +159,7 @@ class StakeServiceV0Test {
         // then
         List<StakeInfo> stakeInfos = stakeServiceV0.getStakeInfoOfNovel(novelForOne.getId());
         assertThat(stakeInfos.size()).isEqualTo(1);
-        assertThat(stakeInfos.get(0).getAuthor().getId()).isEqualTo(author1.getId());
+        assertThat(stakeInfos.get(0).getAuthorInfo().getId()).isEqualTo(author1.getId());
         assertThat(stakeInfos.get(0).getPercentage()).isEqualTo(1F);
     }
 

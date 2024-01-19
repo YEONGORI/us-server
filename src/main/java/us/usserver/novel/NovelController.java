@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
+import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.NovelDetailInfo;
 import us.usserver.novel.dto.NovelInfo;
@@ -21,6 +24,7 @@ import us.usserver.novel.dto.*;
 
 import java.net.URI;
 
+@Tag(name = "소설 API")
 @ResponseBody
 @RestController
 @RequestMapping("/novel")
@@ -49,6 +53,13 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "소설 정보 조회", description = "소설 기본 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "소설 메인 페이지 조회",
+                    content = @Content(schema = @Schema(implementation = NovelDetailInfo.class))),
+            @ApiResponse(responseCode = "400", description = "소설이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
+    })
     @GetMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> getNovelInfo(@PathVariable Long novelId) {
         NovelInfo novelInfo = novelService.getNovelInfo(novelId);
@@ -61,6 +72,13 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "소설 상세 정보 조회", description = "소설 상세 정보 조회(오른쪽 탭)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "소설 상세 페이지 조회",
+                    content = @Content(schema = @Schema(implementation = NovelDetailInfo.class))),
+            @ApiResponse(responseCode = "400", description = "소설이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
+    })
     @GetMapping("/{novelId}/detail")
     public ResponseEntity<ApiCsResponse<?>> getNovelDetailInfo(@PathVariable Long novelId) {
         NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
@@ -73,6 +91,15 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "소설 줄거리 수정", description = "소설 줄거리 수정하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "줄거리 수정 성공",
+                    content = @Content(schema = @Schema(implementation = NovelDetailInfo.class))),
+            @ApiResponse(responseCode = "400", description = "소설이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = NovelNotFoundException.class))),
+            @ApiResponse(responseCode = "406", description = "메인 작가가 아닙니다.",
+                    content = @Content(schema = @Schema(implementation = MainAuthorIsNotMatchedException.class)))
+    })
     @PatchMapping("/{novelId}/synopsis")
     public ResponseEntity<ApiCsResponse<?>> modifyNovelSynopsis(
             @PathVariable Long novelId,

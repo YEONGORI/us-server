@@ -29,10 +29,6 @@ public class BookshelfServiceV0 implements BookshelfService {
     public List<NovelPreview> recentViewedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
         List<Novel> viewedNovels = author.getViewedNovels();
-        System.out.println("viewedNovels.size() = " + viewedNovels.size());
-        for (Novel n : viewedNovels) {
-            System.out.println("n.getId() = " + n.getId());
-        }
 
         return viewedNovels.stream()
                 .map(novel -> NovelPreview.fromNovel(
