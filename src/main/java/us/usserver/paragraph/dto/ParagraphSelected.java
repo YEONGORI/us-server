@@ -12,16 +12,16 @@ import us.usserver.paragraph.Paragraph;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParagraphSelected {
-    @Schema(description = "한줄(paragraph) 식별 id", nullable = false, example = "234")
+    @Schema(description = "한줄(paragraph) 식별 id", example = "234")
     private Long id;
 
-    @Schema(description = "한줄 내용", nullable = false, example = "제가 LA에 있을 때... 주저리 주저리 궁시렁 궁시렁...")
+    @Schema(description = "한줄 내용", example = "제가 LA에 있을 때... 주저리 주저리 궁시렁 궁시렁...")
     private String content;
 
-    @Schema(description = "작성한 작가 식별 id", nullable = false, example = "123")
+    @Schema(description = "작성한 작가 식별 id", example = "123")
     private Long authorId;
 
-    @Schema(description = "한 회차에서 몇 번째로 등장하는 한줄인지에 대한 인덱스", nullable = false, example = "2")
+    @Schema(description = "한 회차에서 몇 번째로 등장하는 한줄인지에 대한 인덱스", example = "1")
     private int sequence;
 
     public static ParagraphSelected fromParagraph(Paragraph paragraph) {

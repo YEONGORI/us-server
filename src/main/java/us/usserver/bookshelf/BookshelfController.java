@@ -10,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import us.usserver.bookshelf.dto.NovelPreview;
+import us.usserver.bookshelf.dto.BookshelfDefaultResponse;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
-
-import java.util.List;
 
 @Tag(name = "보관함 API")
 @ResponseBody
@@ -26,21 +24,21 @@ public class BookshelfController {
 
     @Operation(summary = "최근에 본 소설 조회", description = "보관함 내 최근에 본 소설을 조회하는 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "최근에 본 소설 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "최근에 본 소설 조회 성공",
+                    content = @Content(schema = @Schema(implementation = BookshelfDefaultResponse.class))),
             @ApiResponse(
                     responseCode = "400", description = "작가가 존재하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
-            )
+                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/viewed") // 내가 최근에 본 소설
     public ResponseEntity<ApiCsResponse<?>> recentViewedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.recentViewedNovels(authorId);
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
+                .data(bookshelfDefaultResponse)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -60,7 +58,9 @@ public class BookshelfController {
 
     @Operation(summary = "내가 생성한 소설 조회", description = "보관함 내 내가 생성한 소설을 조회하는 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내가 생성한 소설 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "내가 생성한 소설 조회 성공",
+                    content = @Content(schema = @Schema(implementation = BookshelfDefaultResponse.class))
+            ),
             @ApiResponse(
                     responseCode = "400", description = "작가가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
@@ -69,12 +69,12 @@ public class BookshelfController {
     @GetMapping("/created") // 내가 생성한 소설
     public ResponseEntity<ApiCsResponse<?>> createdNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.createdNovels(authorId);
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
+                .data(bookshelfDefaultResponse)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -95,7 +95,9 @@ public class BookshelfController {
 
     @Operation(summary = "내가 참여한 소설 조회", description = "보관함 내 내가 참여한 소설을 조회하는 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내가 참여한 소설 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "내가 참여한 소설 조회 성공",
+                    content = @Content(schema = @Schema(implementation = BookshelfDefaultResponse.class))
+            ),
             @ApiResponse(
                     responseCode = "400", description = "작가가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
@@ -104,12 +106,12 @@ public class BookshelfController {
     @GetMapping("/joined") // 내가 참여한 소설
     public ResponseEntity<ApiCsResponse<?>> joinedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.joinedNovels(authorId);
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
+                .data(bookshelfDefaultResponse)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -129,7 +131,9 @@ public class BookshelfController {
 
     @Operation(summary = "내가 좋아요한 소설 조회", description = "보관함 내 내가 좋아요한 소설을 조회하는 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "내가 좋아요한 소설 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "내가 좋아요한 소설 조회 성공",
+                    content = @Content(schema = @Schema(implementation = BookshelfDefaultResponse.class))
+            ),
             @ApiResponse(
                     responseCode = "400", description = "작가가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
@@ -138,12 +142,12 @@ public class BookshelfController {
     @GetMapping("/liked") // 내가 좋아요 한 소설
     public ResponseEntity<ApiCsResponse<?>> likedNovels() {
         Long authorId = 0L; // TODO: Token 으로 교체 예정
-        List<NovelPreview> novelPreviews = bookshelfService.likedNovels(authorId);
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
-                .data(novelPreviews)
+                .data(bookshelfDefaultResponse)
                 .build();
         return ResponseEntity.ok(response);
     }

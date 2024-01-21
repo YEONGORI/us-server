@@ -12,6 +12,7 @@ import us.usserver.comment.CommentRepository;
 import us.usserver.comment.CommentService;
 import us.usserver.comment.dto.CommentContent;
 import us.usserver.comment.dto.CommentInfo;
+import us.usserver.comment.dto.GetCommentResponse;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotAuthorizedException;
@@ -24,30 +25,37 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CommentServiceV0 {
+public class CommentServiceV1 implements CommentService {
     private final EntityService entityService;
     private final CommentRepository commentRepository;
 
-    public List<CommentInfo> getCommentsOfNovel(Long novelId) {
+    @Override
+    public GetCommentResponse getCommentsOfNovel(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
         List<Comment> commentsOfNovel = commentRepository.findAllByNovel(novel);
 
         String novelTitle = novel.getTitle();
-        return commentsOfNovel.stream()
+        List<CommentInfo> commentInfos = commentsOfNovel.stream()
                 .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getCommentLikes().size()))
                 .toList();
+
+        return GetCommentResponse.builder().commentInfos(commentInfos).build();
     }
 
-    public List<CommentInfo> getCommentsOfChapter(Long chapterId) {
+    @Override
+    public GetCommentResponse getCommentsOfChapter(Long chapterId) {
         Chapter chapter = entityService.getChapter(chapterId);
         List<Comment> commentsOfChapter = commentRepository.findAllByChapter(chapter);
 
         String chapterTitle = chapter.getTitle();
-        return commentsOfChapter.stream()
+        List<CommentInfo> commentInfos = commentsOfChapter.stream()
                 .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getCommentLikes().size()))
                 .toList();
+
+        return GetCommentResponse.builder().commentInfos(commentInfos).build();
     }
 
+    @Override
     public CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent) {
         Author author = entityService.getAuthor(authorId);
         Novel novel = entityService.getNovel(novelId);
@@ -68,6 +76,7 @@ public class CommentServiceV0 {
         return CommentInfo.fromComment(comment, novel.getTitle(), ZeroLikeCnt);
     }
 
+    @Override
     public CommentInfo writeCommentOnChapter(Long chapterId, Long authorId, CommentContent commentContent) {
         Author author = entityService.getAuthor(authorId);
         Chapter chapter = entityService.getChapter(chapterId);
@@ -93,11 +102,12 @@ public class CommentServiceV0 {
         );
     }
 
-    public List<CommentInfo> getCommentsByAuthor(Long authorId) {
+    @Override
+    public GetCommentResponse getCommentsByAuthor(Long authorId) {
         Author author = entityService.getAuthor(authorId);
         List<Comment> commentsByAuthor = commentRepository.findAllByAuthor(author);
 
-        return commentsByAuthor.stream()
+        List<CommentInfo> commentInfos = commentsByAuthor.stream()
                 .map(comment -> CommentInfo
                         .fromComment(
                                 comment,
@@ -105,8 +115,11 @@ public class CommentServiceV0 {
                                 comment.getCommentLikes().size()
                         ))
                 .toList();
+
+        return GetCommentResponse.builder().commentInfos(commentInfos).build();
     }
 
+    @Override
     public void deleteComment(Long commentId, Long authorId) {
         Comment comment = entityService.getComment(commentId);
         Author author = entityService.getAuthor(authorId);

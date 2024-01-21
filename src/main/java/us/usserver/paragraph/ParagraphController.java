@@ -23,7 +23,7 @@ import us.usserver.paragraph.dto.PostParagraphReq;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "회차 API")
+@Tag(name = "한줄 API")
 @ResponseBody
 @RestController
 @RequestMapping("/paragraph")

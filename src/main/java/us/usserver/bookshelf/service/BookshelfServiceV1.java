@@ -8,6 +8,7 @@ import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.bookshelf.BookshelfService;
+import us.usserver.bookshelf.dto.BookshelfDefaultResponse;
 import us.usserver.bookshelf.dto.NovelPreview;
 import us.usserver.global.EntityService;
 import us.usserver.like.novel.NovelLike;
@@ -20,79 +21,87 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BookshelfServiceV0 {
+public class BookshelfServiceV1 implements BookshelfService {
     private final EntityService entityService;
     private final AuthorityRepository authorityRepository;
     private final NovelLikeRepository novelLikeRepository;
 
-//    @Override
-    public List<NovelPreview> recentViewedNovels(Long authorId) {
+    @Override
+    public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
         List<Novel> viewedNovels = author.getViewedNovels();
 
-        return viewedNovels.stream()
+        List<NovelPreview> novelPreviews = viewedNovels.stream()
                 .map(novel -> NovelPreview.fromNovel(
                         novel,
                         getTotalJoinedAuthor(novel),
                         getShortcuts(novel)
                 )).toList();
+
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
     }
 
-//    @Override
+    @Override
     public void deleteRecentViewedNovels(Long authorId, Long novelId) {
 
     }
 
-//    @Override
-    public List<NovelPreview> createdNovels(Long authorId) {
+    @Override
+    public BookshelfDefaultResponse createdNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
         List<Novel> createdNovels = author.getCreatedNovels();
-        return createdNovels.stream()
+        List<NovelPreview> novelPreviews = createdNovels.stream()
                 .map(novel -> NovelPreview.fromNovel(
                         novel,
                         getTotalJoinedAuthor(novel),
                         getShortcuts(novel)
                 )).toList();
+
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
     }
 
-//    @Override
+    @Override
     public void deleteCreatedNovels(Long authorId, Long novelId) {
 
     }
 
-//    @Override
-    public List<NovelPreview> joinedNovels(Long authorId) {
+    @Override
+    public BookshelfDefaultResponse joinedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
         List<Authority> authorities = authorityRepository.findAllByAuthor(author);
-        return authorities.stream()
+        List<NovelPreview> novelPreviews = authorities.stream()
                 .map(authority -> NovelPreview.fromNovel(
                         authority.getNovel(),
                         getTotalJoinedAuthor(authority.getNovel()),
                         getShortcuts(authority.getNovel())
                 )).toList();
+
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
     }
 
-//    @Override
+    @Override
     public void deleteJoinedNovels(Long authorId, Long novelId) {
 
     }
 
-//    @Override
-    public List<NovelPreview> likedNovels(Long authorId) {
+    @Override
+    public BookshelfDefaultResponse likedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
         List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
-        return novelLikes.stream()
+        List<NovelPreview> novelPreviews = novelLikes.stream()
                 .map(likedNovel -> NovelPreview.fromNovel(
                         likedNovel.getNovel(),
                         getTotalJoinedAuthor(likedNovel.getNovel()),
                         getShortcuts(likedNovel.getNovel())
                 )).toList();
+
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
     }
 
-//    @Override
+    @Override
     public void deleteLikedNovels(Long authorId, Long novelId) {
 
     }
