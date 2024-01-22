@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.*;
-import us.usserver.paragraph.dto.ParagraphInVoting;
-
-import java.util.List;
+import us.usserver.global.exception.AuthorNotAuthorizedException;
+import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.exception.DuplicatedVoteException;
+import us.usserver.global.exception.ParagraphNotFoundException;
 
 @Tag(name = "투표 API")
 @ResponseBody

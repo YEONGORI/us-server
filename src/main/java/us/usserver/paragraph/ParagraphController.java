@@ -17,6 +17,7 @@ import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.novel.dto.NovelDetailInfo;
+import us.usserver.paragraph.dto.GetParagraphResponse;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.PostParagraphReq;
 
@@ -34,13 +35,13 @@ public class ParagraphController {
     @Operation(summary = "투표중인 한줄 불러오기", description = "뷰어에서 투표중인 한줄을 클릭하면 나오는 투표중 한줄 전부 불러오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = List.class))),
+                    content = @Content(schema = @Schema(implementation = GetParagraphResponse.class))),
             @ApiResponse(responseCode = "400", description = "회차가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/{chapterId}/voting")
     public ResponseEntity<ApiCsResponse<?>> getParagraphsInVoting(@PathVariable Long chapterId) {
-        List<ParagraphInVoting> paragraphs = paragraphService.getInVotingParagraphs(chapterId);
+        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(chapterId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())

@@ -25,6 +25,7 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
+import us.usserver.paragraph.dto.GetParagraphResponse;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.PostParagraphReq;
@@ -155,10 +156,10 @@ class ParagraphServiceV0Test {
         // given
 
         // when
-        List<ParagraphInVoting> paragraphs = paragraphServiceV0.getInVotingParagraphs(chapter.getId());
+        GetParagraphResponse paragraphs = paragraphServiceV0.getInVotingParagraphs(chapter.getId());
 
         // then
-        assertThat(paragraphs.size()).isEqualTo(2);
+        assertThat(paragraphs.getParagraphInVotings().size()).isEqualTo(2);
     }
 
     @Test

@@ -94,7 +94,7 @@ public class NovelController {
     @Operation(summary = "소설 줄거리 수정", description = "소설 줄거리 수정하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "줄거리 수정 성공",
-                    content = @Content(schema = @Schema(implementation = NovelDetailInfo.class))),
+                    content = @Content(schema = @Schema(implementation = NovelSynopsis.class))),
             @ApiResponse(responseCode = "400", description = "소설이 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class))),
             @ApiResponse(responseCode = "406", description = "메인 작가가 아닙니다.",
@@ -184,6 +184,11 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "작가 소개 수정", description = "메인 작가 소개글 수정하ㅣㄱ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "소설 검색 성공",
+                    content = @Content(schema = @Schema(implementation = AuthorDescription.class)))
+    })
     @PatchMapping("/{novelId}/author-description")
     public ResponseEntity<ApiCsResponse<?>> modifyAuthorDescription(
             @PathVariable Long novelId,
@@ -223,6 +228,7 @@ public class NovelController {
     @DeleteMapping("/search-keyword")
     public ResponseEntity<ApiCsResponse<?>> deleteAllSearchWord() {
         novelService.deleteSearchKeyword();
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())

@@ -1,15 +1,16 @@
 package us.usserver.note;
 
 import org.springframework.stereotype.Service;
+import us.usserver.note.dto.GetParagraphNote;
 import us.usserver.note.dto.ParagraphPreview;
 
 import java.util.List;
 
 @Service
 public interface NoteService {
-    List<ParagraphPreview> wroteParagraphs(Long authorId);
+    GetParagraphNote wroteParagraphs(Long authorId);
 
-    List<ParagraphPreview> votedParagraphs(Long authorId);
+    GetParagraphNote votedParagraphs(Long authorId);
 
-    List<ParagraphPreview> likedParagraphs(Long authorId);
+    GetParagraphNote likedParagraphs(Long authorId);
 }

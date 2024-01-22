@@ -100,15 +100,14 @@ public class CommentController {
 
     @Operation(summary = "회차에 댓글 작성하기", description = "한 회차에 대한 댓글 작성하기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공"),
+            @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommentInfo.class))),
             @ApiResponse(
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
-            ),
+                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
             @ApiResponse(
                     responseCode = "400", description = "댓글이 너무 깁니다.",
-                    content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class))
-            )
+                    content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class)))
     })
     @PostMapping("/chapter/{chapterId}")
     public ResponseEntity<ApiCsResponse<?>> postCommentOnChapter(
@@ -130,11 +129,11 @@ public class CommentController {
 
     @Operation(summary = "내가 작성한 댓글 불러오기", description = "내가 작성한 모든 댓글 불러오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공"),
+            @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
+                    content = @Content(schema = @Schema(implementation = GetCommentResponse.class))),
             @ApiResponse(
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
-            )
+                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/author")
     public ResponseEntity<ApiCsResponse<?>> getCommentsOfAuthor() {
@@ -152,16 +151,13 @@ public class CommentController {
     @Operation(summary = "작성한 댓글 삭제하기", description = "내가 작성한 댓글 삭제하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "댓글 삭제하기 성공",
-                    content = @Content
-            ),
+                    content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
-            ),
+                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
             @ApiResponse(
                     responseCode = "401", description = "작성자 본인이 아닙니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class))
-            )
+                    content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class)))
     })
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiCsResponse<?>> deleteComment(@PathVariable Long commentId) {

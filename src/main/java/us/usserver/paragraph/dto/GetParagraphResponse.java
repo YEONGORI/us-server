@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostParagraphReq {
-    @Schema(description = "한줄 내용", example = "제가 1994년에 LA에 있었을 때... 이러쿵 저러쿵")
-    private String content;
+public class GetParagraphResponse {
+    @Schema(description = "한줄 정보", example = "[한줄 정보 1, 한줄 정보 2, 한줄 정보 3, ...]")
+    private List<ParagraphInVoting> paragraphInVotings;
 }

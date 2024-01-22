@@ -28,6 +28,7 @@ import us.usserver.novel.novelEnum.Orders;
 import us.usserver.novel.novelEnum.Sorts;
 import us.usserver.novel.repository.NovelCustomRepository;
 import us.usserver.stake.StakeService;
+import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
@@ -90,7 +91,8 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<StakeInfo> stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
+        GetStakeResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
+        List<StakeInfo> stakeInfos = stakeResponse.getStakeInfos();
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
         return NovelDetailInfo.builder()

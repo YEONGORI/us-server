@@ -28,12 +28,10 @@ public class NovelLikeController {
             @ApiResponse(responseCode = "200", description = "좋아요 성공"),
             @ApiResponse(
                     responseCode = "400", description = "작가 혹은 소설 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))
-            ),
+                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
             @ApiResponse(
                     responseCode = "400", description = "이미 좋아요를 누르셨습니다..",
-                    content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class))
-            )
+                    content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class)))
     })
     @PostMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long novelId) {

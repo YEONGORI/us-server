@@ -12,6 +12,7 @@ import us.usserver.novel.Novel;
 import us.usserver.stake.Stake;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.StakeService;
+import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
@@ -22,11 +23,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StakeServiceV0 {
+public class StakeServiceV1 implements StakeService {
     private final StakeRepository stakeRepository;
     private final AuthorityRepository authorityRepository;
     private final EntityService entityService;
 
+    @Override
     public void setStakeInfoOfNovel(Novel novel) {
         List<Chapter> chapters = novel.getChapters();
         float totalParagraphs = (float) getTotalParagraphs(chapters);
@@ -40,11 +42,14 @@ public class StakeServiceV0 {
         }
     }
 
-    public List<StakeInfo> getStakeInfoOfNovel(Long novelId) {
+    @Override
+    public GetStakeResponse getStakeInfoOfNovel(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
 
         List<Stake> stakes = stakeRepository.findAllByNovel(novel);
-        return stakes.stream().map(StakeInfo::fromStake).toList();
+        List<StakeInfo> stakeInfos = stakes.stream().map(StakeInfo::fromStake).toList();
+
+        return GetStakeResponse.builder().stakeInfos(stakeInfos).build();
     }
 
     private int getTotalParagraphs(List<Chapter> chapters) {

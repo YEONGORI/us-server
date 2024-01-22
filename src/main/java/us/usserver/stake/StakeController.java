@@ -15,6 +15,7 @@ import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.global.exception.ScoreOutOfRangeException;
+import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
@@ -30,13 +31,13 @@ public class StakeController {
     @Operation(summary = "지분 정보 조회", description = "특정 소설에 대한 지분 정보 확인")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "작성 성공",
-                    content = @Content(schema = @Schema(implementation = List.class))),
+                    content = @Content(schema = @Schema(implementation = GetStakeResponse.class))),
             @ApiResponse(responseCode = "400", description = "소설이 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
     })
     @GetMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> getStakes(@PathVariable Long novelId) {
-        List<StakeInfo> stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
+        GetStakeResponse stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())

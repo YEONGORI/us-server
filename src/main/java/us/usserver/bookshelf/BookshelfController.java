@@ -14,7 +14,7 @@ import us.usserver.bookshelf.dto.BookshelfDefaultResponse;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
 
-@Tag(name = "보관함 API")
+@Tag(name = "보관함(소설) API")
 @ResponseBody
 @RestController
 @RequestMapping("/bookshelf")
