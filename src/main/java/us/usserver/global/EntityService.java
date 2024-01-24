@@ -10,7 +10,7 @@ import us.usserver.comment.Comment;
 import us.usserver.comment.CommentRepository;
 import us.usserver.global.exception.*;
 import us.usserver.novel.Novel;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EntityService {
     private final AuthorRepository authorRepository;
-    private final NovelRepository novelRepository;
+    private final NovelJpaRepository novelJpaRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
     private final CommentRepository commentRepository;
@@ -37,7 +37,7 @@ public class EntityService {
     }
 
     public Novel getNovel(Long novelId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
+        Optional<Novel> novelById = novelJpaRepository.getNovelById(novelId);
         if (novelById.isEmpty()) {
             throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
         }

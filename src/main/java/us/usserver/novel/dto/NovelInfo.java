@@ -32,6 +32,9 @@ public class NovelInfo {
     @Schema(description = "댓글 갯수",example = "899")
     private Integer commentCnt;
 
+    @Schema(description = "좋아요 갯수",example = "998")
+    private Integer likeCnt;
+
     @Schema(description = "소설 공유 url",example = "https:// ~ ~")
     private String novelSharelUrl;
 }

@@ -20,6 +20,7 @@ import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.like.novel.NovelLikeRepository;
 import us.usserver.like.novel.repository.NovelLikeJpaRepository;
 import us.usserver.novel.Novel;
 import us.usserver.novel.repository.NovelJpaRepository;
@@ -42,12 +43,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class NovelServiceV0 implements NovelService {
+public class NovelServiceV1 implements NovelService {
     private final EntityService entityService;
     private final StakeService stakeService;
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
+
+    private final NovelLikeRepository novelLikeRepository;
     private final NovelLikeJpaRepository novelLikeJpaRepository;
     private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
@@ -86,7 +89,7 @@ public class NovelServiceV0 implements NovelService {
                 .hashtag(novel.getHashtags())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
                 .commentCnt(commentRepository.countAllByNovel(novel))
-                .likeCnt(novelLikeJpaRepository.countAllByNovel(novel))
+                .likeCnt(novelLikeRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
                 .build();
     }

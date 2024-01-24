@@ -7,11 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
-import us.usserver.bookshelf.BookshelfService;
 import us.usserver.bookshelf.dto.NovelPreview;
 import us.usserver.global.EntityService;
 import us.usserver.like.novel.NovelLike;
-import us.usserver.like.novel.NovelLikeRepository;
+import us.usserver.like.novel.repository.NovelLikeJpaRepository;
 import us.usserver.novel.Novel;
 
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.List;
 public class BookshelfServiceV0 {
     private final EntityService entityService;
     private final AuthorityRepository authorityRepository;
-    private final NovelLikeRepository novelLikeRepository;
+    private final NovelLikeJpaRepository novelLikeJpaRepository;
 
 //    @Override
     public List<NovelPreview> recentViewedNovels(Long authorId) {
@@ -83,7 +82,7 @@ public class BookshelfServiceV0 {
     public List<NovelPreview> likedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
-        List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
+        List<NovelLike> novelLikes = novelLikeJpaRepository.findAllByAuthor(author);
         return novelLikes.stream()
                 .map(likedNovel -> NovelPreview.fromNovel(
                         likedNovel.getNovel(),

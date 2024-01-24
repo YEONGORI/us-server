@@ -19,7 +19,7 @@ import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
@@ -42,7 +42,7 @@ class StakeServiceV0Test {
     @Autowired
     private AuthorityRepository authorityRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -80,7 +80,7 @@ class StakeServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
 
         authorityRepository.save(Authority.builder()
                 .novel(novel).author(author1).build());
@@ -142,7 +142,7 @@ class StakeServiceV0Test {
 
         // when
         novelForOne.getChapters().add(chapterForOne);
-        novelRepository.save(novelForOne);
+        novelJpaRepository.save(novelForOne);
 
         chapterForOne.getParagraphs().add(p1);
         chapterForOne.getParagraphs().add(p2);

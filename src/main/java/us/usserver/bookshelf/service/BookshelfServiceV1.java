@@ -12,7 +12,7 @@ import us.usserver.bookshelf.dto.BookshelfDefaultResponse;
 import us.usserver.bookshelf.dto.NovelPreview;
 import us.usserver.global.EntityService;
 import us.usserver.like.novel.NovelLike;
-import us.usserver.like.novel.NovelLikeRepository;
+import us.usserver.like.novel.repository.NovelLikeJpaRepository;
 import us.usserver.novel.Novel;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class BookshelfServiceV1 implements BookshelfService {
     private final EntityService entityService;
     private final AuthorityRepository authorityRepository;
-    private final NovelLikeRepository novelLikeRepository;
+    private final NovelLikeJpaRepository novelLikeJpaRepository;
 
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
@@ -90,7 +90,7 @@ public class BookshelfServiceV1 implements BookshelfService {
     public BookshelfDefaultResponse likedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
-        List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
+        List<NovelLike> novelLikes = novelLikeJpaRepository.findAllByAuthor(author);
         List<NovelPreview> novelPreviews = novelLikes.stream()
                 .map(likedNovel -> NovelPreview.fromNovel(
                         likedNovel.getNovel(),

@@ -21,7 +21,7 @@ import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
@@ -54,7 +54,7 @@ class ParagraphServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -80,7 +80,7 @@ class ParagraphServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);

@@ -20,7 +20,7 @@ import us.usserver.member.MemberRepository;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.novel.dto.*;
 import us.usserver.novel.novelEnum.*;
 
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class NovelServiceV0Test {
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -68,10 +68,10 @@ class NovelServiceV0Test {
         authorRepository.save(dummyAuthor);
 
         novel = NovelMother.generateNovel(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
 
         dummyNovel = NovelMother.generateNovel(dummyAuthor);
-        novelRepository.save(dummyNovel);
+        novelJpaRepository.save(dummyNovel);
 
     }
 
@@ -121,7 +121,7 @@ class NovelServiceV0Test {
         chapterRepository.save(chapter2);
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
 
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
                 () -> novelServiceV0.getNovelDetailInfo(novel.getId()));

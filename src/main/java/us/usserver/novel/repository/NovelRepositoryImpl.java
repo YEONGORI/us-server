@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelRepository;
 import us.usserver.novel.dto.MoreInfoOfNovel;
 import us.usserver.novel.dto.SearchNovelReq;
 import us.usserver.novel.dto.SortDto;
@@ -24,7 +25,7 @@ import static us.usserver.novel.QNovel.novel;
 
 @RequiredArgsConstructor
 @Repository
-public class NovelCustomRepositoryImpl implements NovelCustomRepository{
+public class NovelRepositoryImpl implements NovelRepository {
 
     private final JPAQueryFactory queryFactory;
 
