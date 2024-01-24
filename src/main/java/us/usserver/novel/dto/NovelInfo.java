@@ -3,6 +3,7 @@ package us.usserver.novel.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import us.usserver.author.Author;
+import us.usserver.author.dto.AuthorInfo;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
 
@@ -24,7 +25,7 @@ public class NovelInfo {
     private Set<Hashtag> hashtag;
 
     @Schema(description = "메인 작가 이름",example = "강아지상")
-    private Author createdAuthor;
+    private AuthorInfo createdAuthor;
 
     @Schema(description = "참여 작가 수",example = "12")
     private Integer joinedAuthorCnt;

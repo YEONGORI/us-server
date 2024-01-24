@@ -23,7 +23,6 @@ public class RedisConfig {
     private String redisHost;
 
     @Value("${spring.data.redis.port}")
-
     private int redisPort;
 
     @Bean

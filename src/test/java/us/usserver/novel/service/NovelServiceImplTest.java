@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
-class NovelServiceV0Test {
+class NovelServiceImplTest {
     @Autowired
     private NovelJpaRepository novelJpaRepository;
     @Autowired
@@ -42,7 +42,7 @@ class NovelServiceV0Test {
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
-    private NovelServiceV0 novelServiceV0;
+    private NovelServiceImpl novelServiceImpl;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -79,7 +79,7 @@ class NovelServiceV0Test {
     @DisplayName("소설 정보 확인")
     void getNovelInfo() {
         NovelInfo novelInfo = assertDoesNotThrow(
-                () -> novelServiceV0.getNovelInfo(novel.getId()));
+                () -> novelServiceImpl.getNovelInfo(novel.getId()));
 
         assertThat(novelInfo.getNovelSharelUrl()).contains("/novel/" + novel.getId());
     }
@@ -88,14 +88,14 @@ class NovelServiceV0Test {
     @DisplayName("존재하지 않는 소설 정보 확인")
     void getNotExistNovel() {
         assertThrows(NovelNotFoundException.class,
-                () -> novelServiceV0.getNovelInfo(novel.getId() + 9999));
+                () -> novelServiceImpl.getNovelInfo(novel.getId() + 9999));
     }
 
     @Test
     @DisplayName("소설 상세 정보 확인")
     void getNovelDetailInfo() {
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
-                () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
+                () -> novelServiceImpl.getNovelDetailInfo(novel.getId()));
 
         assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
         assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
@@ -124,7 +124,7 @@ class NovelServiceV0Test {
         novelJpaRepository.save(novel);
 
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
-                () -> novelServiceV0.getNovelDetailInfo(novel.getId()));
+                () -> novelServiceImpl.getNovelDetailInfo(novel.getId()));
 
         // then
         assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
@@ -144,7 +144,7 @@ class NovelServiceV0Test {
     void modifyNovelSynopsis() {
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
         NovelSynopsis synopsisResponse = assertDoesNotThrow(
-                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest));
+                () -> novelServiceImpl.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest));
 
         assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse.getSynopsis());
     }
@@ -154,7 +154,7 @@ class NovelServiceV0Test {
     void modifySysnopsisNotAuthority() {
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
         assertThrows(MainAuthorIsNotMatchedException.class,
-                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest));
+                () -> novelServiceImpl.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest));
     }
 
     @Test
@@ -162,7 +162,7 @@ class NovelServiceV0Test {
     void modifyAuthorDescription() {
         AuthorDescription descriptionRequest = NovelMother.generateDescription();
         AuthorDescription desriptionResponse = assertDoesNotThrow(
-                () -> novelServiceV0.modifyAuthorDescription(novel.getId(), author.getId(), descriptionRequest));
+                () -> novelServiceImpl.modifyAuthorDescription(novel.getId(), author.getId(), descriptionRequest));
 
         assertThat(descriptionRequest.getDescription()).isEqualTo(desriptionResponse.getDescription());
     }
@@ -172,7 +172,7 @@ class NovelServiceV0Test {
     void modifyDescriptionNotAuthority() {
         AuthorDescription authorDescription = NovelMother.generateDescription();
         assertThrows(MainAuthorIsNotMatchedException.class,
-                () -> novelServiceV0.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
+                () -> novelServiceImpl.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
 
     }
 
@@ -192,7 +192,7 @@ class NovelServiceV0Test {
                 .novelSize(NovelSize.LONG)
                 .build();
         //when
-        Novel createNovel = novelServiceV0.createNovel(createNovelReq);
+        Novel createNovel = novelServiceImpl.createNovel(createNovelReq);
 
         //then
         assertThat(createNovel).isNotNull();
@@ -232,8 +232,8 @@ class NovelServiceV0Test {
 
 
         //when
-        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
+        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceImpl.searchNovel(searchNovelReq1);
+        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceImpl.searchNovel(searchNovelReq2);
 
         //then
         assertThat(novelPageInfoResponse1.getNovelList().size()).isEqualTo(2);
@@ -279,11 +279,11 @@ class NovelServiceV0Test {
                 .build();
 
         //when
-        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
-        NovelPageInfoResponse novelPageInfoResponse3 = novelServiceV0.searchNovel(searchNovelReq3);
+        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceImpl.searchNovel(searchNovelReq1);
+        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceImpl.searchNovel(searchNovelReq2);
+        NovelPageInfoResponse novelPageInfoResponse3 = novelServiceImpl.searchNovel(searchNovelReq3);
 
-        SearchKeywordResponse searchKeywordResponse = novelServiceV0.searchKeyword();
+        SearchKeywordResponse searchKeywordResponse = novelServiceImpl.searchKeyword();
 
         //then
         assertThat(searchKeywordResponse.getHotSearch().size()).isEqualTo(2);
@@ -300,7 +300,7 @@ class NovelServiceV0Test {
     @Transactional
     void 메인_소설_성공() {
         //when
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+        HomeNovelListResponse homeNovelListResponse = novelServiceImpl.homeNovelInfo();
 
         //then
         assertThat(homeNovelListResponse.getRealTimeNovels().size()).isEqualTo(3);
@@ -320,7 +320,7 @@ class NovelServiceV0Test {
     @Transactional
     void 메인_소설_더보기_실시간업데이트_성공() {
         //given
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+        HomeNovelListResponse homeNovelListResponse = novelServiceImpl.homeNovelInfo();
         Novel realTimeNovel = homeNovelListResponse.getRealTimeNovels().get(homeNovelListResponse.getRealTimeNovels().size() - 1);
         MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
                 .lastNovelId(realTimeNovel.getId())
@@ -328,7 +328,7 @@ class NovelServiceV0Test {
                 .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
                 .build();
         //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
+        NovelPageInfoResponse novelPageInfoResponse = novelServiceImpl.moreNovel(moreInfoOfNovel);
 
         //then
         assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
@@ -340,7 +340,7 @@ class NovelServiceV0Test {
     @DisplayName("메인화면 소설 더보기")
     void 메인_소설_더보기_신작_성공() {
         //given
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+        HomeNovelListResponse homeNovelListResponse = novelServiceImpl.homeNovelInfo();
         Novel newNovel = homeNovelListResponse.getNewNovels().get(homeNovelListResponse.getNewNovels().size() - 1);
         MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
                 .lastNovelId(newNovel.getId())
@@ -348,7 +348,7 @@ class NovelServiceV0Test {
                 .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
                 .build();
         //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
+        NovelPageInfoResponse novelPageInfoResponse = novelServiceImpl.moreNovel(moreInfoOfNovel);
 
         //then
         assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
@@ -366,7 +366,7 @@ class NovelServiceV0Test {
                 .size(3)
                 .build();
         //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.readMoreNovel(readInfoOfNovel);
+        NovelPageInfoResponse novelPageInfoResponse = novelServiceImpl.readMoreNovel(readInfoOfNovel);
 
         //then
         assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);

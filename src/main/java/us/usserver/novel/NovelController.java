@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.author.dto.AuthorInfo;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
@@ -45,10 +46,21 @@ public class NovelController {
     public ResponseEntity<ApiCsResponse<?>> createNovel(@Valid @RequestBody CreateNovelReq createNovelReq) {
         Novel novel = novelService.createNovel(createNovelReq);
 
+        NovelInfo novelInfo = NovelInfo.builder()
+                .likeCnt(novel.getHit())
+                .novelSharelUrl("")
+                .createdAuthor(AuthorInfo.fromAuthor(novel.getMainAuthor()))
+                .joinedAuthorCnt(0)
+                .title(novel.getTitle())
+                .genre(novel.getGenre())
+                .hashtag(novel.getHashtag())
+                .commentCnt(0)
+                .build();
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(novel)
+                .data(novelInfo)
                 .build();
         return ResponseEntity.ok(response);
     }

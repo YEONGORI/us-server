@@ -27,7 +27,7 @@ public class NovelLikeServiceV0 implements NovelLikeService {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        if (novelLikeRepository.findAnyByNovelAndAuthor(novel, author) == null) {
+        if (novelLikeRepository.findAnyByNovelAndAuthor(novel, author) != null) {
             throw new DuplicatedLikeException("NOVEL_LIKE");
         }
 

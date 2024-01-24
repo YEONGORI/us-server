@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
+import us.usserver.author.dto.AuthorInfo;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
@@ -20,7 +21,7 @@ import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.like.novel.repository.NovelLikeJpaRepository;
+import us.usserver.like.novel.NovelLikeRepository;
 import us.usserver.novel.Novel;
 import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.novel.NovelService;
@@ -42,13 +43,13 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class NovelServiceV0 implements NovelService {
+public class NovelServiceImpl implements NovelService {
     private final EntityService entityService;
     private final StakeService stakeService;
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
-    private final NovelLikeJpaRepository novelLikeJpaRepository;
+    private final NovelLikeRepository novelLikeRepository;
     private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
     private final NovelJpaRepository novelJpaRepository;
@@ -77,16 +78,17 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
+        AuthorInfo authorInfo = AuthorInfo.fromAuthor(novel.getMainAuthor());
 
         // TODO : url 은 상의가 좀 필요함
         return NovelInfo.builder()
                 .title(novel.getTitle())
-                .createdAuthor(novel.getMainAuthor())
+                .createdAuthor(authorInfo)
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtags())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
                 .commentCnt(commentRepository.countAllByNovel(novel))
-                .likeCnt(novelLikeJpaRepository.countAllByNovel(novel))
+                .likeCnt(novelLikeRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
                 .build();
     }

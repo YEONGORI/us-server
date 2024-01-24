@@ -16,6 +16,7 @@ import us.usserver.novel.novelEnum.Hashtag;
 import us.usserver.novel.novelEnum.NovelStatus;
 import us.usserver.novel.novelEnum.NovelSize;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 @Getter
@@ -58,8 +59,10 @@ public class CreateNovelReq {
                 .thumbnail(thumbnail)
                 .synopsis(synopsis)
                 .authorDescription(authorDescription)
+                .mainAuthor(author)
                 .hashtags(hashtag)
                 .genre(genre)
+                .chapters(new ArrayList<>())
                 .ageRating(ageRating)
                 .novelSize(novelSize)
                 .hit(0)
