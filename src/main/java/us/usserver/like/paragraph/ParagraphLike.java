@@ -24,6 +24,6 @@ public class ParagraphLike {
     private Author author;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "paragraph_id")
     private Paragraph paragraph;
 }

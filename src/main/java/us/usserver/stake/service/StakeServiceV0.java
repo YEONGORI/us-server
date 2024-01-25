@@ -22,12 +22,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StakeServiceV0 implements StakeService {
+public class StakeServiceV0 {
     private final StakeRepository stakeRepository;
     private final AuthorityRepository authorityRepository;
     private final EntityService entityService;
 
-    @Override
     public void setStakeInfoOfNovel(Novel novel) {
         List<Chapter> chapters = novel.getChapters();
         float totalParagraphs = (float) getTotalParagraphs(chapters);
@@ -41,7 +40,6 @@ public class StakeServiceV0 implements StakeService {
         }
     }
 
-    @Override
     public List<StakeInfo> getStakeInfoOfNovel(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
 

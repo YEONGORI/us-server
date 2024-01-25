@@ -17,7 +17,7 @@ public class ParagraphMother {
     public static Paragraph generateParagraph(Author author, Chapter chapter) {
         EasyRandomParameters randomParameters = new EasyRandomParameters()
                 .charset(StandardCharsets.UTF_8)
-                .randomize(named("content").and(ofType(String.class)), new StringRandomizer(300))
+                .randomize(named("content").and(ofType(String.class)), new StringRandomizer(50, 300, 0))
                 .randomize(named("sequence").and(ofType(int.class)), new IntegerRangeRandomizer(0, 15))
                 .randomize(ParagraphStatus.class, () -> ParagraphStatus.IN_VOTING)
                 .randomize(Author.class, () -> author)

@@ -4,4 +4,5 @@ public enum ParagraphStatus {
     IN_VOTING,
     SELECTED,
     UNSELECTED
+
 }

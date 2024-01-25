@@ -3,6 +3,7 @@ package us.usserver.stake;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.novel.Novel;
+import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.List;
@@ -13,5 +14,5 @@ public interface StakeService {
     // A: Novel을 전달하는 것이 불필요한 쿼리를 생성 하지 않기 때문에 더 효율적이다.
     void setStakeInfoOfNovel(Novel novel);
 
-    List<StakeInfo> getStakeInfoOfNovel(Long novelId);
+    GetStakeResponse getStakeInfoOfNovel(Long novelId);
 }

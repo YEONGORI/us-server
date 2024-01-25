@@ -15,7 +15,7 @@ import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.comment.novel.NoCommentRepository;
+import us.usserver.comment.CommentRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
@@ -29,13 +29,13 @@ import us.usserver.novel.novelEnum.Orders;
 import us.usserver.novel.novelEnum.Sorts;
 import us.usserver.novel.repository.NovelCustomRepository;
 import us.usserver.stake.StakeService;
+import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Slf4j
 @Service
@@ -47,7 +47,7 @@ public class NovelServiceV0 implements NovelService {
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
-    private final NoCommentRepository noCommentRepository;
+    private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
     private final NovelRepository novelRepository;
     private final NovelCustomRepository novelCustomRepository;
@@ -65,6 +65,8 @@ public class NovelServiceV0 implements NovelService {
         author.getCreatedNovels().add(novel);
         authorityRepository.save(Authority.builder().author(author).novel(novel).build());
 
+        chapterService.createChapter(saveNovel.getId(), authorId);
+
         return saveNovel;
     }
 
@@ -79,7 +81,7 @@ public class NovelServiceV0 implements NovelService {
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtags())
                 .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
-                .commentCnt(noCommentRepository.countAllByNovel(novel))
+                .commentCnt(commentRepository.countAllByNovel(novel))
                 .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
                 .build();
     }
@@ -87,7 +89,8 @@ public class NovelServiceV0 implements NovelService {
     @Override
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<StakeInfo> stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
+        GetStakeResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
+        List<StakeInfo> stakeInfos = stakeResponse.getStakeInfos();
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
         return NovelDetailInfo.builder()
