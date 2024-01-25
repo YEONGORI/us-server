@@ -20,6 +20,7 @@ import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.member.Member;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
@@ -33,7 +34,6 @@ import us.usserver.stake.dto.StakeInfo;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,10 +56,8 @@ public class NovelServiceV0 implements NovelService {
     private static final Integer RECENT_KEYWORD_SIZE = 10;
 
     @Override
-    public Novel createNovel(CreateNovelReq createNovelReq) {
-        //TODO: 토큰 값 변경 예정
-        Long authorId = 1L;
-        Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+    public Novel createNovel(Member member, CreateNovelReq createNovelReq) {
+        Author author = getAuthor(member);
 
         Novel novel = createNovelReq.toEntity(author);
         Novel saveNovel = novelRepository.save(novel);
@@ -135,12 +133,9 @@ public class NovelServiceV0 implements NovelService {
         return req;
     }
 
-    @Transactional
     @Override
-    //TODO: authorId 임시
-    public HomeNovelListResponse homeNovelInfo() {
-        Long authorId = 2L;
-        Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+    public HomeNovelListResponse homeNovelInfo(Member member) {
+        Author author = getAuthor(member);
         MoreInfoOfNovel realTimeNovels = MoreInfoOfNovel.builder()
                 .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
                 .build();
@@ -152,7 +147,7 @@ public class NovelServiceV0 implements NovelService {
         return HomeNovelListResponse.builder()
                 .realTimeNovels(novelCustomRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels)).toList())
                 .newNovels(novelCustomRepository.moreNovelList(newNovels, getPageRequest(newNovels)).toList())
-                .readNovels(author.getViewedNovels()
+                .readNovels((author == null) ? null : author.getViewedNovels()
                         .stream()
                         .limit(8)
                         .sorted(Comparator.comparing(Novel::getId))
@@ -162,23 +157,21 @@ public class NovelServiceV0 implements NovelService {
     
     @Override
     public NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel) {
-
         PageRequest pageable = getPageRequest(moreInfoOfNovel);
         Slice<Novel> novelSlice = novelCustomRepository.moreNovelList(moreInfoOfNovel, pageable);
 
         return getNovelPageInfoResponse(novelSlice, moreInfoOfNovel.getSortDto());
     }
     @Override
-    public NovelPageInfoResponse readMoreNovel(ReadInfoOfNovel readInfoOfNovel){
-        Long authorId = 2L;
-        Optional<Author> findAuthorId = authorRepository.findById(authorId);
+    public NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel){
+        Author author = getAuthor(member);
 
-        if (!findAuthorId.isEmpty()) {
-            int author_readNovel_cnt = findAuthorId.get().getViewedNovels().size();
+        if (author != null) {
+            int author_readNovel_cnt = author.getViewedNovels().size();
             int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
             int endPoint = author_readNovel_cnt < getSize ? author_readNovel_cnt : getSize;
 
-            List<Novel> novelList = findAuthorId.get()
+            List<Novel> novelList = author
                     .getViewedNovels()
                     .stream()
                     .sorted(Comparator.comparing(Novel::getId))
@@ -222,11 +215,12 @@ public class NovelServiceV0 implements NovelService {
     }
 
     @Override
-    public NovelPageInfoResponse searchNovel(SearchNovelReq searchNovelReq) {
+    public NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq) {
+        Author author = getAuthor(member);
         PageRequest pageable = PageRequest.ofSize(searchNovelReq.getSize());
         if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
             increaseKeywordScore(searchNovelReq.getTitle());
-            recentKeyword(searchNovelReq.getAuthorId(), searchNovelReq.getTitle());
+            recentKeyword((author == null) ? null : author.getId(), searchNovelReq.getTitle());
         }
         Slice<Novel> novelSlice = novelCustomRepository.searchNovelList(searchNovelReq, pageable);
 
@@ -234,9 +228,8 @@ public class NovelServiceV0 implements NovelService {
     }
 
     @Override
-    public SearchKeywordResponse searchKeyword() {
-        //Token 값으로 변경
-        Long authorId = 1L;
+    public SearchKeywordResponse searchKeyword(Member member) {
+        Author author = getAuthor(member);
 
         //최신 검색어
         ListOperations<String, String> opsForList = redisTemplate.opsForList();
@@ -247,16 +240,16 @@ public class NovelServiceV0 implements NovelService {
         Set<ZSetOperations.TypedTuple<String>> rankingTuples = opsForZSet.reverseRangeWithScores(hot_keyword, 0, 9);
 
         return SearchKeywordResponse.builder()
-                .recentSearch(opsForList.range(String.valueOf(authorId), 0, 9))
+                .recentSearch(opsForList.range(String.valueOf(author.getId()), 0, 9))
                 .hotSearch(rankingTuples.stream().map(set -> set.getValue()).collect(Collectors.toList()))
                 .build();
     }
 
     @Override
-    public void deleteSearchKeyword() {
-        //TODO memberId 토큰에서 꺼내올 예정
-        Long authorId = 1L;
-        String key = String.valueOf(authorId);
+    public void deleteSearchKeyword(Member member) {
+        Author author = getAuthor(member);
+
+        String key = String.valueOf(author.getId());
         Long size = redisTemplate.opsForList().size(key);
 
         redisTemplate.opsForList().rightPop(key, size);
@@ -274,7 +267,10 @@ public class NovelServiceV0 implements NovelService {
     }
 
     private void recentKeyword(Long authorId, String keyword) {
-        //security 도입 후 Long memberId -> 현재 로그인 중인 MemberId
+        if (authorId == null) {
+            return;
+        }
+
         String key = String.valueOf(authorId);
         String equalWord = null;
         ListOperations<String, String> list = redisTemplate.opsForList();
@@ -297,5 +293,13 @@ public class NovelServiceV0 implements NovelService {
             list.rightPop(key);
         }
         list.leftPush(key, keyword);
+    }
+
+    private Author getAuthor(Member member) {
+        if (member == null) {
+            return null;
+        }
+        Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+        return author;
     }
 }

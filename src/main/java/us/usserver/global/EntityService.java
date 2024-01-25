@@ -9,6 +9,9 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.comment.Comment;
 import us.usserver.comment.CommentRepository;
 import us.usserver.global.exception.*;
+import us.usserver.global.exception.*;
+import us.usserver.member.Member;
+import us.usserver.member.MemberRepository;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
@@ -22,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EntityService {
     private final AuthorRepository authorRepository;
+    private final MemberRepository memberRepository;
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
@@ -34,6 +38,14 @@ public class EntityService {
             throw new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND);
         }
         return authorById.get();
+    }
+
+    public Member getMember(Long memberId) {
+        Optional<Member> memberById = memberRepository.getMemberById(memberId);
+        if (memberById.isEmpty()) {
+            throw new MemberNotFoundException(ExceptionMessage.Member_NOT_FOUND);
+        }
+        return memberById.get();
     }
 
     public Novel getNovel(Long novelId) {

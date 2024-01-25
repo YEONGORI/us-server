@@ -8,4 +8,6 @@ import java.util.Optional;
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
     Optional<Author> getAuthorById(Long id);
+
+    Optional<Author> getAuthorByMemberId(Long memberId);
 }
