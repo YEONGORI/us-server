@@ -5,22 +5,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.authority.Authority;
-import us.usserver.comment.chapter.ChComment;
-import us.usserver.comment.novel.NoComment;
-import us.usserver.like.comment.ChCommentLike;
+import us.usserver.comment.Comment;
+import us.usserver.like.comment.CommentLike;
 import us.usserver.like.novel.NovelLike;
-import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.member.Member;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.score.Score;
 import us.usserver.stake.Stake;
+import us.usserver.vote.Vote;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,7 +46,9 @@ public class Author {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    //TODO[고민]: author에 비중이 너무 커져서 읽은 소설 같은 경우에는 member에 추가를 하면 안될까..?
+    private Boolean participateNovelsPublic;
+    private Boolean collectionNovelsPublic;
+
     @OneToMany(mappedBy = "mainAuthor", cascade = CascadeType.ALL)
     private List<Novel> viewedNovels = new ArrayList<>();
 
@@ -65,20 +67,17 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Authority> authorities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NovelLike> novelLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ParagraphLike> paragraphLikes = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> commentLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<NoComment> noComments = new ArrayList<>();
+    private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChComment> chComments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<ChCommentLike> chCommentLikeList = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     public void addAuthorNovel(Authority authority) {
         authority.setAuthor(this);

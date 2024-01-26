@@ -1,6 +1,7 @@
 package us.usserver.paragraph;
 
 import org.springframework.stereotype.Service;
+import us.usserver.paragraph.dto.GetParagraphResponse;
 import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.PostParagraphReq;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface ParagraphService {
     ParagraphsOfChapter getParagraphs(Long authorId, Long chapterId);
 
-    List<ParagraphInVoting> getInVotingParagraphs(Long chapterId);
+    GetParagraphResponse getInVotingParagraphs(Long chapterId);
 
     ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req);
 

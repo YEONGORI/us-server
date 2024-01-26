@@ -20,19 +20,15 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BookshelfServiceV0 implements BookshelfService {
+public class BookshelfServiceV0 {
     private final EntityService entityService;
     private final AuthorityRepository authorityRepository;
     private final NovelLikeRepository novelLikeRepository;
 
-    @Override
+//    @Override
     public List<NovelPreview> recentViewedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
         List<Novel> viewedNovels = author.getViewedNovels();
-        System.out.println("viewedNovels.size() = " + viewedNovels.size());
-        for (Novel n : viewedNovels) {
-            System.out.println("n.getId() = " + n.getId());
-        }
 
         return viewedNovels.stream()
                 .map(novel -> NovelPreview.fromNovel(
@@ -42,7 +38,12 @@ public class BookshelfServiceV0 implements BookshelfService {
                 )).toList();
     }
 
-    @Override
+//    @Override
+    public void deleteRecentViewedNovels(Long authorId, Long novelId) {
+
+    }
+
+//    @Override
     public List<NovelPreview> createdNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
@@ -55,7 +56,12 @@ public class BookshelfServiceV0 implements BookshelfService {
                 )).toList();
     }
 
-    @Override
+//    @Override
+    public void deleteCreatedNovels(Long authorId, Long novelId) {
+
+    }
+
+//    @Override
     public List<NovelPreview> joinedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
@@ -68,7 +74,12 @@ public class BookshelfServiceV0 implements BookshelfService {
                 )).toList();
     }
 
-    @Override
+//    @Override
+    public void deleteJoinedNovels(Long authorId, Long novelId) {
+
+    }
+
+//    @Override
     public List<NovelPreview> likedNovels(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
@@ -79,6 +90,11 @@ public class BookshelfServiceV0 implements BookshelfService {
                         getTotalJoinedAuthor(likedNovel.getNovel()),
                         getShortcuts(likedNovel.getNovel())
                 )).toList();
+    }
+
+//    @Override
+    public void deleteLikedNovels(Long authorId, Long novelId) {
+
     }
 
     private Integer getTotalJoinedAuthor(Novel novel) {

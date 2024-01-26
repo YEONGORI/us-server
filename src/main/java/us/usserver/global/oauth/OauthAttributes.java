@@ -1,5 +1,6 @@
 package us.usserver.global.oauth;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import us.usserver.global.oauth.oauthEnum.SocialType;
@@ -11,15 +12,11 @@ import us.usserver.global.oauth.userinfo.Oauth2UserInfo;
 import java.util.Map;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class OauthAttributes {
     private final String nameAttributeKey;
     private final Oauth2UserInfo oauth2UserInfo;
-
-    @Builder
-    public OauthAttributes(String nameAttributeKey, Oauth2UserInfo oauth2UserInfo) {
-        this.nameAttributeKey = nameAttributeKey;
-        this.oauth2UserInfo = oauth2UserInfo;
-    }
 
     public static OauthAttributes of(SocialType socialType, String userNameAttributeName, Map<String, Object> attributes) {
         if (socialType == SocialType.NAVER) {

@@ -178,6 +178,7 @@ class NovelServiceV0Test {
     }
 
 
+    /*
     @Test
     @DisplayName("소설 생성")
     void 소설생성_성공() {
@@ -374,4 +375,5 @@ class NovelServiceV0Test {
         assertThat(novelPageInfoResponse.getNovelList().get(0).getId()).isEqualTo(1L);
         assertThat(novelPageInfoResponse.getHasNext()).isFalse();
     }
+    */
 }

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.comment.chapter.ChComment;
+import us.usserver.comment.Comment;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 
@@ -44,12 +44,11 @@ public class Chapter extends BaseEntity {
     private List<Paragraph> paragraphs = new ArrayList<>();
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private List<ChComment> chComments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     public void setStatusForTest(ChapterStatus status) {
         this.status = status;
     }
-
     public void setPartForTest(Integer part) {
         this.part = part;
     }

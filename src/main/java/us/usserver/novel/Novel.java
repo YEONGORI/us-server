@@ -11,7 +11,7 @@ import us.usserver.author.Author;
 import us.usserver.authority.Authority;
 import us.usserver.base.BaseEntity;
 import us.usserver.chapter.Chapter;
-import us.usserver.comment.novel.NoComment;
+import us.usserver.comment.Comment;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.novel.novelEnum.*;
 import us.usserver.stake.Stake;
@@ -99,8 +99,8 @@ public class Novel extends BaseEntity {
     private List<Stake> stakes = new ArrayList<>();
 
     @Schema(description = "소설 댓글 List", example = "Comment_01, Comment_02, ...")
-    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
-    private List<NoComment> noComments = new ArrayList<>();
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Authority> authorities = new ArrayList<>();

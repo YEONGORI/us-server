@@ -1,6 +1,5 @@
 package us.usserver.score.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
-import us.usserver.global.exception.ExceedScoreRangeException;
+import us.usserver.global.exception.ScoreOutOfRangeException;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
@@ -21,8 +20,6 @@ import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
-import us.usserver.paragraph.Paragraph;
-import us.usserver.paragraph.ParagraphMother;
 import us.usserver.score.ScoreRepository;
 import us.usserver.score.dto.PostScore;
 
@@ -85,9 +82,9 @@ class ScoreServiceV0Test {
         PostScore postScore2 = PostScore.builder().score(minInt).build();
 
         // when then
-        assertThrows(ExceedScoreRangeException.class,
+        assertThrows(ScoreOutOfRangeException.class,
                 () -> scoreServiceV0.postScore(chapter.getId(), author.getId(), postScore1));
-        assertThrows(ExceedScoreRangeException.class,
+        assertThrows(ScoreOutOfRangeException.class,
                 () -> scoreServiceV0.postScore(chapter.getId(), author.getId(), postScore2));
     }
 

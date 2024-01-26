@@ -17,7 +17,6 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.novel.NovelRepository;
@@ -92,8 +91,8 @@ class StakeServiceV0Test {
 
         paragraph1_1 = ParagraphMother.generateParagraph(author1, chapter1);
         paragraph2_1 = ParagraphMother.generateParagraph(author1, chapter2);
-        paragraph2_2 = ParagraphMother.generateParagraph(author2, chapter2);
         paragraph3_1 = ParagraphMother.generateParagraph(author1, chapter3);
+        paragraph2_2 = ParagraphMother.generateParagraph(author2, chapter2);
         paragraph3_2 = ParagraphMother.generateParagraph(author2, chapter3);
         paragraph3_3 = ParagraphMother.generateParagraph(author3, chapter3);
         chapter1.getParagraphs().add(paragraph1_1);
@@ -160,7 +159,7 @@ class StakeServiceV0Test {
         // then
         List<StakeInfo> stakeInfos = stakeServiceV0.getStakeInfoOfNovel(novelForOne.getId());
         assertThat(stakeInfos.size()).isEqualTo(1);
-        assertThat(stakeInfos.get(0).getAuthor().getId()).isEqualTo(author1.getId());
+        assertThat(stakeInfos.get(0).getAuthorInfo().getId()).isEqualTo(author1.getId());
         assertThat(stakeInfos.get(0).getPercentage()).isEqualTo(1F);
     }
 
@@ -184,8 +183,13 @@ class StakeServiceV0Test {
         // then
         List<StakeInfo> currInfo = stakeServiceV0.getStakeInfoOfNovel(novel.getId());
         assertThat(currInfo.size()).isEqualTo(prevInfo.size() + 1);
-        for (int i=0; i<prevInfo.size(); i++) {
-            assertThat(prevInfo.get(i).getPercentage()).isGreaterThanOrEqualTo(currInfo.get(i).getPercentage());
+
+        for (StakeInfo prevStake : prevInfo) {
+            for (StakeInfo curStake : currInfo) {
+                if (curStake.getAuthorInfo() == prevStake.getAuthorInfo()) {
+                    assertThat(prevStake.getPercentage()).isGreaterThanOrEqualTo(curStake.getPercentage());
+                }
+            }
         }
     }
 

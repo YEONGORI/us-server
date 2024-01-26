@@ -55,17 +55,17 @@ public class GlobalControllerAdvice {
         return new ApiCsResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
 
-    @ExceptionHandler(ExceedParagraphLengthException.class)
+    @ExceptionHandler(ParagraphLengthOutOfRangeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiCsResponse<Object> exceedParagraphLengthHandler(Exception e) {
-        log.error(ExceptionMessage.Exceed_Paragraph_Length);
+    protected ApiCsResponse<Object> paragraphLengthOutOfRangeHandler(Exception e) {
+        log.error(ExceptionMessage.Paragraph_Length_OUT_OF_RANGE);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
-    @ExceptionHandler(ExceedScoreRangeException.class)
+    @ExceptionHandler(ScoreOutOfRangeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiCsResponse<Object> exceedScoreRangeHandler(Exception e) {
-        log.error(ExceptionMessage.Exceed_Score_Range);
+    protected ApiCsResponse<Object> ScoreOutOfRangeRangeHandler(Exception e) {
+        log.error(ExceptionMessage.Score_OUT_OF_RANGE);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
@@ -81,6 +81,48 @@ public class GlobalControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiCsResponse<Object> ValidRequestBodyHandler(MethodArgumentNotValidException e) {
         log.error(ExceptionMessage.Valid_RequestBody_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(CommentLengthOutOfRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> commentLengthOutOfRangeHandler(Exception e) {
+        log.error(ExceptionMessage.Comment_Length_OUT_OF_RANGE);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> commentNotFoundHandler(Exception e) {
+        log.error(ExceptionMessage.Comment_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(AuthorNotAuthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected ApiCsResponse<Object> authorNotAuthorizedHandler(Exception e) {
+        log.error(ExceptionMessage.Author_NOT_AUTHORIZED);
+        return new ApiCsResponse<>(HttpStatus.UNAUTHORIZED.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(VoteNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> voteNotFoundHandler(Exception e) {
+        log.error(ExceptionMessage.Vote_NOT_FOUND);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(DuplicatedVoteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> duplicatedVoteHandler(Exception e) {
+        log.error(ExceptionMessage.Vote_Only_One_Paragraph);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(DuplicatedLikeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> duplicatedlikeHandler(Exception e) {
+        log.error(ExceptionMessage.Like_DUPLICATED);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 

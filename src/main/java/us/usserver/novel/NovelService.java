@@ -1,6 +1,7 @@
 package us.usserver.novel;
 
 import org.springframework.stereotype.Service;
+import us.usserver.member.Member;
 import us.usserver.novel.dto.AuthorDescription;
 import us.usserver.novel.dto.NovelDetailInfo;
 import us.usserver.novel.dto.NovelInfo;
@@ -18,17 +19,17 @@ public interface NovelService {
 
     AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req);
 
-    Novel createNovel(CreateNovelReq createNovelReq);
+    Novel createNovel(Member member, CreateNovelReq createNovelReq);
 
-    HomeNovelListResponse homeNovelInfo();
+    HomeNovelListResponse homeNovelInfo(Member member);
 
     NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel);
 
-    NovelPageInfoResponse readMoreNovel(ReadInfoOfNovel readInfoOfNovel);
+    NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel);
 
-    NovelPageInfoResponse searchNovel(SearchNovelReq searchNovelReq);
+    NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq);
 
-    SearchKeywordResponse searchKeyword();
+    SearchKeywordResponse searchKeyword(Member member);
 
-    void deleteSearchKeyword();
+    void deleteSearchKeyword(Member member);
 }
