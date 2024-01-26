@@ -65,7 +65,7 @@ public class NovelServiceV0 implements NovelService {
         author.getCreatedNovels().add(novel);
         authorityRepository.save(Authority.builder().author(author).novel(novel).build());
 
-        chapterService.createChapter(saveNovel.getId(), authorId);
+        chapterService.createChapter(saveNovel.getId(), author.getId());
 
         return saveNovel;
     }
@@ -177,7 +177,7 @@ public class NovelServiceV0 implements NovelService {
                     .sorted(Comparator.comparing(Novel::getId))
                     .toList()
                     .subList(readInfoOfNovel.getGetNovelSize(), endPoint);
-            boolean hasNext = (getSize == endPoint) ? true : false;
+            boolean hasNext = getSize == endPoint;
 
             return NovelPageInfoResponse.builder()
                     .novelList(novelList)
@@ -210,8 +210,7 @@ public class NovelServiceV0 implements NovelService {
     }
 
     private Long getLastNovelId(Slice<Novel> novelSlice){
-        Long id = novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
-        return id;
+        return novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
     }
 
     @Override
@@ -256,7 +255,7 @@ public class NovelServiceV0 implements NovelService {
     }
 
     private void increaseKeywordScore(String keyword) {
-        Integer score = 0;
+        int score = 0;
 
         try {
             redisTemplate.opsForZSet().incrementScore("ranking", keyword,1);
@@ -299,7 +298,6 @@ public class NovelServiceV0 implements NovelService {
         if (member == null) {
             return null;
         }
-        Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
-        return author;
+        return authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
     }
 }

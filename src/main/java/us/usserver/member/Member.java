@@ -26,7 +26,7 @@ public class Member extends BaseEntity {
     @NotBlank
     private String socialId;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
@@ -40,7 +40,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 }

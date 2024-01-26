@@ -36,6 +36,7 @@ public class NovelController {
 
     //TODO: Swagger 공통적인 ApiResponse 적용 방법 찾아보기!
 
+
     @Operation(summary = "소설 생성", description = "작가가 소설을 생성하는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "파티 생성 성공", content = @Content(schema = @Schema(implementation = Novel.class))),
@@ -222,13 +223,14 @@ public class NovelController {
         return ResponseEntity.ok(response);
     }
 
+    
     @Operation(summary = "검색 페이지 Keyword Delete", description = "인기 검색어, 최근 검색어 목록 삭제 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색 Keyword Delete 성공")
     })
     @DeleteMapping("/search-keyword")
-    public ResponseEntity<ApiCsResponse<?>> deleteAllSearchWord() {
-        novelService.deleteSearchKeyword();
+    public ResponseEntity<ApiCsResponse<?>> deleteAllSearchWord(@AuthenticationPrincipal Member member) {
+        novelService.deleteSearchKeyword(member);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
