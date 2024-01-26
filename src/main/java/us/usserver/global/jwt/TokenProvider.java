@@ -28,23 +28,19 @@ import static us.usserver.global.ExceptionMessage.*;
 @Slf4j
 @Component
 public class TokenProvider {
-    @Value("${jwt.secret}")
-    private String secretKey;
-    @Value("${jwt.access.expiration}")
-    private Long accessTokenExpirationPeriod;
-    @Value("${jwt.refresh.expiration}")
-    private Long refreshTokenExpirationPeriod;
-    @Value("${jwt.access.header}")
-    private String accessHeader;
-    @Value("${jwt.refresh.header}")
-    private String refreshHeader;
+    private final String secretKey = System.getenv("JWT_SECRET");
+    private final Long accessTokenExpirationPeriod = Long.parseLong(System.getenv("JWT_ACCESS_EXPIRATION"));
+    private final Long refreshTokenExpirationPeriod = Long.parseLong(System.getenv("JWT_REFRESH_EXPIRATION"));
+    private final String accessHeader = System.getenv("JWT_ACCESS_HEADER");
+    private final String refreshHeader = System.getenv("JWT_REFRESH_HEADER");
+
+    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
+    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
+    private static final String BEARER = "Bearer ";
 
     private final MemberRepository memberRepository;
     private final EntityService entityService;
     private final RedisUtils redisUtils;
-    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
-    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    private static final String BEARER = "Bearer ";
 
     /**
      * AccessToken 생성
