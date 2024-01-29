@@ -36,6 +36,7 @@ jobs:
           export NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
           export KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
           export KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
+          source /etc/profile
 
       - name: 🔨 Build with Gradle
         uses: gradle/gradle-build-action@v2
