@@ -25,23 +25,7 @@ jobs:
 
       - name: Set up environment variables
         run:
-          ls
-          pwd
-          cd ../
-          ls
-          cd ../
-          ls
-          export JWT_SECRET=${{ secrets.JWT_SECRET }}
-          export JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
-          export JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
-          export JWT_ACCESS_HEADER=${{ secrets.JWT_ACCESS_HEADER }}
-          export JWT_REFRESH_HEADER=${{ secrets.JWT_REFRESH_HEADER }}
-          export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          export GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          export NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
-          export NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
-          export KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-          export KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
+          ls -al
 
       - name: 🔨 Build with Gradle
         uses: gradle/gradle-build-action@v2
