@@ -1,0 +1,3 @@
+[submodule "us-server-config"]
+	path = us-server-config
+	url = https://github.com/Ustroytelling/us-server-config.git

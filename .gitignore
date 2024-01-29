@@ -7,6 +7,7 @@ build/
 !**/src/test/**/build/
 
 src/main/resources/application-env.yml
+#us-server-config/
 
 ### STS ###
 .apt_generated
