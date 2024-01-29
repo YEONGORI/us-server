@@ -34,8 +34,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
 //    runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc' //JDBC Driver 추가
+
     implementation 'com.h2database:h2'
     implementation 'org.postgresql:postgresql'
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -64,6 +66,15 @@ dependencies {
     testImplementation 'org.jeasy:easy-random-core:5.0.0'
     testImplementation 'org.jeasy:easy-random-bean-validation:5.0.0'
 }
+
+tasks.register('copySecret', Copy) {
+    from 'us-server-config/application-auth.yml' // auth 서브모듈에 있는 oauth 설정파일을 복사한다.
+    into 'src/main/resources'
+
+    from 'us-server-config/application-db.yml'
+    into 'src/main/resources'
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()
