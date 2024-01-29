@@ -25,6 +25,12 @@ jobs:
 
       - name: Set up environment variables
         run:
+          ls
+          pwd
+          cd ../
+          ls
+          cd ../
+          ls
           export JWT_SECRET=${{ secrets.JWT_SECRET }}
           export JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
           export JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
@@ -43,6 +49,7 @@ jobs:
           arguments: clean build
 
   deploy:
+    needs: build
     if: github.event.pull_request.merged == true
     env:
       ENV_PATH: .env
