@@ -35,9 +35,9 @@ dependencies {
 
 //    implementation 'com.h2database:h2'
 //    implementation 'org.postgresql:postgresql'
-//    compileOnly 'org.mariadb.jdbc:mariadb-java-client'
-//    testCompileOnly 'org.mariadb.jdbc:mariadb-java-client'
-    implementation 'org.mariadb.jdbc:mariadb-java-client'
+    compileOnly 'org.mariadb.jdbc:mariadb-java-client'
+    testCompileOnly 'org.mariadb.jdbc:mariadb-java-client'
+//    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
