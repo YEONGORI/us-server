@@ -20,9 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: ✨ Grant execute permission for gradlew
-        run: chmod +x gradlew
-
       - name: 🚚 Make application-db.properties
         run: |
           cd ./src/main/resources
@@ -38,11 +35,18 @@ jobs:
           mysql user: admin
           mysql password: ${{ secrets.DB_PASSWORD }}
 
+      - name: ✨ Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: 🔨 Build with Gradle
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew build
         with:
-          arguments: clean build
           gradle-version: 8.3
+        shell: bash
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: clean build
+#          gradle-version: 8.3
 
   deploy:
     needs: build
