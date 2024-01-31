@@ -31,6 +31,13 @@ jobs:
           echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.yml
         shell: bash
 
+      - name: 💾 Setup MariaDB
+        uses: getong/mariadb-action@v1.1
+        with:
+          mysql database: 'server-db'
+          mysql user: admin
+          mysql password: ${{ secrets.DB_PASSWORD }}
+
       - name: 🔨 Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
