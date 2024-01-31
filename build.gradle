@@ -69,6 +69,8 @@ dependencies {
 
 processResources.dependsOn('copySecret')
 processResources.mustRunAfter('copySecret')
+processTestResources.dependsOn('copySecret')
+processTestResources.mustRunAfter('copySecret')
 //compileTestJava.dependsOn('copySecret')
 //check.dependsOn('copySecret')
 //check.mustRunAfter('copySecret')
