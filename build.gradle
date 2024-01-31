@@ -67,8 +67,8 @@ dependencies {
     testImplementation 'org.jeasy:easy-random-bean-validation:5.0.0'
 }
 
-//processResources.dependsOn('copySecret')
-classes.dependsOn 'copySecret'
+processResources.dependsOn('copySecret')
+processResources.mustRunAfter('copySecret')
 
 tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
