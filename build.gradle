@@ -67,23 +67,16 @@ dependencies {
     testImplementation 'org.jeasy:easy-random-bean-validation:5.0.0'
 }
 
-compileJava.dependsOn('copySecret')
+//processResources.dependsOn('copySecret')
+classes.dependsOn 'copySecret'
 
-task copySecret(type: Copy) {
+tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
     into 'src/main/resources'
 
     from 'us-server-config/application-db.yml'
     into 'src/main/resources'
 }
-
-//tasks.register('copySecret', Copy) {
-//    from 'us-server-config/application-auth.yml'
-//    into 'src/main/resources'
-//
-//    from 'us-server-config/application-db.yml'
-//    into 'src/main/resources'
-//}
 
 tasks.named('test') {
     useJUnitPlatform()
