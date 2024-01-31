@@ -23,12 +23,12 @@ jobs:
       - name: ✨ Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🚚 Make application-db.yml
+      - name: 🚚 Make application-db.properties
         run: |
           cd ./src/main/resources
-          touch ./application-db.yml
+          touch ./application-db.properties
           
-          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.yml
+          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.properties
         shell: bash
 
       - name: 💾 Setup MariaDB
