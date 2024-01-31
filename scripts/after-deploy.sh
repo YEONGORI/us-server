@@ -1,10 +1,14 @@
 #!/bin/bash
+
+echo "> 빌드 Gradle"
+bash /home/api/server/gradlew build -x test
+
 BUILD_JAR=$(ls /home/api/server/build/libs/*.jar)
 JAR_NAME=$(basename $BUILD_JAR)
 echo "> build 파일명: $JAR_NAME"
 
 echo "> build 파일 복사"
-DEPLOY_PATH=/home/server/
+DEPLOY_PATH=/home/api/server/
 cp $BUILD_JAR $DEPLOY_PATH
 
 #echo "> us-server-deploy.jar 교체"
