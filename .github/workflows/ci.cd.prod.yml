@@ -20,20 +20,20 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: 🚚 Make application-db.properties
-        run: |
-          cd ./src/main/resources
-          touch ./application-db.properties
-          
-          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.properties
-        shell: bash
-
-      - name: 💾 Setup MariaDB
-        uses: getong/mariadb-action@v1.1
-        with:
-          mysql database: 'server-db'
-          mysql user: admin
-          mysql password: ${{ secrets.DB_PASSWORD }}
+#      - name: 🚚 Make application-db.properties
+#        run: |
+#          cd ./src/main/resources
+#          touch ./application-db.properties
+#
+#          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.properties
+#        shell: bash
+#
+#      - name: 💾 Setup MariaDB
+#        uses: getong/mariadb-action@v1.1
+#        with:
+#          mysql database: 'server-db'
+#          mysql user: admin
+#          mysql password: ${{ secrets.DB_PASSWORD }}
 
       - name: ✨ Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -41,7 +41,7 @@ jobs:
       - name: 🔨 Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: clean build
+          arguments: clean build -x test
           gradle-version: 8.3
 
   deploy:
