@@ -27,6 +27,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: clean build
+          gradle-version: 6.8.3
 
   deploy:
     needs: build

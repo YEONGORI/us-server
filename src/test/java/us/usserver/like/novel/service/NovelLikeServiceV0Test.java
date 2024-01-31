@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
@@ -26,6 +27,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Rollback
 @SpringBootTest
 class NovelLikeServiceV0Test {
     @Autowired
@@ -73,7 +75,7 @@ class NovelLikeServiceV0Test {
     @DisplayName("존재 하지 않는 소설에 대한 좋아요 테스트")
     void setNovelLikeToNotExistNovel() {
         // given
-        Long notExistNovelId = 123L;
+        Long notExistNovelId = 9999L;
 
         // when then
         Assertions.assertThrows(NovelNotFoundException.class,
