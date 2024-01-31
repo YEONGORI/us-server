@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
@@ -26,6 +27,7 @@ import us.usserver.score.dto.PostScore;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Rollback
 @Transactional
 @SpringBootTest
 class ScoreServiceV0Test {
@@ -133,7 +135,7 @@ class ScoreServiceV0Test {
         Double chapterScore = scoreServiceV0.getChapterScore(chapter);
 
         // then
-        assertThat(chapterScore).isEqualTo((1.0 + 3.0 + 10.0) / 3);
+        assertThat(chapterScore).isEqualTo(4.6667);
     }
 
     private void setMember(Author author) {
