@@ -69,6 +69,8 @@ dependencies {
 
 processResources.dependsOn('copySecret')
 processResources.mustRunAfter('copySecret')
+check.dependsOn('copySecret')
+check.mustRunAfter('copySecret')
 
 tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
