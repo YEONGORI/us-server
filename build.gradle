@@ -71,9 +71,6 @@ processResources.mustRunAfter('copySecret')
 tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
     into 'src/main/resources'
-
-    from 'us-server-config/application-db.yml'
-    into 'src/main/resources'
 }
 
 tasks.named('test') {
