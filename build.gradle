@@ -69,8 +69,9 @@ dependencies {
 
 processResources.dependsOn('copySecret')
 processResources.mustRunAfter('copySecret')
-check.dependsOn('copySecret')
-check.mustRunAfter('copySecret')
+//compileTestJava.dependsOn('copySecret')
+//check.dependsOn('copySecret')
+//check.mustRunAfter('copySecret')
 
 tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
@@ -78,6 +79,12 @@ tasks.register('copySecret', Copy) {
 
     from 'us-server-config/application-db.yml'
     into 'src/main/resources'
+
+    from 'us-server-config/application-auth.yml'
+    into 'src/test/resources'
+
+    from 'us-server-config/application-db.yml'
+    into 'src/test/resources'
 }
 
 tasks.named('test') {
