@@ -35,9 +35,7 @@ dependencies {
 
 //    implementation 'com.h2database:h2'
 //    implementation 'org.postgresql:postgresql'
-    compileOnly 'org.mariadb.jdbc:mariadb-java-client'
-    testCompileOnly 'org.mariadb.jdbc:mariadb-java-client'
-//    implementation 'org.mariadb.jdbc:mariadb-java-client'
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -69,24 +67,13 @@ dependencies {
 
 processResources.dependsOn('copySecret')
 processResources.mustRunAfter('copySecret')
-processTestResources.dependsOn('copySecret')
-processTestResources.mustRunAfter('copySecret')
-//compileTestJava.dependsOn('copySecret')
-//check.dependsOn('copySecret')
-//check.mustRunAfter('copySecret')
 
 tasks.register('copySecret', Copy) {
     from 'us-server-config/application-auth.yml'
     into 'src/main/resources'
 
-    from 'us-server-config/application-db.yml'
-    into 'src/main/resources'
-
-    from 'us-server-config/application-auth.yml'
-    into 'src/test/resources'
-
-    from 'us-server-config/application-db.yml'
-    into 'src/test/resources'
+//    from 'us-server-config/application-db.yml'
+//    into 'src/main/resources'
 }
 
 tasks.named('test') {

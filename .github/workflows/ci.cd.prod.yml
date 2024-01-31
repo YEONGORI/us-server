@@ -23,6 +23,14 @@ jobs:
       - name: ✨ Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: 🚚 Make application-db.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-db.yml
+          
+          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.yml
+        shell: bash
+
       - name: 🔨 Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
