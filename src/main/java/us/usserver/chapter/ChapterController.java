@@ -38,7 +38,7 @@ public class ChapterController {
             @PathVariable Long novelId,
             @PathVariable Long chapterId
     ) {
-        Long authorId = 0L; // TODO 토큰으로 교체 예정
+        Long authorId = 500L; // TODO 토큰으로 교체 예정
         ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, authorId, chapterId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -67,7 +67,7 @@ public class ChapterController {
     public ResponseEntity<ApiCsResponse<?>> createChapter(
             @PathVariable Long novelId
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 가져올 예정
         
         chapterService.createChapter(novelId, authorId);
 

@@ -161,8 +161,8 @@ class ChapterServiceV0Test {
         assertThat(chapterDetailInfo.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo.getPrevChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter1.getId()));
-        assertThat(chapterDetailInfo.getNextChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter3.getId()));
+        assertThat(chapterDetailInfo.getPrevPart()).isEqualTo(chapter1.getPart());
+        assertThat(chapterDetailInfo.getNextPart()).isEqualTo(chapter3.getPart());
     }
 
     @Test
@@ -195,16 +195,16 @@ class ChapterServiceV0Test {
         assertThat(chapterDetailInfo1.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo1.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo1.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo1.getPrevChapterUrl()).isNull();
-        assertThat(chapterDetailInfo1.getNextChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter2.getId()));
+        assertThat(chapterDetailInfo1.getPrevPart()).isOne();
+        assertThat(chapterDetailInfo1.getNextPart()).isEqualTo(chapter2.getPart());
 
         assertThat(chapterDetailInfo3.getPart()).isEqualTo(chapter3.getPart());
         assertThat(chapterDetailInfo3.getTitle()).isEqualTo(chapter3.getTitle());
         assertThat(chapterDetailInfo3.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo3.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo3.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo3.getPrevChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter2.getId()));
-        assertThat(chapterDetailInfo3.getNextChapterUrl()).isNull();
+        assertThat(chapterDetailInfo3.getPrevPart()).isEqualTo(chapter2.getPart());
+        assertThat(chapterDetailInfo3.getNextPart()).isNull();
     }
 
     private void setMember(Author author) {

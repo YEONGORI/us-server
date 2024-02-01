@@ -37,7 +37,7 @@ public class ParagraphLikeController {
     })
     @PostMapping("/{paragraphId}")
     public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long paragraphId) {
-        Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
+        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
 
         paragraphLikeService.setParagraphLike(paragraphId, authorId);
 
@@ -59,7 +59,7 @@ public class ParagraphLikeController {
     })
     @DeleteMapping("/{paragraphId}")
     public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long paragraphId) {
-        Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
+        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
 
         paragraphLikeService.deleteParagraphLike(paragraphId, authorId);
 

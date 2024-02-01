@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChapterDetailInfo {
-    @Schema(description = "소설 내 회차 수", example = "1")
-    private int part;
+    @Schema(description = "소설 내 회차 수", example = "4")
+    private Integer part;
 
     @Schema(description = "회차 제목", example = "주술회전 1화")
     private String title;
@@ -35,9 +35,12 @@ public class ChapterDetailInfo {
     @Schema(description = "가장 투표를 많이 받은 한줄", example = "{id: 111, ...}")
     private ParagraphInVoting bestParagraph;
 
-    @Schema(description = "이전 회차 바로가기", example = "https://some-url/chapter/1/1")
-    private String prevChapterUrl;
+    @Schema(description = "이전 회차", example = "null or 1, 2, 3, ...")
+    private Integer prevPart;
 
-    @Schema(description = "다음 회차 바로가기", example = "https://some-url/chapter/1/3")
-    private String nextChapterUrl;
+    @Schema(description = "다음 회차", example = "4, 5, 6, ... or null")
+    private Integer nextPart;
+
+    @Schema(description = "댓글 갯수", example = "13")
+    private int commentCnt;
 }

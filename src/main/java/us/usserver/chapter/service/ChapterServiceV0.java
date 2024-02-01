@@ -11,6 +11,7 @@ import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.dto.ChapterInfo;
+import us.usserver.comment.CommentRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -31,6 +32,7 @@ public class ChapterServiceV0 implements ChapterService {
 
     private final ChapterRepository chapterRepository;
     private final ScoreRepository scoreRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
@@ -48,23 +50,16 @@ public class ChapterServiceV0 implements ChapterService {
         Novel novel = entityService.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
+        Integer commentCnt = commentRepository.countAllByChapter(chapter);
         Double score = scoreRepository.findAverageScoreByChapter(chapter);
 
-        String prevChapterUrl = null, nextChapterUrl = null;
-
-        // TODO: 최근 본 소설 기능을 클라이언트에서 내부 DB에 저장하는 방식으로 처리할까.. 에 대한 고민중
-        author.getViewedNovels().add(novel);
-
         Integer part = chapter.getPart();
-        for (Chapter c : chapters) {
-            if (c.getPart() == part + 1) {
-                nextChapterUrl = createChapterUrl(novelId, c.getId());
-            }
-            if (c.getPart() == part - 1) {
-                prevChapterUrl = createChapterUrl(novelId, c.getId());
-            }
+        Integer prevPart = part - 1, nextPart = part + 1;
+        if (part == chapters.size()) {
+            nextPart = null;
         }
 
+        author.getViewedNovels().add(novel);
         return ChapterDetailInfo.builder()
                 .part(part)
                 .title(chapter.getTitle())
@@ -73,8 +68,9 @@ public class ChapterServiceV0 implements ChapterService {
                 .myParagraph(paragraphs.getMyParagraph())
                 .bestParagraph(paragraphs.getBestParagraph())
                 .selectedParagraphs(paragraphs.getSelectedParagraphs())
-                .prevChapterUrl(prevChapterUrl)
-                .nextChapterUrl(nextChapterUrl)
+                .prevPart(prevPart)
+                .nextPart(nextPart)
+                .commentCnt(commentCnt)
                 .build();
     }
 

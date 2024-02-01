@@ -13,6 +13,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Integer countAllByNovel(Novel novel);
 
+    Integer countAllByChapter(Chapter chapter);
+
     List<Comment> findAllByNovel(Novel novel);
 
     List<Comment> findAllByChapter(Chapter chapter);
