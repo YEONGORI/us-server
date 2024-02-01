@@ -19,7 +19,7 @@ public interface NovelService {
 
     AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req);
 
-    Novel createNovel(Member member, CreateNovelReq createNovelReq);
+    NovelInfo createNovel(Member member, CreateNovelReq createNovelReq);
 
     HomeNovelListResponse homeNovelInfo(Member member);
 

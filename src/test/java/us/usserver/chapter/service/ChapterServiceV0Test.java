@@ -15,24 +15,16 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.chapter.dto.CreateChapterReq;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.repository.NovelJpaRepository;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,7 +41,7 @@ class ChapterServiceV0Test {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -63,7 +55,7 @@ class ChapterServiceV0Test {
         authorRepository.save(author);
 
         novel = NovelMother.generateNovel(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
     }
 
     @Test
@@ -111,7 +103,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
         novel.getChapters().add(chapter4);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter3);
         chapterRepository.save(chapter4);
         chapterRepository.save(chapter1);
@@ -157,7 +149,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
@@ -190,7 +182,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);

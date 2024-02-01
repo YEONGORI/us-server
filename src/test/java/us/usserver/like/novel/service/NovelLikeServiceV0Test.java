@@ -14,14 +14,13 @@ import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.DuplicatedLikeException;
 import us.usserver.global.exception.NovelNotFoundException;
 import us.usserver.like.novel.NovelLike;
-import us.usserver.like.novel.NovelLikeRepository;
+import us.usserver.like.novel.repository.NovelLikeJpaRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 
 import java.util.*;
 
@@ -31,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class NovelLikeServiceV0Test {
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelLikeRepository novelLikeRepository;
+    private NovelLikeJpaRepository novelLikeJpaRepository;
 
     @Autowired
     private NovelLikeServiceV0 novelLikeServiceV0;
@@ -52,19 +51,19 @@ class NovelLikeServiceV0Test {
         authorRepository.save(author);
 
         novel = NovelMother.generateNovel(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
     }
 
     @Test
     @DisplayName("소설 좋아요 테스트")
     void setNovelLike() {
         // given
-        List<NovelLike> beforeNovelLike = novelLikeRepository.findAllByNovel(novel);
+        List<NovelLike> beforeNovelLike = novelLikeJpaRepository.findAllByNovel(novel);
 
         // when
         Assertions.assertDoesNotThrow(
                 () -> novelLikeServiceV0.setNovelLike(novel.getId(), author.getId()));
-        List<NovelLike> afterNovelLike = novelLikeRepository.findAllByNovel(novel);
+        List<NovelLike> afterNovelLike = novelLikeJpaRepository.findAllByNovel(novel);
 
         // then
         assertThat(beforeNovelLike).isEqualTo(Collections.emptyList());
@@ -115,10 +114,10 @@ class NovelLikeServiceV0Test {
         NovelLike novelLike = NovelLike.builder().novel(novel).author(author).build();
 
         // when
-        novelLikeRepository.save(novelLike);
+        novelLikeJpaRepository.save(novelLike);
         Assertions.assertDoesNotThrow(
                 () -> novelLikeServiceV0.deleteNovelLike(novel.getId(), author.getId()));
-        List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
+        List<NovelLike> novelLikes = novelLikeJpaRepository.findAllByAuthor(author);
 
         // then
         assertThat(novelLikes.size()).isZero();

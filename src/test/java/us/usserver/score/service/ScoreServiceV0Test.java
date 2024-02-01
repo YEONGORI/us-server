@@ -17,10 +17,9 @@ import us.usserver.global.exception.ScoreOutOfRangeException;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.score.ScoreRepository;
 import us.usserver.score.dto.PostScore;
 
@@ -39,7 +38,7 @@ class ScoreServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -59,7 +58,7 @@ class ScoreServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter);
     }
 

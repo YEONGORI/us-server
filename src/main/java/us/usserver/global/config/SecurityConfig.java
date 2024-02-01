@@ -1,4 +1,4 @@
-package us.usserver.global;
+package us.usserver.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import us.usserver.global.jwt.JwtAuthenticationFilter;
+//import us.usserver.global.jwt.JwtAuthenticationFilter;
 import us.usserver.global.oauth.CustomOAuth2UserService;
 import us.usserver.global.oauth.handler.Oauth2LoginFailureHandler;
 import us.usserver.global.oauth.handler.Oauth2LoginSuccessHandler;
@@ -30,7 +30,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final Oauth2LoginSuccessHandler oauth2LoginSuccessHandler;
     private final Oauth2LoginFailureHandler oauth2LoginFailureHandler;
@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 //TODO: 아래 patterns는 1차 개발 이후 정리 예정
                                 "/", "/login**", "/oauth**", "/member/join",
                                 "/resources/**", "/favicon.ico", //resource
-                                "/swagger-ui/**", "/api-docs/**" //swagger
+                                "/swagger-ui/**", "/api-docs/**", //swagger
+                                "/**" // api 테스트할 때 자꾸 막혀서 귀찮아서 이렇게 만들었어용 TODO: 곧 지움
                         )
                 );
 
@@ -74,8 +75,8 @@ public class SecurityConfig {
                         }
                 );
 
-        http
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        http
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

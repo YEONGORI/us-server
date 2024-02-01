@@ -1,7 +1,6 @@
 package us.usserver.comment.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +22,9 @@ import us.usserver.global.exception.*;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +42,7 @@ class CommentServiceV0Test {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -65,7 +63,7 @@ class CommentServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter);
     }
 
@@ -114,10 +112,10 @@ class CommentServiceV0Test {
         newNovel.getComments().add(newComment);
 
         // when
-        novelRepository.save(newNovel);
+        novelJpaRepository.save(newNovel);
         commentRepository.save(newComment);
         List<CommentInfo> beforeComments = commentServiceV0.getCommentsOfNovel(newNovel.getId());
-        novelRepository.delete(newNovel);
+        novelJpaRepository.delete(newNovel);
         List<Comment> afterComments = commentRepository.findAllByAuthor(author);
         assertThrows(NovelNotFoundException.class,
                 () -> commentServiceV0.getCommentsOfNovel(newNovel.getId()));

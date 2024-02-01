@@ -1,13 +1,15 @@
 package us.usserver.novel;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
+import us.usserver.novel.Novel;
+import us.usserver.novel.dto.MoreInfoOfNovel;
+import us.usserver.novel.dto.SearchNovelReq;
 
 @Repository
-public interface NovelRepository extends JpaRepository<Novel, Long> {
-    Optional<Novel> getNovelById(Long id);
+public interface NovelRepository {
+    Slice<Novel> searchNovelList(SearchNovelReq searchNovelReq, Pageable pageable);
+    Slice<Novel> moreNovelList(MoreInfoOfNovel novelMoreDto, Pageable pageable);
+    Novel save(Novel novel);
 }
