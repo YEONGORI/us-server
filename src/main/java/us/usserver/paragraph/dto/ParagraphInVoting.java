@@ -24,8 +24,8 @@ public class ParagraphInVoting {
     @Schema(description = "한 회차에서 몇 번째로 등장하는 한줄인지에 대한 인덱스", nullable = false, example = "2")
     private int sequence;
 
-    @Schema(description = "총 좋아요 갯수", nullable = false, example = "222")
-    private int likeCnt;
+    @Schema(description = "총 투표 갯수", nullable = false, example = "222")
+    private int voteCnt;
 
     @Schema(description = "한줄 상태", nullable = false, example = "투표중(IN_VOTING), 선정(SELECTED), 미선정(UNSELECTED)")
     private ParagraphStatus status;
@@ -47,7 +47,7 @@ public class ParagraphInVoting {
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .sequence(paragraph.getSequence())
-                .likeCnt(likeCnt)
+                .voteCnt(likeCnt)
                 .status(paragraph.getParagraphStatus())
                 .authorId(paragraph.getAuthor().getId())
                 .authorName(paragraph.getAuthor().getNickname())

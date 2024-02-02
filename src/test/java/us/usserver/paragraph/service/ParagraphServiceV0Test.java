@@ -202,7 +202,7 @@ class ParagraphServiceV0Test {
         assertThat(paragraphInVoting.getContent()).isEqualTo(content);
         assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
         assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
-        assertThat(paragraphInVoting.getLikeCnt()).isZero();
+        assertThat(paragraphInVoting.getVoteCnt()).isZero();
         assertThat(paragraphInVoting.getAuthorName()).isEqualTo(author.getNickname());
         assertThat(paragraphs.stream().anyMatch(p ->
                 p.getContent().equals(req.getContent()))).isTrue();

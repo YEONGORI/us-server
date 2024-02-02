@@ -93,7 +93,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         return ParagraphInVoting.builder()
                 .content(paragraph.getContent())
                 .sequence(paragraph.getSequence())
-                .likeCnt(0)
+                .voteCnt(0)
                 .status(paragraph.getParagraphStatus())
                 .authorId(0L) // TODO: 이 부분은 보안 상 아예 제거 할지 말지 고민중
                 .authorName(paragraph.getAuthor().getNickname())

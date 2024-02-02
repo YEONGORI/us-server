@@ -29,10 +29,10 @@ public class ScoreServiceV0 implements ScoreService {
         Author author = entityService.getAuthor(authorID);
         Chapter chapter = entityService.getChapter(chapterId);
 
-        Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
         if (postScore.getScore() > 10 || postScore.getScore() < 1) {
             throw new ScoreOutOfRangeException(ExceptionMessage.Score_OUT_OF_RANGE);
         }
+        Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
         if (scoreByAuthorAndChapter.isEmpty()) {
             Score score = Score.builder()
                     .score(postScore.getScore())

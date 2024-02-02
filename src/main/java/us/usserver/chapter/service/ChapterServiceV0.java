@@ -58,6 +58,9 @@ public class ChapterServiceV0 implements ChapterService {
         if (part == chapters.size()) {
             nextPart = null;
         }
+        if (score == null) {
+            score = 0.0;
+        }
 
         author.getViewedNovels().add(novel);
         return ChapterDetailInfo.builder()
