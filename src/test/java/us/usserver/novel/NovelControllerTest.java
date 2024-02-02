@@ -1,5 +1,6 @@
 package us.usserver.novel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
 import us.usserver.author.AuthorRepository;
@@ -23,9 +26,13 @@ import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
 @AutoConfigureMockMvc
@@ -33,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class NovelControllerTest {
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -49,6 +58,7 @@ class NovelControllerTest {
     private Chapter chapter1;
     private Chapter chapter2;
     private Chapter chapter3;
+    private final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {
@@ -119,12 +129,24 @@ class NovelControllerTest {
         assertThat(resultString).contains(chapter1.getTitle());
         assertThat(resultString).contains(chapter2.getTitle());
         assertThat(resultString).contains(chapter3.getTitle());
-
-
     }
 
     @Test
     @DisplayName("소설 소개 수정")
-    void modifyNovelSynopsis() {
+    void modifyNovelSynopsis() throws Exception {
+        // given
+        Map<String, String> requestBody = new HashMap<>();
+        String key = "synopsis", value = "흐으으으으음... 이것이 창작의 고통인가..";
+        requestBody.put(key, value);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .patch("/novel/" + defaultId + "/synopsis")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(requestBody)));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        resultActions.andExpect(status().isCreated());
+        assertThat(resultString).contains(value);
     }
 }

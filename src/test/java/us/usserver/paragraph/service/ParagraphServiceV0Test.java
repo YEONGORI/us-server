@@ -172,8 +172,8 @@ class ParagraphServiceV0Test {
 
         // when
         chapter.setStatusForTest(ChapterStatus.COMPLETED);
-        paragraph1.setParagraphStatus(ParagraphStatus.SELECTED);
-        paragraph2.setParagraphStatus(ParagraphStatus.SELECTED);
+        paragraph1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);

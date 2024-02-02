@@ -92,7 +92,7 @@ class BookshelfControllerTest {
         paragraph1 = ParagraphMother.generateParagraph(author, chapter);
         paragraph2 = ParagraphMother.generateParagraph(author, chapter);
         paragraph3 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph1.setParagraphStatus(ParagraphStatus.SELECTED);
+        paragraph1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         authority = Authority.builder().author(author).novel(novel).build();
 
         author.setMember(member);

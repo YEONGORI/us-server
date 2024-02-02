@@ -3,9 +3,6 @@ package us.usserver.author;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.member.Member;
-import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 
 import java.nio.charset.StandardCharsets;
 

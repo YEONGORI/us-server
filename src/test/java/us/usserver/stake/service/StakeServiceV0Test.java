@@ -136,11 +136,11 @@ class StakeServiceV0Test {
         Novel novelForOne = NovelMother.generateNovel(author1);
         Chapter chapterForOne = ChapterMother.generateChapter(novelForOne);
         Paragraph p1 = ParagraphMother.generateParagraph(author1, chapterForOne);
-        p1.setParagraphStatus(ParagraphStatus.SELECTED);
+        p1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         Paragraph p2 = ParagraphMother.generateParagraph(author1, chapterForOne);
-        p2.setParagraphStatus(ParagraphStatus.SELECTED);
+        p2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         Paragraph p3 = ParagraphMother.generateParagraph(author1, chapterForOne);
-        p3.setParagraphStatus(ParagraphStatus.SELECTED);
+        p3.setParagraphStatusForTest(ParagraphStatus.SELECTED);
 
         // when
         novelForOne.getChapters().add(chapterForOne);

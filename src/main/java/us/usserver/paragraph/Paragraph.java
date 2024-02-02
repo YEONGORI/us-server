@@ -35,7 +35,6 @@ public class Paragraph extends BaseEntity {
     private int sequence;
 
     @NotNull
-    @Setter
     private ParagraphStatus paragraphStatus;
 
     @ManyToOne
@@ -51,5 +50,9 @@ public class Paragraph extends BaseEntity {
 
     public void setSequenceForTest(int sequence) {
         this.sequence = sequence;
+    }
+
+    public void setParagraphStatusForTest(ParagraphStatus paragraphStatus) {
+        this.paragraphStatus = paragraphStatus;
     }
 }

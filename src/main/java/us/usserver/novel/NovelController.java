@@ -104,7 +104,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody NovelSynopsis req
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -194,7 +194,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody AuthorDescription req
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

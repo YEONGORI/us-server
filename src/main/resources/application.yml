@@ -71,3 +71,10 @@ springdoc:
       enabled: true
   cache:
     disabled: true
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
