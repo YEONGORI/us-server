@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
 import us.usserver.chapter.Chapter;
 import us.usserver.comment.Comment;
-import us.usserver.comment.CommentRepository;
+import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.comment.CommentService;
 import us.usserver.comment.dto.CommentContent;
 import us.usserver.comment.dto.CommentInfo;
@@ -27,12 +27,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentServiceV1 implements CommentService {
     private final EntityService entityService;
-    private final CommentRepository commentRepository;
+    private final CommentJpaRepository commentJpaRepository;
 
     @Override
     public GetCommentResponse getCommentsOfNovel(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        List<Comment> commentsOfNovel = commentRepository.findAllByNovel(novel);
+        List<Comment> commentsOfNovel = commentJpaRepository.findAllByNovel(novel);
 
         String novelTitle = novel.getTitle();
         List<CommentInfo> commentInfos = commentsOfNovel.stream()
@@ -45,7 +45,7 @@ public class CommentServiceV1 implements CommentService {
     @Override
     public GetCommentResponse getCommentsOfChapter(Long chapterId) {
         Chapter chapter = entityService.getChapter(chapterId);
-        List<Comment> commentsOfChapter = commentRepository.findAllByChapter(chapter);
+        List<Comment> commentsOfChapter = commentJpaRepository.findAllByChapter(chapter);
 
         String chapterTitle = chapter.getTitle();
         List<CommentInfo> commentInfos = commentsOfChapter.stream()
@@ -65,7 +65,7 @@ public class CommentServiceV1 implements CommentService {
             throw new CommentLengthOutOfRangeException(ExceptionMessage.Comment_Length_OUT_OF_RANGE);
         }
 
-        Comment comment = commentRepository.save(Comment.builder()
+        Comment comment = commentJpaRepository.save(Comment.builder()
                 .content(commentContent.getContent())
                 .author(author)
                 .novel(novel)
@@ -87,13 +87,14 @@ public class CommentServiceV1 implements CommentService {
             throw new CommentLengthOutOfRangeException(ExceptionMessage.Comment_Length_OUT_OF_RANGE);
         }
 
-        Comment comment = commentRepository.save(Comment.builder()
+        Comment comment = commentJpaRepository.save(Comment.builder()
                 .content(commentContent.getContent())
                 .author(author)
                 .novel(novel)
                 .chapter(chapter)
                 .build());
         novel.getComments().add(comment);
+        chapter.getComments().add(comment);
 
         return CommentInfo.fromComment(
                 comment,
@@ -105,7 +106,7 @@ public class CommentServiceV1 implements CommentService {
     @Override
     public GetCommentResponse getCommentsByAuthor(Long authorId) {
         Author author = entityService.getAuthor(authorId);
-        List<Comment> commentsByAuthor = commentRepository.findAllByAuthor(author);
+        List<Comment> commentsByAuthor = commentJpaRepository.findAllByAuthor(author);
 
         List<CommentInfo> commentInfos = commentsByAuthor.stream()
                 .map(comment -> CommentInfo
@@ -128,6 +129,6 @@ public class CommentServiceV1 implements CommentService {
             throw new AuthorNotAuthorizedException(ExceptionMessage.Author_NOT_AUTHORIZED);
         }
 
-        commentRepository.delete(comment);
+        commentJpaRepository.delete(comment);
     }
 }

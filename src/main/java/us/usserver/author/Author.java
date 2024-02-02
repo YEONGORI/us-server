@@ -1,6 +1,8 @@
 package us.usserver.author;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -40,6 +42,14 @@ public class Author {
     //프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     @Size(max = 500)
     private String profileImg;
+
+    @Min(1)
+    @Max(30)
+    private Integer fontSize = 15;
+
+    @Min(1)
+    @Max(30)
+    private Integer paragraphSpace = 15;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)

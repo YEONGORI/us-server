@@ -15,7 +15,7 @@ import us.usserver.chapter.ChapterMother;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.comment.Comment;
 import us.usserver.comment.CommentMother;
-import us.usserver.comment.CommentRepository;
+import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.comment.dto.CommentContent;
 import us.usserver.comment.dto.CommentInfo;
 import us.usserver.global.exception.*;
@@ -40,7 +40,7 @@ class CommentServiceV0Test {
     private CommentServiceV0 commentServiceV0;
 
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentJpaRepository commentJpaRepository;
     @Autowired
     private NovelJpaRepository novelJpaRepository;
     @Autowired
@@ -91,9 +91,9 @@ class CommentServiceV0Test {
         novel.getComments().add(comment1);
         novel.getComments().add(comment2);
         novel.getComments().add(comment3);
-        commentRepository.save(comment1);
-        commentRepository.save(comment2);
-        commentRepository.save(comment3);
+        commentJpaRepository.save(comment1);
+        commentJpaRepository.save(comment2);
+        commentJpaRepository.save(comment3);
         List<CommentInfo> comments = commentServiceV0.getCommentsOfNovel(novel.getId());
 
         // then
@@ -113,10 +113,10 @@ class CommentServiceV0Test {
 
         // when
         novelJpaRepository.save(newNovel);
-        commentRepository.save(newComment);
+        commentJpaRepository.save(newComment);
         List<CommentInfo> beforeComments = commentServiceV0.getCommentsOfNovel(newNovel.getId());
         novelJpaRepository.delete(newNovel);
-        List<Comment> afterComments = commentRepository.findAllByAuthor(author);
+        List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
         assertThrows(NovelNotFoundException.class,
                 () -> commentServiceV0.getCommentsOfNovel(newNovel.getId()));
 
@@ -151,9 +151,9 @@ class CommentServiceV0Test {
         chapter.getComments().add(comment1);
         chapter.getComments().add(comment2);
         chapter.getComments().add(comment3);
-        commentRepository.save(comment1);
-        commentRepository.save(comment2);
-        commentRepository.save(comment3);
+        commentJpaRepository.save(comment1);
+        commentJpaRepository.save(comment2);
+        commentJpaRepository.save(comment3);
         List<CommentInfo> comments = commentServiceV0.getCommentsOfChapter(chapter.getId());
 
         // then
@@ -178,7 +178,7 @@ class CommentServiceV0Test {
         chapterRepository.delete(newChapter);
         assertThrows(ChapterNotFoundException.class,
                 () -> commentServiceV0.getCommentsOfChapter(newChapter.getId()));
-        List<Comment> afterComments = commentRepository.findAllByAuthor(author);
+        List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
 
         // then
         assertThat(beforeComments.size()).isEqualTo(1);
@@ -214,7 +214,7 @@ class CommentServiceV0Test {
         // when
         assertThrows(AuthorNotFoundException.class,
                 () -> commentServiceV0.writeCommentOnNovel(novel.getId(), newAuthor.getId(), commentContent));
-        List<Comment> comments = commentRepository.findAllByNovel(novel);
+        List<Comment> comments = commentJpaRepository.findAllByNovel(novel);
 
         // then
         assertThat(comments.size()).isZero();
@@ -262,7 +262,7 @@ class CommentServiceV0Test {
         // when
         assertThrows(AuthorNotFoundException.class,
                 () -> commentServiceV0.writeCommentOnChapter(chapter.getId(), newAuthor.getId(), commentContent));
-        List<Comment> comments = commentRepository.findAllByChapter(chapter);
+        List<Comment> comments = commentJpaRepository.findAllByChapter(chapter);
 
         // then
         assertThat(comments.size()).isZero();
@@ -306,8 +306,8 @@ class CommentServiceV0Test {
         // when
         novel.getComments().add(novelComment);
         chapter.getComments().add(chapterComment);
-        commentRepository.save(novelComment);
-        commentRepository.save(chapterComment);
+        commentJpaRepository.save(novelComment);
+        commentJpaRepository.save(chapterComment);
         List<CommentInfo> commentsByAuthor = commentServiceV0.getCommentsByAuthor(author.getId());
 
         // then
@@ -326,11 +326,11 @@ class CommentServiceV0Test {
         // when
         novel.getComments().add(novelComment);
         chapter.getComments().add(chapterComment);
-        commentRepository.save(novelComment);
-        commentRepository.save(chapterComment);
+        commentJpaRepository.save(novelComment);
+        commentJpaRepository.save(chapterComment);
         List<CommentInfo> beforeComments = commentServiceV0.getCommentsByAuthor(author.getId());
-        commentRepository.delete(novelComment);
-        commentRepository.delete(chapterComment);
+        commentJpaRepository.delete(novelComment);
+        commentJpaRepository.delete(chapterComment);
         List<CommentInfo> afterComments = commentServiceV0.getCommentsByAuthor(author.getId());
 
         // then
@@ -348,9 +348,9 @@ class CommentServiceV0Test {
 
         // when
         novel.getComments().add(comment);
-        commentRepository.save(comment);
+        commentJpaRepository.save(comment);
         commentServiceV0.deleteComment(comment.getId(), author.getId());
-        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
 
         // then
         assertTrue(commentById.isEmpty());
@@ -364,9 +364,9 @@ class CommentServiceV0Test {
 
         // when
         chapter.getComments().add(comment);
-        commentRepository.save(comment);
+        commentJpaRepository.save(comment);
         commentServiceV0.deleteComment(comment.getId(), author.getId());
-        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
 
         // then
         assertTrue(commentById.isEmpty());
@@ -393,11 +393,11 @@ class CommentServiceV0Test {
 
         // when
         chapter.getComments().add(comment);
-        commentRepository.save(comment);
+        commentJpaRepository.save(comment);
         authorRepository.save(newAuthor);
         assertThrows(AuthorNotAuthorizedException.class,
                 () -> commentServiceV0.deleteComment(comment.getId(), newAuthor.getId()));
-        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
 
         // then
         assertFalse(commentById.isEmpty());

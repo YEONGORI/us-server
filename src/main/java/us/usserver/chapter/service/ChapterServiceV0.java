@@ -11,7 +11,9 @@ import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.dto.ChapterInfo;
+import us.usserver.comment.Comment;
 import us.usserver.comment.CommentRepository;
+import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -31,8 +33,8 @@ public class ChapterServiceV0 implements ChapterService {
     private final ParagraphService paragraphService;
 
     private final ChapterRepository chapterRepository;
-    private final ScoreRepository scoreRepository;
     private final CommentRepository commentRepository;
+    private final ScoreRepository scoreRepository;
 
     @Override
     public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
@@ -49,12 +51,17 @@ public class ChapterServiceV0 implements ChapterService {
         Chapter chapter = entityService.getChapter(chapterId);
         Novel novel = entityService.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
+
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
-        Integer commentCnt = commentRepository.countAllByChapter(chapter);
+        Integer commentCnt = commentRepository.countByChapter(chapter);
+        List<Comment> comments = commentRepository.getTop3CommentOfChapter(chapter);
         Double score = scoreRepository.findAverageScoreByChapter(chapter);
 
         Integer part = chapter.getPart();
         Integer prevPart = part - 1, nextPart = part + 1;
+        if (part == 0) {
+            prevPart = null;
+        }
         if (part == chapters.size()) {
             nextPart = null;
         }
@@ -74,6 +81,9 @@ public class ChapterServiceV0 implements ChapterService {
                 .prevPart(prevPart)
                 .nextPart(nextPart)
                 .commentCnt(commentCnt)
+                .fontSize(author.getFontSize())
+                .paragraphSpace(author.getParagraphSpace())
+                .bestComments(comments)
                 .build();
     }
 
