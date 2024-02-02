@@ -15,6 +15,8 @@ import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.ParagraphNotFoundException;
+import us.usserver.like.paragraph.ParagraphLike;
+import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.paragraph.dto.*;
 import us.usserver.vote.VoteRepository;
 import us.usserver.novel.Novel;
@@ -24,10 +26,7 @@ import us.usserver.paragraph.ParagraphService;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.stake.StakeService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -35,11 +34,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ParagraphServiceV0 implements ParagraphService {
     private final EntityService entityService;
+    private final StakeService stakeService;
+
     private final ParagraphRepository paragraphRepository;
     private final VoteRepository voteRepository;
     private final AuthorityRepository authorityRepository;
+    private final ParagraphLikeRepository paragraphLikeRepository;
 
-    private final StakeService stakeService;
 
     @Override
     public ParagraphsOfChapter getParagraphs(Long authorId, Long chapterId) {
@@ -50,7 +51,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         if (paragraphs.isEmpty()) {
             return getInitialChParagraph();
         } else if (chapter.getStatus() == ChapterStatus.COMPLETED) {
-            return getCompletedChParagraph(paragraphs);
+            return getCompletedChParagraph(paragraphs, author);
         } else {
             return getInProgressChParagraph(paragraphs, author);
         }
@@ -92,7 +93,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         return ParagraphInVoting.builder()
                 .content(paragraph.getContent())
                 .sequence(paragraph.getSequence())
-                .likeCnt(0)
+                .voteCnt(0)
                 .status(paragraph.getParagraphStatus())
                 .authorId(0L) // TODO: 이 부분은 보안 상 아예 제거 할지 말지 고민중
                 .authorName(paragraph.getAuthor().getNickname())
@@ -120,14 +121,14 @@ public class ParagraphServiceV0 implements ParagraphService {
 
         addAuthority(author, novel);
 
-        paragraph.setParagraphStatus(ParagraphStatus.SELECTED);
+        paragraph.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         stakeService.setStakeInfoOfNovel(novel);
 
         // 선택 되지 않은 paragraph 들의 status 변경
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
         for (Paragraph p : paragraphs) {
             if (p.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
-                p.setParagraphStatus(ParagraphStatus.UNSELECTED);
+                p.setParagraphStatusForTest(ParagraphStatus.UNSELECTED);
             }
         }
     }
@@ -148,10 +149,10 @@ public class ParagraphServiceV0 implements ParagraphService {
                 .build();
     }
 
-    private ParagraphsOfChapter getCompletedChParagraph(List<Paragraph> paragraphs) {
+    private ParagraphsOfChapter getCompletedChParagraph(List<Paragraph> paragraphs, Author author) {
         List<ParagraphSelected> selectedParagraphs = paragraphs.stream()
                 .filter(paragraph -> paragraph.getParagraphStatus() == ParagraphStatus.SELECTED)
-                .map(ParagraphSelected::fromParagraph)
+                .map(paragraph -> ParagraphSelected.fromParagraph(paragraph, isLikedParagraph(paragraph, author)))
                 .toList();
         return ParagraphsOfChapter.builder()
                 .selectedParagraphs(selectedParagraphs)
@@ -179,7 +180,7 @@ public class ParagraphServiceV0 implements ParagraphService {
                 maxVoteCnt = voteCnt;
             }
             if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
-                selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph));
+                selectedParagraphs.add(ParagraphSelected.fromParagraph(paragraph, isLikedParagraph(paragraph, author)));
             }
         }
 
@@ -200,5 +201,10 @@ public class ParagraphServiceV0 implements ParagraphService {
             authority.takeNovel(novel);
             authorityRepository.save(authority);
         }
+    }
+
+    private boolean isLikedParagraph(Paragraph paragraph, Author author) {
+        Optional<ParagraphLike> paragraphLike = paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author);
+        return paragraphLike.isPresent();
     }
 }

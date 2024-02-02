@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import us.usserver.novel.Novel;
+import us.usserver.novel.NovelRepository;
 import us.usserver.novel.dto.MoreInfoOfNovel;
 import us.usserver.novel.dto.SearchNovelReq;
 import us.usserver.novel.dto.SortDto;
@@ -22,26 +23,30 @@ import java.util.List;
 import static org.springframework.util.StringUtils.hasText;
 import static us.usserver.novel.QNovel.novel;
 
-@RequiredArgsConstructor
 @Repository
-public class NovelCustomRepositoryImpl implements NovelCustomRepository{
+@RequiredArgsConstructor
+public class NovelRepositoryImpl implements NovelRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final NovelJpaRepository novelJpaRepository;
 
     @Override
     public Slice<Novel> moreNovelList(MoreInfoOfNovel moreInfoOfNovel, Pageable pageable) {
         List<Novel> novels = getMoreNovel(moreInfoOfNovel, pageable);
-        Slice<Novel> novelSlice = checkLastPage(pageable, novels);
 
-        return novelSlice;
+        return checkLastPage(pageable, novels);
+    }
+
+    @Override
+    public Novel save(Novel novel) {
+        return novelJpaRepository.save(novel);
     }
 
     @Override
     public Slice<Novel> searchNovelList(SearchNovelReq searchNovelReq, Pageable pageable) {
         List<Novel> novels = getSearchNovel(searchNovelReq, pageable);
-        Slice<Novel> novelSlice = checkLastPage(pageable, novels);
 
-        return novelSlice;
+        return checkLastPage(pageable, novels);
     }
 
     private List<Novel> getMoreNovel(MoreInfoOfNovel moreInfoOfNovel, Pageable pageable) {

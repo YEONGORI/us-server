@@ -9,7 +9,7 @@ build/
 src/main/resources/application-env.yml
 src/main/resources/application-db.yml
 src/main/resources/application-auth.yml
-#us-server-config/
+src/test/resources/application-auth.yml
 
 ### STS ###
 .apt_generated

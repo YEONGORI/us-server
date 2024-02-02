@@ -16,5 +16,7 @@ public interface ParagraphLikeRepository extends JpaRepository<ParagraphLike, Lo
 
     List<ParagraphLike> findAllByAuthor(Author author);
 
+    Optional<ParagraphLike> findByParagraphAndAuthor(Paragraph paragraph, Author author);
+
     Optional<ParagraphLike> findFirstByParagraphAndAuthor(Paragraph paragraph, Author author);
 }

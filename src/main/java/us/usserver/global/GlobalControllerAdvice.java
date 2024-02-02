@@ -133,4 +133,18 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Token_EXPIRED);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(FontSizeOutOfRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> FontSizeExceptionHandler(Exception e) {
+        log.error(ExceptionMessage.Font_Size_OUT_OF_RANGE);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(ParagraphSpaceOutOfRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiCsResponse<Object> ParagraphSpaceExceptionHandler(Exception e) {
+        log.error(ExceptionMessage.Paragraph_Space_OUT_OF_RANGE);
+        return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
 }

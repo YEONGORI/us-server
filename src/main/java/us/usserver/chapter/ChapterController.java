@@ -15,7 +15,6 @@ import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 
-
 @Tag(name = "회차 API")
 @ResponseBody
 @RestController
@@ -38,7 +37,7 @@ public class ChapterController {
             @PathVariable Long novelId,
             @PathVariable Long chapterId
     ) {
-        Long authorId = 0L; // TODO 토큰으로 교체 예정
+        Long authorId = 500L; // TODO 토큰으로 교체 예정
         ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, authorId, chapterId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -67,8 +66,7 @@ public class ChapterController {
     public ResponseEntity<ApiCsResponse<?>> createChapter(
             @PathVariable Long novelId
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 가져올 예정
-        
+        Long authorId = 500L; // TODO: 토큰에서 가져올 예정
         chapterService.createChapter(novelId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

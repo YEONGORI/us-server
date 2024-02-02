@@ -24,12 +24,16 @@ public class ParagraphSelected {
     @Schema(description = "한 회차에서 몇 번째로 등장하는 한줄인지에 대한 인덱스", example = "1")
     private int sequence;
 
-    public static ParagraphSelected fromParagraph(Paragraph paragraph) {
+    @Schema(description = "사용자가 좋아요 한 한줄인지 확인", example = "true or false")
+    private boolean isLiked;
+
+    public static ParagraphSelected fromParagraph(Paragraph paragraph, boolean isLiked) {
         return ParagraphSelected.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .authorId(paragraph.getAuthor().getId())
                 .sequence(paragraph.getSequence())
+                .isLiked(isLiked)
                 .build();
     }
 }

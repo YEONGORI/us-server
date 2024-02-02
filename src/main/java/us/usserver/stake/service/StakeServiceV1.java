@@ -9,6 +9,7 @@ import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.global.EntityService;
 import us.usserver.novel.Novel;
+import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.stake.Stake;
 import us.usserver.stake.StakeRepository;
 import us.usserver.stake.StakeService;
@@ -62,6 +63,7 @@ public class StakeServiceV1 implements StakeService {
         return (int) chapters.stream()
                 .flatMap(chapter -> chapter.getParagraphs().stream())
                 .filter(paragraph -> paragraph.getAuthor().getId().equals(author.getId()))
+                .filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.SELECTED))
                 .count();
     }
 

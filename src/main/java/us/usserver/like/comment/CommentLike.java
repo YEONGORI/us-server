@@ -1,16 +1,14 @@
 package us.usserver.like.comment;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.comment.Comment;
 
 @Entity
 @Getter
 @Builder
+@EqualsAndHashCode // remove 때 equals 비교를 위해 사용
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentLike {

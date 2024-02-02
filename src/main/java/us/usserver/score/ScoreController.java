@@ -19,30 +19,26 @@ import us.usserver.global.exception.ScoreOutOfRangeException;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.score.dto.PostScore;
 
-@Tag(name = "한줄 선택 API(방장 전용)")
+@Tag(name = "평점 API")
 @ResponseBody
 @RestController
 @RequestMapping("/score")
 @RequiredArgsConstructor
 public class ScoreController {
     private final ScoreService scoreService;
-    
-    @Operation(summary = "한줄 선택하기", description = "다음으로 추가될 한줄을 선정(메인 작가만 가능)")
+
+    @Operation(summary = "챕터 평점 주기", description = "챕터에 대한 평점 1 ~ 10 까지 입력 가능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "선택 성공"),
-            @ApiResponse(responseCode = "400", description = "회차가 존재하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class))),
-            @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
-            @ApiResponse(responseCode = "400", description = "권한이 없습니다.",
-                    content = @Content(schema = @Schema(implementation = ScoreOutOfRangeException.class))),
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "평점을 1 ~ 10 사이로 입력해 주세요",
+                    content = @Content(schema = @Schema(implementation = ScoreOutOfRangeException.class)))
     })
     @PostMapping("/{chapterId}")
-    public ResponseEntity<ApiCsResponse<?>> getParagraphsInVoting(
+    public ResponseEntity<ApiCsResponse<?>> setScore(
             @PathVariable Long chapterId,
             @Validated @RequestBody PostScore score
             ) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         scoreService.postScore(chapterId, authorId, score);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

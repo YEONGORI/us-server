@@ -7,13 +7,12 @@ import us.usserver.author.AuthorRepository;
 import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterRepository;
 import us.usserver.comment.Comment;
-import us.usserver.comment.CommentRepository;
-import us.usserver.global.exception.*;
+import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.global.exception.*;
 import us.usserver.member.Member;
 import us.usserver.member.MemberRepository;
 import us.usserver.novel.Novel;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
@@ -26,10 +25,10 @@ import java.util.Optional;
 public class EntityService {
     private final AuthorRepository authorRepository;
     private final MemberRepository memberRepository;
-    private final NovelRepository novelRepository;
+    private final NovelJpaRepository novelJpaRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
-    private final CommentRepository commentRepository;
+    private final CommentJpaRepository commentJpaRepository;
     private final VoteRepository voteRepository;
 
     public Author getAuthor(Long authorId) {
@@ -49,7 +48,7 @@ public class EntityService {
     }
 
     public Novel getNovel(Long novelId) {
-        Optional<Novel> novelById = novelRepository.getNovelById(novelId);
+        Optional<Novel> novelById = novelJpaRepository.getNovelById(novelId);
         if (novelById.isEmpty()) {
             throw new NovelNotFoundException(ExceptionMessage.Novel_NOT_FOUND);
         }
@@ -73,7 +72,7 @@ public class EntityService {
     }
 
     public Comment getComment(Long commentId) {
-        Optional<Comment> commentById = commentRepository.getCommentById(commentId);
+        Optional<Comment> commentById = commentJpaRepository.getCommentById(commentId);
         if (commentById.isEmpty()) {
             throw new CommentNotFoundException(ExceptionMessage.Comment_NOT_FOUND);
         }

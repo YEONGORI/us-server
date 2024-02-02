@@ -32,24 +32,22 @@ import java.net.URI;
 @RequestMapping("/novel")
 @RequiredArgsConstructor
 public class NovelController {
-    private final NovelService novelService;
-
     //TODO: Swagger 공통적인 ApiResponse 적용 방법 찾아보기!
-
+    private final NovelService novelService;
 
     @Operation(summary = "소설 생성", description = "작가가 소설을 생성하는 API")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "파티 생성 성공", content = @Content(schema = @Schema(implementation = Novel.class))),
+            @ApiResponse(responseCode = "201", description = "파티 생성 성공", content = @Content(schema = @Schema(implementation = NovelInfo.class))),
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PostMapping
     public ResponseEntity<ApiCsResponse<?>> createNovel(@AuthenticationPrincipal Member member, @Valid @RequestBody CreateNovelReq createNovelReq) {
-        Novel novel = novelService.createNovel(member, createNovelReq);
+        NovelInfo novelInfo = novelService.createNovel(member, createNovelReq);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(novel)
+                .data(novelInfo)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -106,7 +104,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody NovelSynopsis req
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -196,7 +194,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody AuthorDescription req
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

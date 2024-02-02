@@ -35,7 +35,7 @@ public class NovelLikeController {
     })
     @PostMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long novelId) {
-        Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
+        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
 
         novelLikeService.setNovelLike(novelId, authorId);
 
@@ -57,7 +57,7 @@ public class NovelLikeController {
     })
     @DeleteMapping("/{novelId}")
     public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long novelId) {
-        Long authorId = 1L; // TODO: 유저 정보는 토큰 에서 가져올 예정
+        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
         novelLikeService.deleteNovelLike(novelId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

@@ -1,6 +1,7 @@
 package us.usserver.like.novel.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.Author;
@@ -19,14 +20,14 @@ public class NovelLikeServiceV0 implements NovelLikeService {
     private final NovelLikeRepository novelLikeRepository;
 
     @Override
+//    @CacheEvict(cacheNames = "novelLikeCnt", key = "#novelId")
     public void setNovelLike(Long novelId, Long authorId) {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        novelLikeRepository.findFirstByNovelAndAuthor(novel, author)
-                .ifPresent(novelLike -> {
-                    throw new DuplicatedLikeException("NOVEL_LIKE");
-                });
+        if (novelLikeRepository.findAnyByNovelAndAuthor(novel, author) != null) {
+            throw new DuplicatedLikeException("NOVEL_LIKE");
+        }
 
         NovelLike novelLike = NovelLike
                 .builder()
@@ -37,11 +38,14 @@ public class NovelLikeServiceV0 implements NovelLikeService {
     }
 
     @Override
+//    @CacheEvict(cacheNames = "novelLikeCnt", key = "#novelId")
     public void deleteNovelLike(Long novelId, Long authorId) {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
-        novelLikeRepository.findFirstByNovelAndAuthor(novel, author)
-                .ifPresent(novelLikeRepository::delete);
+        NovelLike novelLike = novelLikeRepository.findAnyByNovelAndAuthor(novel, author);
+        if (novelLike != null) {
+            novelLikeRepository.delete(novelLike);
+        }
     }
 }

@@ -15,24 +15,21 @@ import us.usserver.chapter.ChapterRepository;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.chapter.dto.CreateChapterReq;
+import us.usserver.comment.Comment;
+import us.usserver.comment.CommentMother;
+import us.usserver.comment.CommentRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.like.comment.CommentLike;
+import us.usserver.like.comment.CommentLikeRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
-import us.usserver.novel.novelEnum.AgeRating;
-import us.usserver.novel.novelEnum.Genre;
-import us.usserver.novel.novelEnum.Hashtag;
+import us.usserver.novel.repository.NovelJpaRepository;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,9 +46,13 @@ class ChapterServiceV0Test {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private CommentLikeRepository commentLikeRepository;
 
     private Novel novel;
     private Author author;
@@ -63,7 +64,7 @@ class ChapterServiceV0Test {
         authorRepository.save(author);
 
         novel = NovelMother.generateNovel(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
     }
 
     @Test
@@ -111,7 +112,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
         novel.getChapters().add(chapter4);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter3);
         chapterRepository.save(chapter4);
         chapterRepository.save(chapter1);
@@ -147,17 +148,17 @@ class ChapterServiceV0Test {
         Chapter chapter1 = ChapterMother.generateChapter(novel);
         Chapter chapter2 = ChapterMother.generateChapter(novel);
         Chapter chapter3 = ChapterMother.generateChapter(novel);
-        chapter1.setPartForTest(0);
+        chapter1.setPartForTest(1);
         chapter1.setStatusForTest(ChapterStatus.COMPLETED);
-        chapter2.setPartForTest(1);
+        chapter2.setPartForTest(2);
         chapter2.setStatusForTest(ChapterStatus.COMPLETED);
-        chapter3.setPartForTest(2);
+        chapter3.setPartForTest(3);
 
         // when
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
@@ -169,8 +170,8 @@ class ChapterServiceV0Test {
         assertThat(chapterDetailInfo.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo.getPrevChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter1.getId()));
-        assertThat(chapterDetailInfo.getNextChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter3.getId()));
+        assertThat(chapterDetailInfo.getPrevPart()).isEqualTo(chapter1.getPart());
+        assertThat(chapterDetailInfo.getNextPart()).isEqualTo(chapter3.getPart());
     }
 
     @Test
@@ -180,17 +181,17 @@ class ChapterServiceV0Test {
         Chapter chapter1 = ChapterMother.generateChapter(novel);
         Chapter chapter2 = ChapterMother.generateChapter(novel);
         Chapter chapter3 = ChapterMother.generateChapter(novel);
-        chapter1.setPartForTest(0);
+        chapter1.setPartForTest(1);
         chapter1.setStatusForTest(ChapterStatus.COMPLETED);
-        chapter2.setPartForTest(1);
+        chapter2.setPartForTest(2);
         chapter2.setStatusForTest(ChapterStatus.COMPLETED);
-        chapter3.setPartForTest(2);
+        chapter3.setPartForTest(3);
 
         // when
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
@@ -203,16 +204,95 @@ class ChapterServiceV0Test {
         assertThat(chapterDetailInfo1.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo1.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo1.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo1.getPrevChapterUrl()).isNull();
-        assertThat(chapterDetailInfo1.getNextChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter2.getId()));
+        assertThat(chapterDetailInfo1.getPrevPart()).isNull();
+        assertThat(chapterDetailInfo1.getNextPart()).isEqualTo(chapter2.getPart());
 
         assertThat(chapterDetailInfo3.getPart()).isEqualTo(chapter3.getPart());
         assertThat(chapterDetailInfo3.getTitle()).isEqualTo(chapter3.getTitle());
         assertThat(chapterDetailInfo3.getMyParagraph()).isNull();
         assertThat(chapterDetailInfo3.getBestParagraph()).isNull();
         assertThat(chapterDetailInfo3.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo3.getPrevChapterUrl()).isEqualTo(createChapterUrl(novel.getId(), chapter2.getId()));
-        assertThat(chapterDetailInfo3.getNextChapterUrl()).isNull();
+        assertThat(chapterDetailInfo3.getPrevPart()).isEqualTo(chapter2.getPart());
+        assertThat(chapterDetailInfo3.getNextPart()).isNull();
+    }
+
+    @Test
+    @DisplayName("댓글 갯수, 베스트 댓글 정보 확인 테스트")
+    void getChapterDetailInfo3() {
+        // given
+        Member newMember1 = MemberMother.generateMember();
+        Author newAuthor1 = AuthorMother.generateAuthor();
+        newAuthor1.setMember(newMember1);
+        Member newMember2 = MemberMother.generateMember();
+        Author newAuthor2 = AuthorMother.generateAuthor();
+        newAuthor2.setMember(newMember2);
+        Chapter chapter1 = ChapterMother.generateChapter(novel);
+        novel.getChapters().add(chapter1);
+        chapterRepository.save(chapter1);
+        Comment comment1 = CommentMother.generateComment(author, novel, chapter1);
+        Comment comment2 = CommentMother.generateComment(author, novel, chapter1);
+        Comment comment3 = CommentMother.generateComment(author, novel, chapter1);
+        Comment comment4 = CommentMother.generateComment(author, novel, null);
+        CommentLike commentLike1 = CommentLike.builder().author(newAuthor1).comment(comment1).build();
+        CommentLike commentLike2 = CommentLike.builder().author(newAuthor2).comment(comment1).build();
+        CommentLike commentLike3 = CommentLike.builder().author(newAuthor1).comment(comment2).build();
+        CommentLike commentLike4 = CommentLike.builder().author(newAuthor2).comment(comment2).build();
+        comment1.getCommentLikes().add(commentLike1);
+        comment1.getCommentLikes().add(commentLike2);
+        comment2.getCommentLikes().add(commentLike3);
+        comment2.getCommentLikes().add(commentLike4);
+        chapter1.getComments().add(comment1);
+        chapter1.getComments().add(comment2);
+        chapter1.getComments().add(comment3);
+        novel.getComments().add(comment4);
+        memberRepository.save(newMember1);
+        memberRepository.save(newMember2);
+        authorRepository.save(newAuthor1);
+        authorRepository.save(newAuthor2);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+        commentLikeRepository.save(commentLike1);
+        commentLikeRepository.save(commentLike2);
+        commentLikeRepository.save(commentLike3);
+        commentLikeRepository.save(commentLike4);
+
+        // when
+        ChapterDetailInfo chapterDetailInfo = chapterServiceV0.getChapterDetailInfo(novel.getId(), author.getId(), chapter1.getId());
+
+        // then
+        assertThat(chapterDetailInfo.getCommentCnt()).isEqualTo(3);
+        assertThat(chapterDetailInfo.getBestComments().size()).isEqualTo(3);
+        assertThat(chapterDetailInfo.getBestComments().get(0).getId()).isEqualTo(comment1.getId());
+    }
+
+    @Test
+    @DisplayName("글자 크기, 문단 간격 정보 확인 테스트")
+    void getChapterDetailInfo4() {
+        // given
+        Chapter chapter1 = ChapterMother.generateChapter(novel);
+        Chapter chapter2 = ChapterMother.generateChapter(novel);
+        Chapter chapter3 = ChapterMother.generateChapter(novel);
+        chapter1.setPartForTest(1);
+        chapter1.setStatusForTest(ChapterStatus.COMPLETED);
+        chapter2.setPartForTest(2);
+        chapter2.setStatusForTest(ChapterStatus.COMPLETED);
+        chapter3.setPartForTest(3);
+
+        // when
+        novel.getChapters().add(chapter1);
+        novel.getChapters().add(chapter2);
+        novel.getChapters().add(chapter3);
+        novelJpaRepository.save(novel);
+        chapterRepository.save(chapter1);
+        chapterRepository.save(chapter2);
+        chapterRepository.save(chapter3);
+        ChapterDetailInfo chapterDetailInfo = chapterServiceV0.getChapterDetailInfo(novel.getId(), author.getId(), chapter2.getId());
+
+        // then
+        assertThat(chapterDetailInfo.getFontSize()).isEqualTo(15);
+        assertThat(chapterDetailInfo.getParagraphSpace()).isEqualTo(15);
     }
 
     private void setMember(Author author) {

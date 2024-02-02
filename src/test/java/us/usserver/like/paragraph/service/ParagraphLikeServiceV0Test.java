@@ -1,6 +1,5 @@
 package us.usserver.like.paragraph.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +18,9 @@ import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
@@ -43,7 +41,7 @@ class ParagraphLikeServiceV0Test {
     @Autowired
     private ParagraphLikeRepository paragraphLikeRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -71,7 +69,7 @@ class ParagraphLikeServiceV0Test {
         novel.getChapters().add(chapter);
         chapter.getParagraphs().add(paragraph);
 
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph);
     }

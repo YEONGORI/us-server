@@ -36,7 +36,7 @@ public class VoteController {
     })
     @PostMapping("/{paragraphId}")
     public ResponseEntity<ApiCsResponse<?>> voting(@PathVariable Long paragraphId) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         voteService.voting(paragraphId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -59,7 +59,7 @@ public class VoteController {
     })
     @DeleteMapping("/{voteId}")
     public ResponseEntity<ApiCsResponse<?>> cancelVote(@PathVariable Long voteId) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         voteService.unvoting(voteId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()

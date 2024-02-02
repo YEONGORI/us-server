@@ -20,10 +20,9 @@ import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
 import us.usserver.member.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
 import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
@@ -57,7 +56,7 @@ class ParagraphServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelJpaRepository novelJpaRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -83,7 +82,7 @@ class ParagraphServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelJpaRepository.save(novel);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);
@@ -173,8 +172,8 @@ class ParagraphServiceV0Test {
 
         // when
         chapter.setStatusForTest(ChapterStatus.COMPLETED);
-        paragraph1.setParagraphStatus(ParagraphStatus.SELECTED);
-        paragraph2.setParagraphStatus(ParagraphStatus.SELECTED);
+        paragraph1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);
@@ -203,7 +202,7 @@ class ParagraphServiceV0Test {
         assertThat(paragraphInVoting.getContent()).isEqualTo(content);
         assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
         assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
-        assertThat(paragraphInVoting.getLikeCnt()).isZero();
+        assertThat(paragraphInVoting.getVoteCnt()).isZero();
         assertThat(paragraphInVoting.getAuthorName()).isEqualTo(author.getNickname());
         assertThat(paragraphs.stream().anyMatch(p ->
                 p.getContent().equals(req.getContent()))).isTrue();
