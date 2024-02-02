@@ -62,7 +62,6 @@ dependencies {
     testImplementation 'org.jeasy:easy-random-bean-validation:5.0.0'
 
     testImplementation 'com.h2database:h2'
-
 }
 
 processResources.dependsOn('copySecret')

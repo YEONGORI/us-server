@@ -134,7 +134,7 @@ class ScoreServiceV0Test {
         Double chapterScore = scoreServiceV0.getChapterScore(chapter);
 
         // then
-        assertThat(chapterScore).isEqualTo(4.6667);
+        assertThat(chapterScore).isEqualTo(4.666666666666667);
     }
 
     private void setMember(Author author) {

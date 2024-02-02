@@ -70,8 +70,6 @@ class ChapterControllerTest {
     private Comment comment3;
     private Comment comment4;
 
-    private final Long defaultId = 500L;
-
     @BeforeEach
     void setUp() {
         Member member1 = MemberMother.generateMember();
@@ -171,8 +169,7 @@ class ChapterControllerTest {
     @Test
     void getChapterDetailInfo() {
         // given
-        Author author = authorRepository.getAuthorById(defaultId).get();
-        Paragraph newParagraph = ParagraphMother.generateParagraph(author, chapter2);
+        Paragraph newParagraph = ParagraphMother.generateParagraph(author1, chapter2);
         newParagraph.setSequenceForTest(5);
 
         // when

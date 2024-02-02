@@ -59,7 +59,7 @@ public class ChapterServiceV0 implements ChapterService {
 
         Integer part = chapter.getPart();
         Integer prevPart = part - 1, nextPart = part + 1;
-        if (part == 0) {
+        if (part == 1) {
             prevPart = null;
         }
         if (part == chapters.size()) {
@@ -87,15 +87,11 @@ public class ChapterServiceV0 implements ChapterService {
                 .build();
     }
 
-    private static String createChapterUrl(Long novelId, Long chapterId) {
-        return "http://localhost:8000/chapter/" + novelId + "/" + chapterId;
-    }
-
     @Override
     public void createChapter(Long novelId, Long authorId) {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
-        int curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
+        Integer curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);

@@ -62,7 +62,7 @@ class VoteControllerTest {
     private Paragraph paragraph4;
     private Paragraph paragraph5;
 
-    private final Long defaultId = 500L;
+    private static final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {
@@ -98,6 +98,8 @@ class VoteControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
+        author.setIdForTest(defaultId);
+        authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);
     }
@@ -106,14 +108,13 @@ class VoteControllerTest {
     @DisplayName("투표 하기 api test")
     void voting() throws Exception {
         // given
-        Author defaultAuthor = authorRepository.getAuthorById(defaultId).get();
 
         // when
-        List<Vote> prevVotes = voteRepository.findAllByAuthor(defaultAuthor);
+        List<Vote> prevVotes = voteRepository.findAllByAuthor(author);
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/vote/" + paragraph4.getId())
                 .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> nextVotes = voteRepository.findAllByAuthor(defaultAuthor);
+        List<Vote> nextVotes = voteRepository.findAllByAuthor(author);
 
         // then
         boolean anyMatch = nextVotes.stream().anyMatch(vote -> vote.getParagraph().getId().equals(paragraph4.getId()));
@@ -143,15 +144,14 @@ class VoteControllerTest {
     @DisplayName("투표 취소 하기 api test")
     void cancelVote() throws Exception {
         // given
-        Author defaultAuthor = authorRepository.getAuthorById(defaultId).get();
-        Vote vote = Vote.builder().paragraph(paragraph5).author(defaultAuthor).build();
+        Vote vote = Vote.builder().paragraph(paragraph5).author(author).build();
         vote = voteRepository.save(vote);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .post("/vote/" + vote.getId())
                 .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> votes = voteRepository.findAllByAuthor(defaultAuthor);
+        List<Vote> votes = voteRepository.findAllByAuthor(author);
 
 
         // then

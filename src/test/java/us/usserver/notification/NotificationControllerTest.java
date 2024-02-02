@@ -50,13 +50,18 @@ class NotificationControllerTest {
     private Novel novel;
     private Chapter chapter;
 
+    private static final Long defaultId = 500L;
+
+
     @BeforeEach
     void setUp() {
         member = MemberMother.generateMember();
         author = AuthorMother.generateAuthor();
         author.setMember(member);
+        author.setIdForTest(defaultId);
 
         novel = NovelMother.generateNovel(author);
+        novel.setIdForTest(defaultId);
         chapter = ChapterMother.generateChapter(novel);
         novel.getChapters().add(chapter);
 

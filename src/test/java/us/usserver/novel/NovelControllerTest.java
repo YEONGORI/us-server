@@ -58,15 +58,17 @@ class NovelControllerTest {
     private Chapter chapter1;
     private Chapter chapter2;
     private Chapter chapter3;
-    private final Long defaultId = 500L;
+    private static final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {
         member = MemberMother.generateMember();
         author = AuthorMother.generateAuthor();
         author.setMember(member);
+        author.setIdForTest(defaultId);
 
         novel = NovelMother.generateNovel(author);
+        novel.setIdForTest(defaultId);
         chapter1 = ChapterMother.generateChapter(novel);
         chapter1.setPartForTest(1);
         chapter2 = ChapterMother.generateChapter(novel);
@@ -141,7 +143,7 @@ class NovelControllerTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .patch("/novel/" + defaultId + "/synopsis")
+                .patch("/novel/" + novel.getId() + "/synopsis")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(requestBody)));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();
