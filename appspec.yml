@@ -6,7 +6,7 @@ version: 0.0
 os: linux
 files:
   - source: / # CodeDeploy 에서 전달해 준 파일 중 destination 으로 이동시킬 대상 지정 [루트 경로(/) 지정 시 전체 파일]
-    destination: /home/ec2-user/server-v1/
+    destination: /home/ec2-user/us-server/
 #  - source: /
 #    destination: /home/api
 
