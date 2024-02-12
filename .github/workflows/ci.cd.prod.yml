@@ -39,8 +39,6 @@ jobs:
         run: chmod +x gradlew
 
       - name: 🔨 Build with Gradle
-#        run: ./gradlew build -x test
-#        shell: bash
         uses: gradle/gradle-build-action@v2
         with:
           arguments: clean build -x test
@@ -50,6 +48,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: ✅ Checkout branch
+        uses: actions/checkout@v3
+
       - name: 배포를 위한 파일만 담을 디렉토리 생성
         run: |
           mkdir -p before-deploy
