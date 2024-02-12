@@ -60,10 +60,10 @@ jobs:
 
       - name: ⚙️ Create application-*.yml files
         run: |
-          touch ${{ ENV_PATH }}/${{ env.ENV_DB }}
-          touch ${{ ENV_PATH }}/${{ env.ENV_AUTH }}
-          echo "${{ secrets.SPRING_DB_CONFIG }}" >> ${{ ENV_PATH }}/${{ env.ENV_DB }}
-          echo "${{ secrets.SPRING_AUTH_CONFIG }}" >> ${{ ENV_PATH }}/${{ env.ENV_AUTH }}
+          touch ${{ env.ENV_PATH }}/${{ env.ENV_DB }}
+          touch ${{ env.ENV_PATH }}/${{ env.ENV_AUTH }}
+          echo "${{ secrets.SPRING_DB_CONFIG }}" >> ${{ env.ENV_PATH }}/${{ env.ENV_DB }}
+          echo "${{ secrets.SPRING_AUTH_CONFIG }}" >> ${{ env.ENV_PATH }}/${{ env.ENV_AUTH }}
 
       - name: 📦 Zip project files
         run: zip -r ./$GITHUB_SHA.zip .
