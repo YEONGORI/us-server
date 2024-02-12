@@ -2,7 +2,7 @@
 # shellcheck disable=SC2164
 
 REPOSITORY=/home/ec2-user
-PROJECT_NAME=/server-v1
+PROJECT_NAME=/us-server
 BUILD_DIRECTORY=/build/libs
 
 echo "> 프로젝트 디렉토리 이동"
@@ -32,5 +32,8 @@ else
   sleep 5
 fi
 
+echo "> log 디렉토리 생성"
+mkdir -p log
+
 echo "> 새 애플리케이션 배포"
-nohup java -jar $REPOSITORY/$PROJECT_NAME/"$JAR_NAME" 1>log.out 2>error.out &
+nohup java -jar $REPOSITORY/$PROJECT_NAME/"$JAR_NAME" 1>log/log.out 2>log/error.out &
