@@ -44,29 +44,23 @@ jobs:
           arguments: clean build -x test
           gradle-version: 8.3
 
-  before-deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: ✅ Checkout branch
-        uses: actions/checkout@v3
 
-      - name: 배포를 위한 파일만 담을 디렉토리 생성
+      - name: 🗂️ Create a directory for distribution
         run: |
           mkdir -p before-deploy
 
-      - name: 배포용 스크립트, jar 파일 복사
+      - name: 💿 Copy deploy scripts and jar file
         run: |
           cp scripts/*.sh before-deploy/
           cp appspec.yml before-deploy/
           cp build/libs/*.jar before-deploy/
 
-      - name: 배포용 파일 전체 압축
+      - name: 💿 Compressing all distribution files
         run: |
           cd before-deploy
           zip -r before-deploy
 
-      - name: deploy 폴더로 zip 파일 이동
+      - name: 🚚 Move the zip file to the deploy folder
         run: |
           cd ../ & mkdir -p deploy
           mv before-deploy/before-deploy.zip deploy/us-server.zip
@@ -79,7 +73,7 @@ jobs:
       DEPLOY_ZIP: us-server.zip
       CODE_DEPLOY_APPLICATION_NAME: us-server
       CODE_DEPLOY_GROUP_NAME: us-server-deploy
-    environment: production
+#    environment: production
     runs-on: ubuntu-latest
     steps:
       - name: ✅ Checkout branch
