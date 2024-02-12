@@ -17,9 +17,9 @@ permissions: # CodeDeploy 에서 EC2 서버로 넘겨준 파일들 권한 설정
     owner: ec2-user
     group: ec2-user
 
-#hooks: # CodeDeploy 배포 단계에서 실행할 명령어 지정
-#  ApplicationStart:
-#    - location: scripts/deploy.sh
-#      timeout: 300 # 스크릡트 실행 시간 5분 넘억면 실패
-#      runas: root
+hooks: # CodeDeploy 배포 단계에서 실행할 명령어 지정
+  ApplicationStart:
+    - location: scripts/deploy.sh
+      timeout: 300 # 스크릡트 실행 시간 5분 넘억면 실패
+      runas: root
 #
