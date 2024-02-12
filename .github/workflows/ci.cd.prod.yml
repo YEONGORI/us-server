@@ -48,14 +48,22 @@ jobs:
     needs: build
     if: github.event.pull_request.merged == true
     env:
-      DEPLOY_DIR: deploy
-      DEPLOY_ZIP: us-server.zip
+      ENV_PATH: ./src/main/resources
+      ENV_DB: application-db.yml
+      ENV_AUTH: application-auth.yml
       CODE_DEPLOY_APPLICATION_NAME: us-server
       CODE_DEPLOY_GROUP_NAME: us-server-deploy
     runs-on: ubuntu-latest
     steps:
       - name: ✅ Checkout branch
         uses: actions/checkout@v3
+
+      - name: ⚙️ Create application-*.yml files
+        run: |
+          touch ${{ ENV_PATH }}/${{ env.ENV_DB }}
+          touch ${{ ENV_PATH }}/${{ env.ENV_AUTH }}
+          echo "${{ secrets.SPRING_DB_CONFIG }}" >> ${{ ENV_PATH }}/${{ env.ENV_DB }}
+          echo "${{ secrets.SPRING_AUTH_CONFIG }}" >> ${{ ENV_PATH }}/${{ env.ENV_AUTH }}
 
       - name: 📦 Zip project files
         run: zip -r ./$GITHUB_SHA.zip .
