@@ -1,9 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC2164
 
-REPOSITORY=/home/ec2-user
-PROJECT_NAME=/us-server
-BUILD_DIRECTORY=/build/libs
+REPOSITORY=home/ec2-user
+PROJECT_NAME=us-server
+BUILD_DIRECTORY=build/libs
 
 echo "> 프로젝트 디렉토리 이동"
 cd $REPOSITORY/$PROJECT_NAME
@@ -19,7 +19,7 @@ JAR_NAME=$(basename "$BUILD_JAR")
 echo "> Build 파일명: $JAR_NAME"
 
 echo "> Build 파일 복사"
-cp "$JAR_NAME" $REPOSITORY/$PROJECT_NAME
+cp "$JAR_NAME" /$REPOSITORY/$PROJECT_NAME
 
 CURRENT_PID=$(pgrep -f .jar)
 echo "> Running Application PID: $CURRENT_PID"
