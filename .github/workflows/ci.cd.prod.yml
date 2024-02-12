@@ -1,3 +1,4 @@
+# GitHub Action 설정
 name: 🚀 Build & Deploy workflow on production environment
 
 on:
@@ -20,64 +21,88 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-#      - name: 🚚 Make application-db.properties
-#        run: |
-#          cd ./src/main/resources
-#          touch ./application-db.properties
-#
-#          echo "${{ secrets.SPRING_DATABASE_CONFIG }}" >> ./application-db.properties
-#        shell: bash
-#
-#      - name: 💾 Setup MariaDB
-#        uses: getong/mariadb-action@v1.1
-#        with:
-#          mysql database: 'server-db'
-#          mysql user: admin
-#          mysql password: ${{ secrets.DB_PASSWORD }}
+      - name: 💽 Make application-db.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-db.yml
+          echo "${{ secrets.SPRING_DB_CONFIG }}" >> ./application-db.yml
+        shell: bash
+
+      - name: 🔑 Make application-auth.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-auth.yml
+          echo "${{ secrets.SPRING_AUTH_CONFIG }}" > ./application-auth.yml
+        shell: bash
 
       - name: ✨ Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: 🔨 Build with Gradle
-        run: ./gradlew build -x test
-        shell: bash
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: clean build -x test
-#          gradle-version: 8.3
+#        run: ./gradlew build -x test
+#        shell: bash
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean build -x test
+          gradle-version: 8.3
+
+  before-deploy:
+    needs: build
+    steps:
+      - name: 배포를 위한 파일만 담을 디렉토리 생성
+        run: |
+          mkdir -p before-deploy
+
+      - name: 배포용 스크립트, jar 파일 복사
+        run: |
+          cp scripts/*.sh before-deploy/
+          cp appspec.yml before-deploy/
+          cp build/libs/*.jar before-deploy/
+
+      - name: 배포용 파일 전체 압축
+        run: |
+          cd before-deploy
+          zip -r before-deploy
+
+      - name: deploy 폴더로 zip 파일 이동
+        run: |
+          cd ../ & mkdir -p deploy
+          mv before-deploy/before-deploy.zip deploy/us-server.zip
 
   deploy:
-    needs: build
+    needs: before-deploy
     if: github.event.pull_request.merged == true
     env:
-      ENV_PATH: .env
-      DEPLOYMENT_GROUP_NAME: production
+      DEPLOY_DIR: deploy
+      DEPLOY_ZIP: us-server.zip
+      CODE_DEPLOY_APPLICATION_NAME: us-server
+      CODE_DEPLOY_GROUP_NAME: us-server-deploy
     environment: production
     runs-on: ubuntu-latest
     steps:
       - name: ✅ Checkout branch
         uses: actions/checkout@v3
 
-      - name: 🗂️ Make config folder
-        run: mkdir -p config
-
-      - name: ⚙️ Create .env file
-        run: |
-          touch ${{ env.ENV_PATH }}
-          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> ${{ env.ENV_PATH }}
-          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
-          echo NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} >> ${{ env.ENV_PATH }}
-          echo NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
-          echo KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} >> ${{ env.ENV_PATH }}
-          echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
-          echo JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }} >> ${{ env.ENV_PATH }}
-          echo JWT_REFRESH_HEADER=${{ secrets.JWT_REFRESH_HEADER }} >> ${{ env.ENV_PATH }}
-          echo JWT_ACCESS_HEADER=${{ secrets.JWT_ACCESS_HEADER }} >> ${{ env.ENV_PATH }}
-          echo JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }} >> ${{ env.ENV_PATH }}
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ${{ env.ENV_PATH }}
-
-      - name: 📦 Zip project files
-        run: zip -r ./$GITHUB_SHA.zip .
+#      - name: 🗂️ Make config folder
+#        run: mkdir -p config
+#
+#      - name: ⚙️ Create .env file
+#        run: |
+#          touch ${{ env.ENV_PATH }}
+#          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> ${{ env.ENV_PATH }}
+#          echo GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
+#          echo NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} >> ${{ env.ENV_PATH }}
+#          echo NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
+#          echo KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} >> ${{ env.ENV_PATH }}
+#          echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> ${{ env.ENV_PATH }}
+#          echo JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }} >> ${{ env.ENV_PATH }}
+#          echo JWT_REFRESH_HEADER=${{ secrets.JWT_REFRESH_HEADER }} >> ${{ env.ENV_PATH }}
+#          echo JWT_ACCESS_HEADER=${{ secrets.JWT_ACCESS_HEADER }} >> ${{ env.ENV_PATH }}
+#          echo JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }} >> ${{ env.ENV_PATH }}
+#          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ${{ env.ENV_PATH }}
+#
+#      - name: 📦 Zip project files
+#        run: zip -r ./$GITHUB_SHA.zip .
 
       - name: 🌎 Access to AWS
         uses: aws-actions/configure-aws-credentials@v2
@@ -87,11 +112,17 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: 🚛 Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/${{ env.S3_BUCKET_DIR_NAME }}/$GITHUB_SHA.zip
+#        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
+        run: |
+          aws deploy push \
+            --application-name ${{env.CODE_DEPLOY_APPLICATION_NAME}}
+            --s3-location s3: // ${{secrets.S3_BUCKET_NAME}}/${{ env.DEPLOY_DIR }}
+            --ignore-hidden-files
+            --source .
 
       - name: 🚀 Deploy to EC2 with CodeDeploy
         run: aws deploy create-deployment
-          --application-name us-server-deploy-application
+          --application-name ${{env.CODE_DEPLOY_APPLICATION_NAME}}
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }}
-          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=${{ env.S3_BUCKET_DIR_NAME }}/$GITHUB_SHA.zip
+          --deployment-group-name ${{ env.CODE_DEPLOY_GROUP_NAME }}
+          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=${{ env.DEPLOY_ZIP }}
