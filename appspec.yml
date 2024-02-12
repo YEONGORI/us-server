@@ -13,7 +13,7 @@ files:
 permissions: # CodeDeploy 에서 EC2 서버로 넘겨준 파일들 권한 설정
   - object: /home/api/
     pattern: '**'
-    mode: '755'
+    mode: '777'
     owner: ec2-user
     group: ec2-user
 
