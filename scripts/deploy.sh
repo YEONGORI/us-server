@@ -8,11 +8,11 @@ BUILD_DIRECTORY=/build/libs
 echo "> 프로젝트 디렉토리 이동"
 cd $REPOSITORY/$PROJECT_NAME
 
-echo "> 빌드 디렉토리 이동"
-cd $BUILD_DIRECTORY
-
 echo "> Gradle Build"
 bash ./gradlew build -x test
+
+echo "> 빌드 디렉토리 이동"
+cd $BUILD_DIRECTORY
 
 BUILD_JAR=$(ls *.jar)
 JAR_NAME=$(basename "$BUILD_JAR")
