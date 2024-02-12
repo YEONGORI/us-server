@@ -58,7 +58,7 @@ jobs:
       - name: 💿 Compressing all distribution files
         run: |
           cd before-deploy
-          zip -r before-deploy
+          zip -r before-deploy .
 
       - name: 🚚 Move the zip file to the deploy folder
         run: |
