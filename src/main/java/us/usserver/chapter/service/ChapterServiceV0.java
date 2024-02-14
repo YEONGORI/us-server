@@ -13,6 +13,7 @@ import us.usserver.chapter.dto.ChapterDetailInfo;
 import us.usserver.chapter.dto.ChapterInfo;
 import us.usserver.comment.Comment;
 import us.usserver.comment.CommentRepository;
+import us.usserver.comment.dto.CommentInfo;
 import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
@@ -55,6 +56,7 @@ public class ChapterServiceV0 implements ChapterService {
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
         Integer commentCnt = commentRepository.countByChapter(chapter);
         List<Comment> comments = commentRepository.getTop3CommentOfChapter(chapter);
+        List<CommentInfo> commentInfos = comments.stream().map(comment -> CommentInfo.fromComment(comment, chapter.getTitle(), comment.getCommentLikes().size())).toList();
         Double score = scoreRepository.findAverageScoreByChapter(chapter);
 
         Integer part = chapter.getPart();
@@ -83,7 +85,7 @@ public class ChapterServiceV0 implements ChapterService {
                 .commentCnt(commentCnt)
                 .fontSize(author.getFontSize())
                 .paragraphSpace(author.getParagraphSpace())
-                .bestComments(comments)
+                .bestComments(commentInfos)
                 .build();
     }
 

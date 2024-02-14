@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import us.usserver.chapter.chapterEnum.ChapterStatus;
 import us.usserver.comment.Comment;
+import us.usserver.comment.dto.CommentInfo;
 import us.usserver.paragraph.dto.ParagraphInVoting;
 import us.usserver.paragraph.dto.ParagraphSelected;
 
@@ -52,5 +53,5 @@ public class ChapterDetailInfo {
     private Integer paragraphSpace;
 
     @Schema(description = "베스트 댓글", example = "[댓글 1, 댓글 2, 댓글 3] 최대 3")
-    private List<Comment> bestComments;
+    private List<CommentInfo> bestComments;
 }

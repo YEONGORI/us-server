@@ -65,7 +65,7 @@ public class ParagraphController {
             @PathVariable Long chapterId,
             @Validated @RequestBody PostParagraphReq req
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         ParagraphInVoting paragraph = paragraphService.postParagraph(authorId, chapterId, req);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -88,7 +88,7 @@ public class ParagraphController {
     public ResponseEntity<ApiCsResponse<?>> selectParagraph(
             @PathVariable Long novelId, @PathVariable Long chapterId, @PathVariable Long paragraphId
     ) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         paragraphService.selectParagraph(authorId, novelId, chapterId, paragraphId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -105,9 +105,9 @@ public class ParagraphController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "작성 성공")
     })
-    @PostMapping("/{paragraphId}") // 신고 하기
+    @PostMapping("/call/{paragraphId}") // 신고 하기
     public ResponseEntity<ApiCsResponse<?>> reportParagraph(@PathVariable Long paragraphId) {
-        Long authorId = 0L; // TODO: 토큰에서 author 정보 가져올 예정
+        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         paragraphService.reportParagraph(authorId, paragraphId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
