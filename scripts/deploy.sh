@@ -37,4 +37,4 @@
 #mkdir -p log
 #
 #echo "> 새 애플리케이션 배포"
-#nohup java -jar $REPOSITORY/$PROJECT_NAME/"$JAR_NAME" 1>log/log.out 2>log/error.out &
+#nohup java -jar $REPOSITORY/$PROJECT_NAME/"$JAR_NAME" 1>log.out 2>error.out &
