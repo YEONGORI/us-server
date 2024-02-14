@@ -18,7 +18,7 @@ import us.usserver.global.exception.ParagraphNotFoundException;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
 import us.usserver.paragraph.dto.*;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 import us.usserver.novel.Novel;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
@@ -37,7 +37,7 @@ public class ParagraphServiceV0 implements ParagraphService {
     private final StakeService stakeService;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteRepository voteRepository;
+    private final VoteJpaRepository voteJpaRepository;
     private final AuthorityRepository authorityRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
@@ -63,7 +63,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
-                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, voteRepository.countAllByParagraph(paragraph)))
+                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, voteJpaRepository.countAllByParagraph(paragraph)))
                 .toList();
 
         return GetParagraphResponse.builder().paragraphInVotings(paragraphInVotings).build();
@@ -168,7 +168,7 @@ public class ParagraphServiceV0 implements ParagraphService {
         int maxVoteCnt = 0, voteCnt;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
-            voteCnt = voteRepository.countAllByParagraph(paragraph);
+            voteCnt = voteJpaRepository.countAllByParagraph(paragraph);
 
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {

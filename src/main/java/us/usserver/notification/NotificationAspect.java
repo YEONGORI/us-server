@@ -27,10 +27,9 @@ public class NotificationAspect {
     public void annotationPointcut() {}
 
     @Async
-    @AfterReturning(pointcut = "annotationPointcut()", returning = "responseEntity")
-    public void checkValue(JoinPoint joinPoint, ResponseEntity<CustomApiResponse<?>> responseEntity) {
-
-        CustomApiResponse<?> apiResponse = responseEntity.getBody();
+    @AfterReturning(pointcut = "annotationPointcut()", returning = "returnValue")
+    public void checkValue(JoinPoint joinPoint, ResponseEntity<CustomApiResponse<?>> returnValue) {
+        CustomApiResponse<?> apiResponse = returnValue.getBody();
 
         NotificationInfo notificationInfo = apiResponse.getNotificationInfo();
         notificationService.send(

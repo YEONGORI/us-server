@@ -1,6 +1,5 @@
 package us.usserver.vote;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,11 +26,11 @@ import us.usserver.novel.NovelRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
@@ -41,7 +40,7 @@ class VoteControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private VoteRepository voteRepository;
+    private VoteJpaRepository voteJpaRepository;
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -110,11 +109,11 @@ class VoteControllerTest {
         // given
 
         // when
-        List<Vote> prevVotes = voteRepository.findAllByAuthor(author);
+        List<Vote> prevVotes = voteJpaRepository.findAllByAuthor(author);
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/vote/" + paragraph4.getId())
                 .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> nextVotes = voteRepository.findAllByAuthor(author);
+        List<Vote> nextVotes = voteJpaRepository.findAllByAuthor(author);
 
         // then
         boolean anyMatch = nextVotes.stream().anyMatch(vote -> vote.getParagraph().getId().equals(paragraph4.getId()));
@@ -145,13 +144,13 @@ class VoteControllerTest {
     void cancelVote() throws Exception {
         // given
         Vote vote = Vote.builder().paragraph(paragraph5).author(author).build();
-        vote = voteRepository.save(vote);
+        vote = voteJpaRepository.save(vote);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .post("/vote/" + vote.getId())
                 .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> votes = voteRepository.findAllByAuthor(author);
+        List<Vote> votes = voteJpaRepository.findAllByAuthor(author);
 
 
         // then
@@ -165,7 +164,7 @@ class VoteControllerTest {
         // 현 컨트롤러에 기본 authorId가 500으로 설정되어 있어. 본 테스트에서 만든 author를 사용하면 권한이 없을 수 밖에 없음
         // given
         Vote vote = Vote.builder().paragraph(paragraph5).author(author).build();
-        vote = voteRepository.save(vote);
+        vote = voteJpaRepository.save(vote);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders

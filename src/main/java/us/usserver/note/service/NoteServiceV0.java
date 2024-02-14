@@ -8,12 +8,11 @@ import us.usserver.author.Author;
 import us.usserver.global.EntityService;
 import us.usserver.like.paragraph.ParagraphLike;
 import us.usserver.like.paragraph.ParagraphLikeRepository;
-import us.usserver.note.NoteService;
 import us.usserver.note.dto.ParagraphPreview;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class NoteServiceV0 {
     private final EntityService entityService;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteRepository voteRepository;
+    private final VoteJpaRepository voteJpaRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     public List<ParagraphPreview> wroteParagraphs(Long authorId) {
@@ -42,7 +41,7 @@ public class NoteServiceV0 {
     public List<ParagraphPreview> votedParagraphs(Long authorId) {
         Author author = entityService.getAuthor(authorId);
 
-        List<Vote> votes = voteRepository.findAllByAuthor(author);
+        List<Vote> votes = voteJpaRepository.findAllByAuthor(author);
         return votes.stream().map(vote -> ParagraphPreview.fromParagraph(
                 vote.getParagraph(),
                 vote.getParagraph().getChapter().getNovel(),

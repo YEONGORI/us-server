@@ -16,7 +16,7 @@ import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public class EntityService {
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
     private final CommentJpaRepository commentJpaRepository;
-    private final VoteRepository voteRepository;
+    private final VoteJpaRepository voteJpaRepository;
 
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);
@@ -80,7 +80,7 @@ public class EntityService {
     }
 
     public Vote getVote(Long voteId) {
-        Optional<Vote> voteById = voteRepository.getVoteById(voteId);
+        Optional<Vote> voteById = voteJpaRepository.getVoteById(voteId);
         if (voteById.isEmpty()) {
             throw new VoteNotFoundException(ExceptionMessage.Vote_NOT_FOUND);
         }
