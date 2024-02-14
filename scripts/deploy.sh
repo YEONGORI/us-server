@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2164
 
-REPOSITORY=home/ec2-user
+REPOSITORY=/home/ec2-user
 PROJECT_NAME=us-server
 BUILD_DIRECTORY=build/libs
 
@@ -9,6 +9,7 @@ echo "> 프로젝트 디렉토리 이동"
 cd $REPOSITORY/$PROJECT_NAME
 
 echo "> Gradle Build"
+chmod +x gradlew
 bash ./gradlew build -x test
 
 echo "> 빌드 디렉토리 이동"
