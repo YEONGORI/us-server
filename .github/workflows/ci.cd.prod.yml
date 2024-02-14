@@ -84,7 +84,7 @@ jobs:
         run: |
           sudo docker system prune -f
 
-        #      - name: 🌎 Access to AWS
+        #      - name: 🌎 Access to AWSss
 #        uses: aws-actions/configure-aws-credentials@v4
 #        with:
 #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
