@@ -32,7 +32,7 @@ import us.usserver.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.paragraph.dto.PostParagraphReq;
 import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +50,7 @@ class ParagraphServiceV0Test {
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
-    private VoteRepository voteRepository;
+    private VoteJpaRepository voteJpaRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -139,10 +139,10 @@ class ParagraphServiceV0Test {
         authorRepository.save(author1);
         authorRepository.save(author2);
         authorRepository.save(author3);
-        voteRepository.save(like1);
-        voteRepository.save(like2);
-        voteRepository.save(like3);
-        voteRepository.save(like4);
+        voteJpaRepository.save(like1);
+        voteJpaRepository.save(like2);
+        voteJpaRepository.save(like3);
+        voteJpaRepository.save(like4);
 
         ParagraphsOfChapter paragraphs = paragraphServiceV0.getParagraphs(author1.getId(), chapter.getId());
 

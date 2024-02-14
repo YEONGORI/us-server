@@ -25,7 +25,7 @@ import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ class VoteServiceV0Test {
     private VoteServiceV0 voteServiceV0;
 
     @Autowired
-    private VoteRepository voteRepository;
+    private VoteJpaRepository voteJpaRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -80,7 +80,7 @@ class VoteServiceV0Test {
 
         // when
         voteServiceV0.voting(paragraph.getId(), author.getId());
-        List<Vote> allByAuthor = voteRepository.findAllByAuthor(author);
+        List<Vote> allByAuthor = voteJpaRepository.findAllByAuthor(author);
 
         // then
         assertThat(allByAuthor.size()).isEqualTo(1);
@@ -106,9 +106,9 @@ class VoteServiceV0Test {
         Vote vote = Vote.builder().author(author).paragraph(paragraph).build();
 
         // when
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
         voteServiceV0.unvoting(vote.getId(), author.getId());
-        List<Vote> allByAuthor = voteRepository.findAllByAuthor(author);
+        List<Vote> allByAuthor = voteJpaRepository.findAllByAuthor(author);
 
         // then
         assertThat(allByAuthor.size()).isZero();
@@ -125,7 +125,7 @@ class VoteServiceV0Test {
 
         // when
         authorRepository.save(newAuthor);
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
 
         // then
         assertThrows(AuthorNotAuthorizedException.class,
@@ -139,7 +139,7 @@ class VoteServiceV0Test {
         Vote vote = Vote.builder().author(author).paragraph(paragraph).build();
 
         // when
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
         assertDoesNotThrow(
                 () -> voteServiceV0.unvoting(vote.getId(), author.getId()));
 

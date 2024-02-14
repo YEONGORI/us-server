@@ -11,7 +11,7 @@ import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.global.exception.DuplicatedVoteException;
 import us.usserver.paragraph.Paragraph;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 import us.usserver.vote.VoteService;
 
 import java.util.List;
@@ -23,14 +23,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class VoteServiceV0 implements VoteService {
     private final EntityService entityService;
-    private final VoteRepository voteRepository;
+    private final VoteJpaRepository voteJpaRepository;
 
     @Override
     public void voting(Long paragraphId, Long authorId) {
         Paragraph paragraph = entityService.getParagraph(paragraphId);
         Author author = entityService.getAuthor(authorId);
 
-        List<Vote> allByAuthor = voteRepository.findAllByAuthor(author);
+        List<Vote> allByAuthor = voteJpaRepository.findAllByAuthor(author);
         if (allByAuthor.stream()
                 .filter(vote -> Objects.equals(vote.getParagraph().getChapter().getId(), paragraph.getChapter().getId()))
                 .anyMatch(vote ->
@@ -44,7 +44,7 @@ public class VoteServiceV0 implements VoteService {
                 .author(author)
                 .build();
 
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
     }
 
     @Override
@@ -56,6 +56,6 @@ public class VoteServiceV0 implements VoteService {
             throw new AuthorNotAuthorizedException(ExceptionMessage.Author_NOT_AUTHORIZED);
         }
 
-        voteRepository.delete(vote);
+        voteJpaRepository.delete(vote);
     }
 }

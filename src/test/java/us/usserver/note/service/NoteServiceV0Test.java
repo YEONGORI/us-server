@@ -25,7 +25,7 @@ import us.usserver.paragraph.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
 import us.usserver.paragraph.ParagraphRepository;
 import us.usserver.vote.Vote;
-import us.usserver.vote.VoteRepository;
+import us.usserver.vote.repository.VoteJpaRepository;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ class NoteServiceV0Test {
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
-    private VoteRepository voteRepository;
+    private VoteJpaRepository voteJpaRepository;
     @Autowired
     private ParagraphLikeRepository paragraphLikeRepository;
 
@@ -123,7 +123,7 @@ class NoteServiceV0Test {
         Vote vote = Vote.builder().author(author).paragraph(paragraph).build();
 
         // when
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
         List<ParagraphPreview> paragraphPreviews = noteServiceV0.votedParagraphs(author.getId());
 
         // then
@@ -140,7 +140,7 @@ class NoteServiceV0Test {
 
         // when
         authorRepository.save(newAuthor);
-        voteRepository.save(vote);
+        voteJpaRepository.save(vote);
         List<ParagraphPreview> paragraphPreviews = noteServiceV0.votedParagraphs(author.getId());
 
         // then
