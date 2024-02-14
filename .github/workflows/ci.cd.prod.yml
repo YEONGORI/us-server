@@ -66,11 +66,13 @@ jobs:
   deploy:
     needs: build
     runs-on: self-hosted
-
+    env:
+      DOCKER_IMAGE_NAME: us-server
+      DOCKER_IMAGE_TAG: deploy
     steps:
       - name: Pull Latest Image
         run: |
-          sudo docker pull teamus/us-server:deploy
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
 
       - name: Stop Current Running Container
         run: |
