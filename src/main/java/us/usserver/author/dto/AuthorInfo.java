@@ -14,12 +14,12 @@ public class AuthorInfo {
     private Long id;
 
     @Schema(description = "작가 닉네임", example = "특별한닉네임")
-    private String nickName;
+    private String nickname;
 
     public static AuthorInfo fromAuthor(Author author) {
         return AuthorInfo.builder()
                 .id(author.getId())
-                .nickName(author.getNickname())
+                .nickname(author.getNickname())
                 .build();
     }
 }
