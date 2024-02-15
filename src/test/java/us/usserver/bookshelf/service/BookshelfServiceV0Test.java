@@ -121,7 +121,7 @@ class BookshelfServiceV0Test {
         // then
         assertThat(novelPreviews.size()).isEqualTo(1);
         assertThat(novelPreviews.get(0).getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelPreviews.get(0).getMainAuthor().getNickName()).isEqualTo(author.getNickname());
+        assertThat(novelPreviews.get(0).getMainAuthor().getNickname()).isEqualTo(author.getNickname());
         assertThat(novelPreviews.get(0).getJoinedAuthor()).isEqualTo(1);
         assertThat(novelPreviews.get(0).getShortcuts()).contains(novel.getId().toString());
     }
