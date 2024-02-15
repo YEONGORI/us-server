@@ -80,7 +80,7 @@ jobs:
 
       - name: Run Latest Image
         run: |
-          sudo docker run --name api-server --rm -d -p 7070:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+          sudo docker run --name api-server --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
 
       - name: Delete Old Image
         run: |
