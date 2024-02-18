@@ -5,7 +5,7 @@ import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.EmailRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.global.oauth.oauthEnum.SocialType;
+import us.usserver.global.oauth.oauthEnum.OauthProvider;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.member.memberEnum.Role;
 
@@ -21,7 +21,7 @@ public class MemberMother {
                 .randomize(named("socialId").and(ofType(String.class)), new StringRandomizer(20))
                 .randomize(named("email").and(ofType(String.class)), new EmailRandomizer(0))
                 .randomize(named("age").and(ofType(Integer.class)), new IntegerRangeRandomizer(1, 100))
-                .randomize(SocialType.class, () -> SocialType.KAKAO)
+                .randomize(OauthProvider.class, () -> OauthProvider.KAKAO)
                 .randomize(Role.class, () -> Role.USER)
                 .randomize(Gender.class, () -> Gender.UNKNOWN);
 
