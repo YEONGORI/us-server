@@ -144,10 +144,10 @@ class NovelServiceV0Test {
     @DisplayName("쇼셜 소개 수정")
     void modifyNovelSynopsis() {
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
-        NovelSynopsis synopsisResponse = assertDoesNotThrow(
-                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest));
+        String synopsisResponse = assertDoesNotThrow(
+                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.getSynopsis()));
 
-        assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse.getSynopsis());
+        assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse);
     }
     
     @Test
@@ -155,7 +155,7 @@ class NovelServiceV0Test {
     void modifySysnopsisNotAuthority() {
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
         assertThrows(MainAuthorIsNotMatchedException.class,
-                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest));
+                () -> novelServiceV0.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest.getSynopsis()));
     }
 
     @Test

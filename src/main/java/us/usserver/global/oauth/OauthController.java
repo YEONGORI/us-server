@@ -15,9 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
+import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MemberNotFoundException;
 import us.usserver.global.exception.TokenInvalidException;
+import us.usserver.global.exception.UnsupportedSocialProviderException;
 import us.usserver.global.jwt.TokenProvider;
 import us.usserver.global.oauth.dto.*;
 import us.usserver.global.oauth.oauthEnum.OauthProvider;
@@ -54,15 +56,20 @@ public class OauthController {
         log.debug("넘겨받은 kakao 인증키 :: " + oauthReq.getCode());
 
         MemberInfoDto memberInfoDto;
-        if (oauthReq.getOauthProvider() == OauthProvider.KAKAO) {
-            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthReq.getCode()));
-        } else if (oauthReq.getOauthProvider() == OauthProvider.NAVER) {
-            memberInfoDto = oauthService.getMemberByOauthLogin(new NaverParams(oauthReq.getCode(), oauthReq.getState()));
-        } else if (oauthReq.getOauthProvider() == OauthProvider.GOOGLE){
-            memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthReq.getCode()));
-        } else {
-            memberInfoDto = oauthService.getMemberByOauthLogin(new AppleParams(oauthReq.getCode()));
+        switch (oauthReq.getOauthProvider()) {
+            case KAKAO -> memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthReq.getCode()));
+            case GOOGLE -> memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthReq.getCode()));
+            default -> throw new UnsupportedSocialProviderException(ExceptionMessage.Unsupported_Social_Provider);
         }
+//        if (oauthReq.getOauthProvider() == OauthProvider.KAKAO) {
+//            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthReq.getCode()));
+//        } else if (oauthReq.getOauthProvider() == OauthProvider.NAVER) {
+//            memberInfoDto = oauthService.getMemberByOauthLogin(new NaverParams(oauthReq.getCode(), oauthReq.getState()));
+//        } else if (oauthReq.getOauthProvider() == OauthProvider.GOOGLE){
+//            memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthReq.getCode()));
+//        } else {
+//            memberInfoDto = oauthService.getMemberByOauthLogin(new AppleParams(oauthReq.getCode()));
+//        }
 
         //응답 헤더 생성
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -16,6 +16,7 @@ public class OauthReq {
     @Schema(description = "소셜 타입", example = "NAVER or KAKAO")
     @NotNull
     private OauthProvider oauthProvider;
+
     @Schema(description = "소셜 인증 Code", example = "213afiiwqjd2")
     @NotNull
     private String code;

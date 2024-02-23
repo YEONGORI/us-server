@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import us.usserver.author.Author;
 import us.usserver.author.dto.AuthorInfo;
+import us.usserver.novel.Novel;
 import us.usserver.novel.novelEnum.Genre;
 import us.usserver.novel.novelEnum.Hashtag;
 
@@ -15,6 +16,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NovelInfo {
+    @Schema(description = "소설 ID", example = "1")
+    private Long id;
+
     @Schema(description = "소설 제목", example = "주술 회전")
     private String title;
 
@@ -38,4 +42,19 @@ public class NovelInfo {
 
     @Schema(description = "소설 공유 url",example = "https:// ~ ~")
     private String novelSharelUrl;
+
+
+    public static NovelInfo mapNovelToNovelInfo(Novel novel) {
+        return NovelInfo.builder()
+                .id(novel.getId())
+                .title(novel.getTitle())
+                .genre(novel.getGenre())
+                .hashtag(novel.getHashtags())
+                .createdAuthor(AuthorInfo.fromAuthor(novel.getMainAuthor()))
+                .joinedAuthorCnt(novel.getAuthorities().size()) // TODO: 여기 size만 필요한데 이거 유지 관리 하는 필드가 필요함
+                .commentCnt(novel.getComments().size())
+                .likeCnt(novel.getNovelLikes().size())
+                .novelSharelUrl("")
+                .build();
+    }
 }
