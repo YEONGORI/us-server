@@ -105,7 +105,7 @@ public class NovelController {
             @Validated @RequestBody NovelSynopsis req
     ) {
         Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        NovelSynopsis synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req);
+        String synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req.getSynopsis());
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
@@ -126,6 +126,7 @@ public class NovelController {
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
     public ResponseEntity<ApiCsResponse<?>> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
         HomeNovelListResponse homeNovelList = novelService.homeNovelInfo(member);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
@@ -143,6 +144,7 @@ public class NovelController {
     @GetMapping("/main/more")
     public ResponseEntity<ApiCsResponse<?>> moreNovel(@Valid MoreInfoOfNovel moreInfoOfNovel) {
         NovelPageInfoResponse novelPageInfoResponse = novelService.moreNovel(moreInfoOfNovel);
+
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())

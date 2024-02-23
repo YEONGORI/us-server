@@ -11,25 +11,22 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.author.dto.AuthorInfo;
 import us.usserver.authority.Authority;
 import us.usserver.authority.AuthorityRepository;
 import us.usserver.chapter.ChapterService;
 import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.comment.repository.CommentJpaRepository;
 import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.like.novel.NovelLikeRepository;
 import us.usserver.member.Member;
 import us.usserver.novel.Novel;
-import us.usserver.novel.repository.NovelJpaRepository;
+import us.usserver.novel.NovelRepository;
 import us.usserver.novel.NovelService;
 import us.usserver.novel.dto.*;
 import us.usserver.novel.novelEnum.Orders;
 import us.usserver.novel.novelEnum.Sorts;
-import us.usserver.novel.NovelRepository;
+import us.usserver.novel.repository.NovelJpaRepository;
 import us.usserver.stake.StakeService;
 import us.usserver.stake.dto.GetStakeResponse;
 import us.usserver.stake.dto.StakeInfo;
@@ -49,8 +46,6 @@ public class NovelServiceV0 implements NovelService {
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
-    private final NovelLikeRepository novelLikeRepository;
-    private final CommentJpaRepository commentJpaRepository;
     private final AuthorRepository authorRepository;
     private final NovelJpaRepository novelJpaRepository;
     private final NovelRepository novelRepository;
@@ -69,34 +64,35 @@ public class NovelServiceV0 implements NovelService {
         authorityRepository.save(Authority.builder().author(author).novel(novel).build());
 
         chapterService.createChapter(saveNovel.getId(), author.getId());
+        return NovelInfo.mapNovelToNovelInfo(novel);
 
-        return NovelInfo.builder()
-                .title(novel.getTitle())
-                .createdAuthor(AuthorInfo.fromAuthor(author))
-                .genre(novel.getGenre())
-                .hashtag(novel.getHashtags())
-                .joinedAuthorCnt(1)
-                .commentCnt(0)
-                .likeCnt(0)
-                .build();
+//        return NovelInfo.builder() TODO: 리펙토링으로 삭제 예정
+//                .title(novel.getTitle())
+//                .createdAuthor(AuthorInfo.fromAuthor(author))
+//                .genre(novel.getGenre())
+//                .hashtag(novel.getHashtags())
+//                .joinedAuthorCnt(1)
+//                .commentCnt(0)
+//                .likeCnt(0)
+//                .build();
     }
 
     @Override
     public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityService.getNovel(novelId);
-        AuthorInfo authorInfo = AuthorInfo.fromAuthor(novel.getMainAuthor());
-
-        // TODO : url 은 상의가 좀 필요함
-        return NovelInfo.builder()
-                .title(novel.getTitle())
-                .createdAuthor(authorInfo)
-                .genre(novel.getGenre())
-                .hashtag(novel.getHashtags())
-                .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
-                .commentCnt(commentJpaRepository.countAllByNovel(novel))
-                .likeCnt(novelLikeRepository.countAllByNovel(novel))
-                .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
-                .build();
+        return NovelInfo.mapNovelToNovelInfo(novel);
+//        AuthorInfo authorInfo = AuthorInfo.fromAuthor(novel.getMainAuthor()); TODO: 리펙토링으로 삭제 예정
+//
+//        return NovelInfo.builder()
+//                .title(novel.getTitle())
+//                .createdAuthor(authorInfo)
+//                .genre(novel.getGenre())
+//                .hashtag(novel.getHashtags())
+//                .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
+//                .commentCnt(commentJpaRepository.countAllByNovel(novel))
+//                .likeCnt(novelLikeRepository.countAllByNovel(novel))
+//                .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
+//                .build();
     }
 
     @Override
@@ -121,7 +117,7 @@ public class NovelServiceV0 implements NovelService {
     }
 
     @Override
-    public NovelSynopsis modifyNovelSynopsis(Long novelId, Long authorId, NovelSynopsis req) {
+    public String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis) {
         Novel novel = entityService.getNovel(novelId);
         Author author = entityService.getAuthor(authorId);
 
@@ -129,8 +125,8 @@ public class NovelServiceV0 implements NovelService {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.Main_Author_NOT_MATCHED);
         }
 
-        novel.setSynopsis(req.getSynopsis());
-        return req;
+        novel.setSynopsis(synopsis);
+        return synopsis;
     }
 
     @Override
@@ -150,24 +146,26 @@ public class NovelServiceV0 implements NovelService {
     public HomeNovelListResponse homeNovelInfo(Member member) {
         Author author = getAuthor(member);
         MoreInfoOfNovel realTimeNovels = MoreInfoOfNovel.builder()
+                .lastNovelId(501L)
                 .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
                 .build();
 
         MoreInfoOfNovel newNovels = MoreInfoOfNovel.builder()
+                .lastNovelId(501L)
                 .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
                 .build();
 
         return HomeNovelListResponse.builder()
-                .realTimeNovels(novelRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels)).toList())
-                .newNovels(novelRepository.moreNovelList(newNovels, getPageRequest(newNovels)).toList())
+                .realTimeNovels(mapNovelsToNovelInfos(novelRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels))))
+                .newNovels(mapNovelsToNovelInfos(novelRepository.moreNovelList(newNovels, getPageRequest(newNovels))))
                 .readNovels((author == null) ? null : author.getViewedNovels()
-                        .stream()
-                        .limit(8)
+                        .stream().limit(8)
                         .sorted(Comparator.comparing(Novel::getId))
+                        .map(NovelInfo::mapNovelToNovelInfo)
                         .toList())
                 .build();
     }
-    
+
     @Override
     public NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel) {
         PageRequest pageable = getPageRequest(moreInfoOfNovel);
@@ -182,7 +180,7 @@ public class NovelServiceV0 implements NovelService {
         if (author != null) {
             int author_readNovel_cnt = author.getViewedNovels().size();
             int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
-            int endPoint = author_readNovel_cnt < getSize ? author_readNovel_cnt : getSize;
+            int endPoint = Math.min(author_readNovel_cnt, getSize);
 
             List<Novel> novelList = author
                     .getViewedNovels()
@@ -193,7 +191,7 @@ public class NovelServiceV0 implements NovelService {
             boolean hasNext = getSize == endPoint;
 
             return NovelPageInfoResponse.builder()
-                    .novelList(novelList)
+                    .novelList(novelList.stream().map(NovelInfo::mapNovelToNovelInfo).toList())
                     .lastNovelId(novelList.get(novelList.size()-1).getId())
                     .hasNext(hasNext)
                     .sorts(null)
@@ -215,7 +213,7 @@ public class NovelServiceV0 implements NovelService {
 
         return NovelPageInfoResponse
                 .builder()
-                .novelList(novelSlice.getContent())
+                .novelList(mapNovelsToNovelInfos(novelSlice))
                 .lastNovelId(newLastNovelId)
                 .hasNext(novelSlice.hasNext())
                 .sorts(novelMoreDto.getSorts())
@@ -312,5 +310,11 @@ public class NovelServiceV0 implements NovelService {
             return null;
         }
         return authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+    }
+
+    private List<NovelInfo> mapNovelsToNovelInfos(Slice<Novel> novels) {
+        return novels.getContent()
+                .stream().map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
     }
 }

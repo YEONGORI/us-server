@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import us.usserver.global.oauth.oauthEnum.SocialType;
+import us.usserver.global.oauth.oauthEnum.OauthProvider;
 import us.usserver.member.memberEnum.Gender;
 
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class JoinMemberReq {
     @Schema(description = "사용자 소셜 Type", example = "KAKAO, GOOGLE, NAVER")
     @NotBlank
     @Enumerated(EnumType.STRING)
-    private SocialType socialType;
+    private OauthProvider oauthProvider;
     @Schema(description = "사용자 이메일", example = "aorkserni123@naver.com")
     @NotBlank
     private String email;

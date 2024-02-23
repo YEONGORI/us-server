@@ -15,9 +15,9 @@ public interface NovelService {
 
     NovelDetailInfo getNovelDetailInfo(Long novelId);
 
-    NovelSynopsis modifyNovelSynopsis(Long novelId, Long authorId, NovelSynopsis req);
+    String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis);
 
-    AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req);
+    AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription description);
 
     NovelInfo createNovel(Member member, CreateNovelReq createNovelReq);
 
