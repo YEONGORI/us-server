@@ -25,4 +25,5 @@ public final class ExceptionMessage {
     public static final String Token_NOT_FOUND = "해당 토큰이 존재 하지 않습니다.";
     public static final String Font_Size_OUT_OF_RANGE = "폰트 크기는 1 ~ 30 사이입니다.";
     public static final String Paragraph_Space_OUT_OF_RANGE = "단락 크기는 1 ~ 30 사이입니다.";
+    public static final String Unsupported_Social_Provider = "지원하는 소셜 프로바이더가 아닙니다.";
 }

@@ -6,10 +6,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-src/main/resources/application-env.yml
-src/main/resources/application-db.yml
 src/main/resources/application-auth.yml
+src/main/resources/application-db.yml
 src/test/resources/application-auth.yml
+src/test/resources/application-db.yml
 
 ### STS ###
 .apt_generated

@@ -147,4 +147,11 @@ public class GlobalControllerAdvice {
         log.error(ExceptionMessage.Paragraph_Space_OUT_OF_RANGE);
         return new ApiCsResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(UnsupportedSocialProviderException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    protected ApiCsResponse<Object> UnsupportedSocialProviderExceptionHandler(Exception e) {
+        log.error(ExceptionMessage.Unsupported_Social_Provider);
+        return new ApiCsResponse<>(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
+    }
 }

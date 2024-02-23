@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import us.usserver.global.oauth.oauthEnum.SocialType;
+import us.usserver.global.oauth.oauthEnum.OauthProvider;
 import us.usserver.member.memberEnum.Role;
 
 @Getter
@@ -18,7 +18,7 @@ public class LoginMemberResponse {
     private String email;
     @Schema(description = "사용자 소셜 Type", example = "KAKAO, NAVER, GOOGLE")
     @NotNull
-    private SocialType socialType;
+    private OauthProvider oauthProvider;
     @Schema(description = "사용자 소셜 ID", example = "12312312")
     @NotNull
     private String socialId;

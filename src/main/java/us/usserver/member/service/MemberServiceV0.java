@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.author.Author;
 import us.usserver.author.AuthorRepository;
-import us.usserver.global.EntityService;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.RedisUtils;
 import us.usserver.global.exception.AuthorNotFoundException;
@@ -40,7 +39,7 @@ public class MemberServiceV0 implements MemberService {
     public Long join(JoinMemberReq joinMemberReq) {
         Member member = Member.builder()
                 .socialId(joinMemberReq.getSocialId())
-                .socialType(joinMemberReq.getSocialType())
+                .oauthProvider(joinMemberReq.getOauthProvider())
                 .email(joinMemberReq.getEmail())
                 .age(LocalDateTime.now().getYear() - joinMemberReq.getBirthday().getYear())
                 .gender(joinMemberReq.getGender())

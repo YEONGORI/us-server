@@ -10,16 +10,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-//import us.usserver.global.jwt.JwtAuthenticationFilter;
-import us.usserver.global.oauth.CustomOAuth2UserService;
-import us.usserver.global.oauth.handler.Oauth2LoginFailureHandler;
-import us.usserver.global.oauth.handler.Oauth2LoginSuccessHandler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +26,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 //    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final Oauth2LoginSuccessHandler oauth2LoginSuccessHandler;
-    private final Oauth2LoginFailureHandler oauth2LoginFailureHandler;
+//    private final CustomOAuth2UserService customOAuth2UserService;
+//    private final Oauth2LoginSuccessHandler oauth2LoginSuccessHandler;
+//    private final Oauth2LoginFailureHandler oauth2LoginFailureHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         http
@@ -64,16 +59,16 @@ public class SecurityConfig {
                         }
                 );
 
-        http
-                .oauth2Login(
-                        oauth -> {
-                            oauth.loginPage("/loginForm");
-                            oauth.defaultSuccessUrl("/");
-                            oauth.userInfoEndpoint(userService -> userService.userService(customOAuth2UserService));
-                            oauth.successHandler(oauth2LoginSuccessHandler);
-                            oauth.failureHandler(oauth2LoginFailureHandler);
-                        }
-                );
+//        http
+//                .oauth2Login(
+//                        oauth -> {
+//                            oauth.loginPage("/loginForm");
+//                            oauth.defaultSuccessUrl("/");
+//                            oauth.userInfoEndpoint(userService -> userService.userService(customOAuth2UserService));
+//                            oauth.successHandler(oauth2LoginSuccessHandler);
+//                            oauth.failureHandler(oauth2LoginFailureHandler);
+//                        }
+//                );
 
 //        http
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

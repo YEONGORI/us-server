@@ -78,6 +78,7 @@ public class NovelRepositoryImpl implements NovelRepository {
     private BooleanExpression ltNovelId(Long lastNovelId) {
         return lastNovelId == 0L ? null : novel.id.lt(lastNovelId);
     }
+
     private BooleanExpression containsTitle(String title) {
         return hasText(title) ? novel.title.contains(title) : null;
     }

@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.base.BaseEntity;
-import us.usserver.global.oauth.oauthEnum.SocialType;
+import us.usserver.global.oauth.oauthEnum.OauthProvider;
 import us.usserver.member.memberEnum.Gender;
 import us.usserver.member.memberEnum.Role;
 
@@ -28,7 +28,7 @@ public class Member extends BaseEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private SocialType socialType;
+    private OauthProvider oauthProvider;
 
     @NotBlank
     private String email;
