@@ -1,12 +1,14 @@
 package us.usserver.like.novel.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import us.usserver.author.Author;
 import us.usserver.like.novel.NovelLike;
 import us.usserver.like.novel.NovelLikeRepository;
 import us.usserver.novel.Novel;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +32,12 @@ public class NovelLikeRepositoryImpl implements NovelLikeRepository {
     }
 
     @Override
-    public NovelLike findAnyByNovelAndAuthor(Novel novel, Author author) {
-        return novelLikeJpaRepository.findFirstByNovelAndAuthor(novel, author).orElse(null);
+    public Optional<NovelLike> findAnyByNovelAndAuthor(Novel novel, Author author) {
+        return novelLikeJpaRepository.findFirstByNovelAndAuthor(novel, author);
+    }
+
+    @Override
+    public List<NovelLike> findAllByAuthor(Author author) {
+        return novelLikeJpaRepository.findAllByAuthor(author);
     }
 }

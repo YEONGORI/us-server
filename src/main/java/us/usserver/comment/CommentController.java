@@ -85,7 +85,7 @@ public class CommentController {
             @PathVariable Long novelId,
             @Validated @RequestBody CommentContent commentContent
     ) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         CommentInfo comment = commentService.writeCommentOnNovel(novelId, authorId, commentContent);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -114,7 +114,7 @@ public class CommentController {
             @PathVariable Long chapterId,
             @Validated @RequestBody CommentContent commentContent
     ) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         CommentInfo comment = commentService.writeCommentOnChapter(chapterId, authorId, commentContent);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -137,7 +137,7 @@ public class CommentController {
     })
     @GetMapping("/author")
     public ResponseEntity<ApiCsResponse<?>> getCommentsOfAuthor() {
-        Long authorId = 1L; // TODO: 토큰 에서 뺴올 예정
+        Long authorId = 500L; // TODO: 토큰 에서 뺴올 예정
         GetCommentResponse comments = commentService.getCommentsByAuthor(authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
@@ -161,7 +161,7 @@ public class CommentController {
     })
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiCsResponse<?>> deleteComment(@PathVariable Long commentId) {
-        Long authorId = 0L;
+        Long authorId = 500L;
         commentService.deleteComment(commentId, authorId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
