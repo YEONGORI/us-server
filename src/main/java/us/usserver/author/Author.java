@@ -53,7 +53,7 @@ public class Author {
     @Min(1)
     @Max(30)
     @Setter
-    private Integer paragraphSpace = 15;
+    private Integer paragraphSpace = 16;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
