@@ -23,6 +23,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Author {
