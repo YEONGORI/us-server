@@ -7,27 +7,25 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.authority.Authority;
-import us.usserver.authority.AuthorityRepository;
-import us.usserver.comment.Comment;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.authority.Authority;
+import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.comment.Comment;
 import us.usserver.comment.CommentMother;
-import us.usserver.member.Member;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
-import us.usserver.paragraph.Paragraph;
+import us.usserver.domain.novel.repository.NovelDSLRepository;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
-import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 
 @SpringBootTest
 @Rollback
@@ -41,7 +39,7 @@ class ChapterControllerTest {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelDSLRepository novelCustomRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -148,7 +146,7 @@ class ChapterControllerTest {
         authorRepository.save(author3);
         authorRepository.save(author4);
         authorRepository.save(author5);
-        novelRepository.save(novel);
+        novelCustomRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         paragraphRepository.save(paragraph1);

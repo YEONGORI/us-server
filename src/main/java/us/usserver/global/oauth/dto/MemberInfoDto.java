@@ -1,6 +1,6 @@
 package us.usserver.global.oauth.dto;
 
-import us.usserver.member.memberEnum.Role;
+import us.usserver.domain.member.constant.Role;
 
 public record MemberInfoDto(
         Long userId,

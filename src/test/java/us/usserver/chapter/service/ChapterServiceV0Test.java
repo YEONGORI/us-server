@@ -6,27 +6,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.chapter.dto.ChapterDetailInfo;
-import us.usserver.chapter.dto.ChapterInfo;
-import us.usserver.comment.Comment;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterDetailInfo;
+import us.usserver.domain.chapter.dto.ChapterInfo;
+import us.usserver.domain.chapter.service.ChapterServiceV0;
+import us.usserver.domain.comment.Comment;
 import us.usserver.comment.CommentMother;
-import us.usserver.comment.CommentRepository;
+import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.like.comment.CommentLike;
-import us.usserver.like.comment.CommentLikeRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.like.comment.CommentLike;
+import us.usserver.domain.like.comment.repository.CommentLikeRepository;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
+import us.usserver.domain.novel.repository.NovelRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,7 @@ class ChapterServiceV0Test {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -64,7 +65,7 @@ class ChapterServiceV0Test {
         authorRepository.save(author);
 
         novel = NovelMother.generateNovel(author);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
     }
 
     @Test
@@ -112,7 +113,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
         novel.getChapters().add(chapter4);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter3);
         chapterRepository.save(chapter4);
         chapterRepository.save(chapter1);
@@ -158,7 +159,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
@@ -191,7 +192,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
@@ -284,7 +285,7 @@ class ChapterServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);

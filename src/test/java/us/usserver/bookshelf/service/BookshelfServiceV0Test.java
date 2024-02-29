@@ -7,24 +7,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.authority.Authority;
-import us.usserver.authority.AuthorityRepository;
-import us.usserver.bookshelf.dto.NovelPreview;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.authority.Authority;
+import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.bookshelf.dto.NovelPreview;
+import us.usserver.domain.bookshelf.service.BookshelfServiceV0;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
+import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.like.novel.NovelLike;
-import us.usserver.like.novel.repository.NovelLikeJpaRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.like.novel.NovelLike;
+import us.usserver.domain.like.novel.repository.NovelLikeJpaRepository;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
+import us.usserver.domain.novel.repository.NovelRepository;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ class BookshelfServiceV0Test {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -64,7 +65,7 @@ class BookshelfServiceV0Test {
         chapter = ChapterMother.generateChapter(novel);
 
         novel.getChapters().add(chapter);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter);
         authorityRepository.save(Authority.builder().novel(novel).author(author).build());
     }
@@ -83,7 +84,7 @@ class BookshelfServiceV0Test {
         newNovel.getChapters().add(newChapter);
 
         // when
-        novelJpaRepository.save(newNovel);
+        novelRepository.save(newNovel);
         chapterRepository.save(newChapter);
         author.getViewedNovels().add(novel);
         author.getViewedNovels().add(newNovel);
@@ -150,9 +151,9 @@ class BookshelfServiceV0Test {
         Novel newNovel3 = NovelMother.generateNovel(author);
 
         // when
-        novelJpaRepository.save(newNovel1);
-        novelJpaRepository.save(newNovel2);
-        novelJpaRepository.save(newNovel3);
+        novelRepository.save(newNovel1);
+        novelRepository.save(newNovel2);
+        novelRepository.save(newNovel3);
         authorityRepository.save(Authority.builder().novel(newNovel1).author(author).build());
         authorityRepository.save(Authority.builder().novel(newNovel2).author(author).build());
         authorityRepository.save(Authority.builder().novel(newNovel3).author(author).build());
@@ -171,17 +172,17 @@ class BookshelfServiceV0Test {
         Novel newNovel3 = NovelMother.generateNovel(author);
 
         // when
-        novelJpaRepository.save(newNovel1);
-        novelJpaRepository.save(newNovel2);
-        novelJpaRepository.save(newNovel3);
+        novelRepository.save(newNovel1);
+        novelRepository.save(newNovel2);
+        novelRepository.save(newNovel3);
         authorityRepository.save(Authority.builder().novel(newNovel1).author(author).build());
         authorityRepository.save(Authority.builder().novel(newNovel2).author(author).build());
         authorityRepository.save(Authority.builder().novel(newNovel3).author(author).build());
         List<NovelPreview> beforeNP = bookshelfServiceV0.createdNovels(author.getId());
 
-        novelJpaRepository.delete(newNovel1);
-        novelJpaRepository.delete(newNovel2);
-        novelJpaRepository.delete(newNovel3);
+        novelRepository.delete(newNovel1);
+        novelRepository.delete(newNovel2);
+        novelRepository.delete(newNovel3);
         List<NovelPreview> afterNP = bookshelfServiceV0.createdNovels(author.getId());
 
 
@@ -230,8 +231,8 @@ class BookshelfServiceV0Test {
 
         // when
         authorRepository.save(newAuthor);
-        novelJpaRepository.save(newNovel1);
-        novelJpaRepository.save(newNovel2);
+        novelRepository.save(newNovel1);
+        novelRepository.save(newNovel2);
         authorityRepository.save(Authority.builder().novel(novel).author(newAuthor).build());
         authorityRepository.save(Authority.builder().novel(newNovel1).author(newAuthor).build());
         authorityRepository.save(Authority.builder().novel(newNovel2).author(newAuthor).build());
@@ -252,14 +253,14 @@ class BookshelfServiceV0Test {
 
         // when
         authorRepository.save(newAuthor);
-        novelJpaRepository.save(newNovel1);
-        novelJpaRepository.save(newNovel2);
+        novelRepository.save(newNovel1);
+        novelRepository.save(newNovel2);
         authorityRepository.save(Authority.builder().novel(newNovel1).author(newAuthor).build());
         authorityRepository.save(Authority.builder().novel(newNovel2).author(newAuthor).build());
         List<NovelPreview> beforeNP = bookshelfServiceV0.joinedNovels(newAuthor.getId());
 
-        novelJpaRepository.delete(newNovel1);
-        novelJpaRepository.delete(newNovel2);
+        novelRepository.delete(newNovel1);
+        novelRepository.delete(newNovel2);
         List<NovelPreview> afterNP = bookshelfServiceV0.joinedNovels(newAuthor.getId());
         
         // then
@@ -307,8 +308,8 @@ class BookshelfServiceV0Test {
         NovelLike like2 = NovelLike.builder().novel(newNovel2).author(author).build();
 
         // when
-        novelJpaRepository.save(newNovel1);
-        novelJpaRepository.save(newNovel2);
+        novelRepository.save(newNovel1);
+        novelRepository.save(newNovel2);
         novelLikeJpaRepository.save(like1);
         novelLikeJpaRepository.save(like2);
         List<NovelPreview> novelPreviews = bookshelfServiceV0.likedNovels(author.getId());
@@ -325,10 +326,10 @@ class BookshelfServiceV0Test {
         NovelLike like = NovelLike.builder().novel(newNovel).author(author).build();
 
         // when
-        novelJpaRepository.save(newNovel);
+        novelRepository.save(newNovel);
         novelLikeJpaRepository.save(like);
         List<NovelPreview> beforeNP = bookshelfServiceV0.likedNovels(author.getId());
-        novelJpaRepository.delete(newNovel);
+        novelRepository.delete(newNovel);
         List<NovelPreview> afterNP = bookshelfServiceV0.likedNovels(author.getId());
 
         // then

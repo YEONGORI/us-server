@@ -11,22 +11,23 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
-import us.usserver.paragraph.Paragraph;
+import us.usserver.domain.novel.repository.NovelDSLRepository;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-import us.usserver.vote.repository.VoteJpaRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.domain.paragraph.repository.VoteJpaRepository;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ class VoteControllerTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelDSLRepository novelCustomRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -99,7 +100,7 @@ class VoteControllerTest {
         authorRepository.save(author);
         author.setIdForTest(defaultId);
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelCustomRepository.save(novel);
         chapterRepository.save(chapter);
     }
 

@@ -7,26 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.authority.Authority;
-import us.usserver.authority.AuthorityRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.authority.Authority;
+import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.stake.service.StakeServiceV0;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
-import us.usserver.paragraph.Paragraph;
+import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
-import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-import us.usserver.paragraph.service.ParagraphServiceV0;
-import us.usserver.stake.dto.StakeInfo;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.domain.paragraph.service.ParagraphServiceV0;
+import us.usserver.domain.stake.dto.StakeInfo;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ class StakeServiceV0Test {
     @Autowired
     private AuthorityRepository authorityRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -82,7 +83,7 @@ class StakeServiceV0Test {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
 
         authorityRepository.save(Authority.builder()
                 .novel(novel).author(author1).build());
@@ -144,7 +145,7 @@ class StakeServiceV0Test {
 
         // when
         novelForOne.getChapters().add(chapterForOne);
-        novelJpaRepository.save(novelForOne);
+        novelRepository.save(novelForOne);
 
         chapterForOne.getParagraphs().add(p1);
         chapterForOne.getParagraphs().add(p2);

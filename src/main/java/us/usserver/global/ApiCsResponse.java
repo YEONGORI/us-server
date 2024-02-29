@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class ApiCsResponse<T> {
     private int status;
     private String message;
     private T data;
+
+    private ApiCsResponse() {}
 }

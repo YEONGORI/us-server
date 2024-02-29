@@ -66,7 +66,7 @@ public class KakaoClient implements OauthClient{
 
         if (kakaoToken == null) {
             log.error("token을 정상적으로 가져오지 못했습니다.");
-            throw new TokenInvalidException(ExceptionMessage.Token_VERIFICATION);
+            throw new TokenInvalidException(ExceptionMessage.TOKEN_VERIFICATION);
         }
 
         return kakaoToken.getAccess_token();

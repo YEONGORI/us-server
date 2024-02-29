@@ -11,12 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.global.EntityService;
 import us.usserver.global.RedisUtils;
 import us.usserver.global.exception.TokenInvalidException;
-import us.usserver.member.Member;
-import us.usserver.member.MemberRepository;
+import us.usserver.domain.member.repository.MemberRepository;
 
 import java.util.Date;
 import java.util.Optional;
@@ -103,10 +102,10 @@ public class TokenProvider {
             return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
         } catch (TokenExpiredException e) {
             log.error("token expired");
-            throw new TokenInvalidException(Token_EXPIRED);
+            throw new TokenInvalidException(TOKEN_EXPIRED);
         } catch (JWTVerificationException e) {
             log.error("token verify fail");
-            throw new TokenInvalidException(Token_VERIFICATION);
+            throw new TokenInvalidException(TOKEN_VERIFICATION);
         } catch (Exception e) {
             throw new RuntimeException("Token Error!");
         }
@@ -132,9 +131,9 @@ public class TokenProvider {
         String findToken = redisUtils.getData(String.valueOf(id));
 
         if (findToken == null) {
-            throw new TokenInvalidException(Token_NOT_FOUND);
+            throw new TokenInvalidException(TOKEN_NOT_FOUND);
         } else if (!findToken.equals(refreshToken)) {
-            throw new TokenInvalidException(Token_VERIFICATION);
+            throw new TokenInvalidException(TOKEN_VERIFICATION);
         }
 
         Author author = entityService.getAuthor(id);

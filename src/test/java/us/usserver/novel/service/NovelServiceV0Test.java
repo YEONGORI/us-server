@@ -8,21 +8,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
+import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.NovelNotFoundException;
-import us.usserver.member.Member;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
+import us.usserver.domain.novel.dto.NovelSynopsis;
+import us.usserver.domain.novel.service.NovelServiceV0;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
-import us.usserver.novel.dto.*;
+import us.usserver.domain.novel.repository.NovelRepository;
 
 import java.util.Collections;
 
@@ -35,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class NovelServiceV0Test {
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -71,8 +75,8 @@ class NovelServiceV0Test {
         novel = NovelMother.generateNovel(author);
         dummyNovel = NovelMother.generateNovel(dummyAuthor);
 
-        novelJpaRepository.save(novel);
-        novelJpaRepository.save(dummyNovel);
+        novelRepository.save(novel);
+        novelRepository.save(dummyNovel);
 
     }
 
@@ -122,7 +126,7 @@ class NovelServiceV0Test {
         chapterRepository.save(chapter2);
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
 
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
                 () -> novelServiceV0.getNovelDetailInfo(novel.getId()));

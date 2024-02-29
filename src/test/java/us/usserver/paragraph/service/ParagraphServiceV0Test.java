@@ -8,31 +8,32 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.chapter.chapterEnum.ChapterStatus;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
-import us.usserver.member.Member;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.paragraph.service.ParagraphServiceV0;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
-import us.usserver.paragraph.Paragraph;
+import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
-import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.dto.GetParagraphResponse;
-import us.usserver.paragraph.dto.ParagraphInVoting;
-import us.usserver.paragraph.dto.ParagraphsOfChapter;
-import us.usserver.paragraph.dto.PostParagraphReq;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-import us.usserver.vote.Vote;
-import us.usserver.vote.repository.VoteJpaRepository;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.domain.paragraph.dto.GetParagraphResponse;
+import us.usserver.domain.paragraph.dto.ParagraphInVoting;
+import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
+import us.usserver.domain.paragraph.dto.PostParagraphReq;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.domain.paragraph.entity.Vote;
+import us.usserver.domain.paragraph.repository.VoteJpaRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,7 +57,7 @@ class ParagraphServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -82,7 +83,7 @@ class ParagraphServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);

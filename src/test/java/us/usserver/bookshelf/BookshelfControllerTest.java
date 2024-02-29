@@ -4,40 +4,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.authority.Authority;
-import us.usserver.authority.AuthorityRepository;
-import us.usserver.bookshelf.BookshelfController;
-import us.usserver.bookshelf.dto.NovelPreview;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.authority.Authority;
+import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.chapter.ChapterService;
-import us.usserver.member.Member;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.chapter.service.ChapterService;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
-import us.usserver.paragraph.Paragraph;
+import us.usserver.domain.novel.repository.NovelDSLRepository;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.paragraph.ParagraphMother;
-import us.usserver.paragraph.ParagraphRepository;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -54,7 +44,7 @@ class BookshelfControllerTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelDSLRepository novelCustomRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -104,7 +94,7 @@ class BookshelfControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelCustomRepository.save(novel);
         chapterRepository.save(chapter);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);

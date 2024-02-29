@@ -4,9 +4,10 @@ import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.author.Author;
-import us.usserver.chapter.Chapter;
-import us.usserver.paragraph.paragraphEnum.ParagraphStatus;
+import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.paragraph.entity.Paragraph;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 
 import java.nio.charset.StandardCharsets;
 

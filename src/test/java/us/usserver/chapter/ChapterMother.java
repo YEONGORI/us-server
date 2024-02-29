@@ -4,8 +4,9 @@ import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.novel.Novel;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.novel.Novel;
 
 import java.nio.charset.StandardCharsets;
 

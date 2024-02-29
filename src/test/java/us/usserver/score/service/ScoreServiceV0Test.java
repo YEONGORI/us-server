@@ -7,21 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
+import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.global.exception.ScoreOutOfRangeException;
-import us.usserver.member.Member;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.chapter.service.ScoreServiceV0;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
-import us.usserver.score.ScoreRepository;
-import us.usserver.score.dto.PostScore;
+import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.domain.chapter.repository.ScoreRepository;
+import us.usserver.domain.chapter.dto.PostScore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +39,7 @@ class ScoreServiceV0Test {
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
     @Autowired
@@ -58,7 +59,7 @@ class ScoreServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter);
     }
 

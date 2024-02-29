@@ -59,7 +59,7 @@ public class AppleClient implements OauthClient{
         AppleToken appleToken = rt.postForObject(url, tokenRequest, AppleToken.class);
 
         if (appleToken == null) {
-            throw new TokenInvalidException(ExceptionMessage.Token_VERIFICATION);
+            throw new TokenInvalidException(ExceptionMessage.TOKEN_VERIFICATION);
         }
 
         return appleToken.getAccess_token();

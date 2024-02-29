@@ -7,24 +7,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.comment.Comment;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.comment.Comment;
 import us.usserver.comment.CommentMother;
-import us.usserver.comment.repository.CommentJpaRepository;
-import us.usserver.comment.dto.CommentContent;
-import us.usserver.comment.dto.CommentInfo;
+import us.usserver.domain.comment.repository.CommentJpaRepository;
+import us.usserver.domain.comment.dto.CommentContent;
+import us.usserver.domain.comment.dto.CommentInfo;
+import us.usserver.domain.comment.service.CommentServiceV0;
 import us.usserver.global.exception.*;
-import us.usserver.member.Member;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
+import us.usserver.domain.novel.repository.NovelRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +43,7 @@ class CommentServiceV0Test {
     @Autowired
     private CommentJpaRepository commentJpaRepository;
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -63,7 +64,7 @@ class CommentServiceV0Test {
         novel.getChapters().add(chapter);
 
         authorRepository.save(author);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter);
     }
 
@@ -112,10 +113,10 @@ class CommentServiceV0Test {
         newNovel.getComments().add(newComment);
 
         // when
-        novelJpaRepository.save(newNovel);
+        novelRepository.save(newNovel);
         commentJpaRepository.save(newComment);
         List<CommentInfo> beforeComments = commentServiceV0.getCommentsOfNovel(newNovel.getId());
-        novelJpaRepository.delete(newNovel);
+        novelRepository.delete(newNovel);
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
         assertThrows(NovelNotFoundException.class,
                 () -> commentServiceV0.getCommentsOfNovel(newNovel.getId()));

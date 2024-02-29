@@ -1,7 +1,6 @@
 package us.usserver.novel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,25 +11,23 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
+import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.repository.NovelDSLRepository;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
+import us.usserver.domain.member.repository.MemberRepository;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,7 +45,7 @@ class NovelControllerTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelRepository novelRepository;
+    private NovelDSLRepository novelCustomRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -81,7 +78,7 @@ class NovelControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
-        novelRepository.save(novel);
+        novelCustomRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);

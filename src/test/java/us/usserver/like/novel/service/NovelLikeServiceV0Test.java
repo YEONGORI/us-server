@@ -7,20 +7,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.author.Author;
+import us.usserver.domain.member.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
+import us.usserver.domain.member.repository.AuthorRepository;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.DuplicatedLikeException;
 import us.usserver.global.exception.NovelNotFoundException;
-import us.usserver.like.novel.NovelLike;
-import us.usserver.like.novel.repository.NovelLikeJpaRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.like.novel.NovelLike;
+import us.usserver.domain.like.novel.repository.NovelLikeJpaRepository;
+import us.usserver.domain.like.novel.service.NovelLikeServiceV0;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.repository.NovelJpaRepository;
+import us.usserver.domain.novel.repository.NovelRepository;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class NovelLikeServiceV0Test {
     @Autowired
-    private NovelJpaRepository novelJpaRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -51,7 +52,7 @@ class NovelLikeServiceV0Test {
         authorRepository.save(author);
 
         novel = NovelMother.generateNovel(author);
-        novelJpaRepository.save(novel);
+        novelRepository.save(novel);
     }
 
     @Test

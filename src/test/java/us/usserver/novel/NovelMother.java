@@ -5,15 +5,13 @@ import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.misc.EnumRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.author.Author;
-import us.usserver.chapter.chapterEnum.ChapterStatus;
-import us.usserver.novel.Novel;
-import us.usserver.novel.dto.AuthorDescription;
-import us.usserver.novel.dto.NovelSynopsis;
-import us.usserver.novel.novelEnum.*;
+import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.NovelSynopsis;
+import us.usserver.domain.novel.constant.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 

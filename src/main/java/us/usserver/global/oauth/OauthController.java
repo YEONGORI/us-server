@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,17 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MemberNotFoundException;
 import us.usserver.global.exception.TokenInvalidException;
 import us.usserver.global.exception.UnsupportedSocialProviderException;
 import us.usserver.global.jwt.TokenProvider;
 import us.usserver.global.oauth.dto.*;
-import us.usserver.global.oauth.oauthEnum.OauthProvider;
-import us.usserver.member.Member;
-import us.usserver.member.MemberService;
-import us.usserver.member.dto.LoginMemberResponse;
-import us.usserver.member.memberEnum.Gender;
-import us.usserver.member.memberEnum.Role;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +51,7 @@ public class OauthController {
         switch (oauthReq.getOauthProvider()) {
             case KAKAO -> memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthReq.getCode()));
             case GOOGLE -> memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthReq.getCode()));
-            default -> throw new UnsupportedSocialProviderException(ExceptionMessage.Unsupported_Social_Provider);
+            default -> throw new UnsupportedSocialProviderException(ExceptionMessage.UNSUPPORTED_SOCIAL_PROVIDER);
         }
 //        if (oauthReq.getOauthProvider() == OauthProvider.KAKAO) {
 //            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthReq.getCode()));

@@ -3,18 +3,18 @@ package us.usserver.global.oauth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import us.usserver.author.Author;
-import us.usserver.author.AuthorRepository;
+import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.member.repository.AuthorRepository;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.jwt.TokenProvider;
 import us.usserver.global.oauth.dto.OauthMember;
 import us.usserver.global.oauth.dto.OauthParams;
 import us.usserver.global.oauth.dto.MemberInfoDto;
-import us.usserver.member.Member;
-import us.usserver.member.MemberRepository;
-import us.usserver.member.memberEnum.Gender;
-import us.usserver.member.memberEnum.Role;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.member.constant.Gender;
+import us.usserver.domain.member.constant.Role;
 
 import java.util.Optional;
 import java.util.Random;
@@ -43,7 +43,7 @@ public class OauthService {
         //기존유저
         if (bySocialTypeAndSocialId.isPresent()) {
             Member member = bySocialTypeAndSocialId.get();
-            Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.Author_NOT_FOUND));
+            Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
             String accessToken = tokenProvider.createAccessToken(author);
             String refreshToken = tokenProvider.createRefreshToken(author);
 
