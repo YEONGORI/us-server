@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import us.usserver.domain.author.dto.NovelPreview;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.entity.CommentLike;
@@ -18,7 +19,9 @@ import us.usserver.domain.authority.entity.Stake;
 import us.usserver.domain.paragraph.entity.Vote;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -62,10 +65,10 @@ public class Author {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "mainAuthor", cascade = CascadeType.ALL)
-    private List<Novel> viewedNovels = new ArrayList<>();
+    @ElementCollection
+    private Set<Long> viewedNovelIds = new HashSet<>();
 
-    @OneToMany(mappedBy = "mainAuthor", cascade = CascadeType.ALL)
+    @OneToMany
     private List<Novel> createdNovels = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
@@ -99,6 +102,13 @@ public class Author {
     public void addAuthorNovel(Authority authority) {
         authority.setAuthor(this);
         this.authorities.add(authority);
+    }
+
+    public void addViewedNovelId(Long id) {
+        this.getViewedNovelIds().add(id);
+    }
+    public void deleteViewedNovelId(Long id) {
+        this.getViewedNovelIds().remove(id);
     }
     public void changeNickname(String nickname) {
         this.nickname = nickname;

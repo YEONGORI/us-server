@@ -1,6 +1,5 @@
 package us.usserver.novel.service;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,10 +14,7 @@ import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
-import us.usserver.domain.novel.dto.AuthorDescription;
-import us.usserver.domain.novel.dto.NovelDetailInfo;
-import us.usserver.domain.novel.dto.NovelInfo;
-import us.usserver.domain.novel.dto.NovelSynopsis;
+import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelService;
@@ -34,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Rollback
-@Transactional
 @SpringBootTest
 class NovelServiceTest {
     @Autowired
@@ -51,22 +46,23 @@ class NovelServiceTest {
 
     private Novel novel;
     private Novel dummyNovel;
+    private Member member;
+    private Member dummymember;
     private Author author;
     private Author dummyAuthor;
 
     @BeforeEach
     void setup() {
-        Member member1 = MemberMother.generateMember();
-        Member member2 = MemberMother.generateMember();
+        Member member = MemberMother.generateMember();
+        Member dummymember = MemberMother.generateMember();
         author = AuthorMother.generateAuthor();
         dummyAuthor = AuthorMother.generateAuthor();
 
-        author.setMember(member1);
-        dummyAuthor.setMember(member2);
+        author.setMember(member);
+        dummyAuthor.setMember(dummymember);
 
-
-        memberRepository.save(member1);
-        memberRepository.save(member2);
+        memberRepository.save(member);
+        memberRepository.save(dummymember);
         authorRepository.save(author);
         authorRepository.save(dummyAuthor);
 
@@ -297,85 +293,86 @@ class NovelServiceTest {
         assertThat(searchKeywordResponse.getRecentSearch().size()).isEqualTo(2);
         assertThat(searchKeywordResponse.getRecentSearch().get(0)).isEqualTo("TITLE");
         assertThat(searchKeywordResponse.getRecentSearch().get(1)).isEqualTo("TITLE2");
-    }
+    } */
 
     @Test
-    @DisplayName("메인화면 소설 List")
-    @Transactional
-    void 메인_소설_성공() {
+    @DisplayName("메인 페이지 로드 테스트")
+    void get_main_page() {
+        // given
+        Novel newNovel = NovelMother.generateNovel(author);
+        for (int i=0; i<100; i++)
+            newNovel.upHitCnt();
+        Chapter newChapter = ChapterMother.generateChapter(novel);
+        novel.addChapter(newChapter);
+
         //when
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+        novelRepository.save(newNovel);
+        novelRepository.save(novel);
+        chapterRepository.save(newChapter);
+        MainPageResponse mainPageResponse = novelService.getMainPage(member);
 
         //then
-        assertThat(homeNovelListResponse.getRealTimeNovels().size()).isEqualTo(3);
-        assertThat(homeNovelListResponse.getRealTimeNovels().get(0).getTitle()).isEqualTo("TITLE3");
-
-        assertThat(homeNovelListResponse.getNewNovels().size()).isEqualTo(3);
-        assertThat(homeNovelListResponse.getNewNovels().get(0).getTitle()).isEqualTo("TITLE3");
-        assertThat(homeNovelListResponse.getNewNovels().get(1).getTitle()).isEqualTo("TITLE2");
-
-        assertThat(homeNovelListResponse.getReadNovels().size()).isEqualTo(2);
-        assertThat(homeNovelListResponse.getReadNovels().get(0).getTitle()).isEqualTo("TITLE");
-        assertThat(homeNovelListResponse.getReadNovels().get(1).getTitle()).isEqualTo("TITLE2");
+        mainPageResponse.getReadNovels();
+        assertThat(mainPageResponse.getPopularNovels().get(0).getId()).isEqualTo(newNovel.getId());
+        assertThat(mainPageResponse.getRealTimeUpdateNovels().get(0).getId()).isEqualTo(novel.getId());
+        assertThat(mainPageResponse.getRecentlyCreatedNovels().get(0).getId()).isEqualTo(newNovel.getId());
     }
 
-    @Test
-    @DisplayName("메인화면 소설 더보기")
-    @Transactional
-    void 메인_소설_더보기_실시간업데이트_성공() {
-        //given
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
-        Novel realTimeNovel = homeNovelListResponse.getRealTimeNovels().get(homeNovelListResponse.getRealTimeNovels().size() - 1);
-        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
-                .lastNovelId(realTimeNovel.getId())
-                .size(3)
-                .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
-                .build();
-        //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
-
-        //then
-        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
-        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
-        assertThat(novelPageInfoResponse.getSorts()).isEqualTo(Sorts.LATEST);
-    }
-
-    @Test
-    @DisplayName("메인화면 소설 더보기")
-    void 메인_소설_더보기_신작_성공() {
-        //given
-        HomeNovelListResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
-        Novel newNovel = homeNovelListResponse.getNewNovels().get(homeNovelListResponse.getNewNovels().size() - 1);
-        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
-                .lastNovelId(newNovel.getId())
-                .size(3)
-                .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
-                .build();
-        //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
-
-        //then
-        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
-        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
-        assertThat(novelPageInfoResponse.getSorts()).isEqualTo(Sorts.NEW);
-    }
-
-    @Test
-    @DisplayName("메인화면 소설 더보기")
-    @Transactional
-    void 메인_소설_더보기_읽은소설_성공() {
-        //given
-        ReadInfoOfNovel readInfoOfNovel = ReadInfoOfNovel.builder()
-                .getNovelSize(0)
-                .size(3)
-                .build();
-        //when
-        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.readMoreNovel(readInfoOfNovel);
-
-        //then
-        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
-        assertThat(novelPageInfoResponse.getNovelList().get(0).getId()).isEqualTo(1L);
-        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
-    }
-    */
+//    @Test
+//    @DisplayName("메인 페이지 소설 더보기")
+//    void 메인_소설_더보기_실시간업데이트_성공() {
+//        //given
+//        MainPageResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+//        Novel realTimeNovel = homeNovelListResponse.getRealTimeNovels().get(homeNovelListResponse.getRealTimeNovels().size() - 1);
+//        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
+//                .lastNovelId(realTimeNovel.getId())
+//                .size(3)
+//                .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
+//                .build();
+//        //when
+//        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
+//
+//        //then
+//        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
+//        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
+//        assertThat(novelPageInfoResponse.getSorts()).isEqualTo(Sorts.LATEST);
+//    }
+//
+//    @Test
+//    @DisplayName("메인화면 소설 더보기")
+//    void 메인_소설_더보기_신작_성공() {
+//        //given
+//        MainPageResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
+//        Novel newNovel = homeNovelListResponse.getNewNovels().get(homeNovelListResponse.getNewNovels().size() - 1);
+//        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
+//                .lastNovelId(newNovel.getId())
+//                .size(3)
+//                .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
+//                .build();
+//        //when
+//        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.moreNovel(moreInfoOfNovel);
+//
+//        //then
+//        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
+//        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
+//        assertThat(novelPageInfoResponse.getSorts()).isEqualTo(Sorts.NEW);
+//    }
+//
+//    @Test
+//    @DisplayName("메인화면 소설 더보기")
+//    @Transactional
+//    void 메인_소설_더보기_읽은소설_성공() {
+//        //given
+//        ReadInfoOfNovel readInfoOfNovel = ReadInfoOfNovel.builder()
+//                .getNovelSize(0)
+//                .size(3)
+//                .build();
+//        //when
+//        NovelPageInfoResponse novelPageInfoResponse = novelServiceV0.readMoreNovel(readInfoOfNovel);
+//
+//        //then
+//        assertThat(novelPageInfoResponse.getNovelList().size()).isEqualTo(2);
+//        assertThat(novelPageInfoResponse.getNovelList().get(0).getId()).isEqualTo(1L);
+//        assertThat(novelPageInfoResponse.getHasNext()).isFalse();
+//    }
 }

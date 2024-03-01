@@ -70,7 +70,7 @@ class BookshelfServiceTest {
 
     @AfterEach
     void setOff() {
-        author.getViewedNovels().clear();
+        author.getViewedNovelIds().clear();
     }
 
     @Test
@@ -84,8 +84,8 @@ class BookshelfServiceTest {
         // when
         novelRepository.save(newNovel);
         chapterRepository.save(newChapter);
-        author.getViewedNovels().add(novel);
-        author.getViewedNovels().add(newNovel);
+        author.addViewedNovelId(novel.getId());
+        author.addViewedNovelId(newNovel.getId());
         authorRepository.save(author);
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(author.getId());
 

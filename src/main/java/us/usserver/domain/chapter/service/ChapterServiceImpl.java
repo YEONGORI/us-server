@@ -69,7 +69,7 @@ public class ChapterServiceImpl implements ChapterService {
             score = 0.0;
         }
 
-        author.getViewedNovels().add(novel);
+        author.addViewedNovelId(novelId);
         return ChapterDetailInfo.builder()
                 .part(part)
                 .title(chapter.getTitle())
@@ -104,7 +104,7 @@ public class ChapterServiceImpl implements ChapterService {
                 .novel(novel)
                 .build();
 
-        novel.getChapters().add(chapter);
+        novel.addChapter(chapter);
         chapterRepository.save(chapter);
     }
 }

@@ -17,9 +17,9 @@ public interface NovelService {
 
     NovelInfo createNovel(Member member, CreateNovelReq createNovelReq);
 
-    HomeNovelListResponse homeNovelInfo(Member member);
+    MainPageResponse getMainPage(Member member);
 
-    NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel);
+    NovelPageInfoResponse getMoreNovels(MoreInfoOfNovel moreInfoOfNovel);
 
     NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel);
 

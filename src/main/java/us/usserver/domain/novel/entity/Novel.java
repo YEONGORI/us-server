@@ -15,89 +15,75 @@ import us.usserver.domain.novel.constant.*;
 import us.usserver.domain.authority.entity.Stake;
 import us.usserver.global.BaseEntity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Novel extends BaseEntity {
-    @Schema(description = "소설 ID", nullable = true, example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "novel_id")
     private Long id;
 
-    @Schema(description = "소설 제목", nullable = true, example = "주술회전")
     @NotBlank
     @Size(max = 16)
     private String title;
 
-    @Setter
-    @Schema(description = "소설 썸네일", nullable = true, example = "주술회전.jpg")
     @NotBlank
     @Size(max = 500)
     private String thumbnail;
 
-    @Setter
-    @Schema(description = "소설 줄거리", nullable = true, example = "주술을 쓰면서 싸우는 웹소설")
     @NotBlank
     @Size(max = 300)
     private String synopsis;
 
-    @Setter
-    @Schema(description = "작가 소개", nullable = true, example = "액션 소설을 좋아하는 작가입니다.")
     @NotBlank
     @Size(max = 300)
     private String authorDescription;
 
-    @Schema(description = "소설 해시태그", example = "MONCHKIN, HASHTAG1, ...")
-    @Enumerated(EnumType.STRING) // Enum 순서가 자주 변할 예정 이므로 String 으로 저장
+    @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Hashtag> hashtags;
 
-    @Schema(description = "소설 장르", nullable = true, example = "FANTASY")
     @NotNull
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    @Schema(description = "소설 연령대", nullable = true, example = "FIFTEEN_PLUS")
     @NotNull
     @Enumerated(EnumType.STRING)
     private AgeRating ageRating;
 
-    @Schema(description = "소설 연재 상태", nullable = true, example = "IN_PROGRESS")
     @NotNull
     @Enumerated(EnumType.STRING)
     private NovelStatus novelStatus;
 
-    @Schema(description = "조회수", nullable = true, example = "100")
     @NotNull
     private Integer hit;
 
-    @Schema(description = "작가", nullable = true, example = "author1")
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private Author mainAuthor;
+    @NotNull
+    private LocalDateTime recentlyUpdated;
 
     @Schema(description = "소설 분류", nullable = true, example = "장편소설")
     @NotNull
     @Enumerated(EnumType.STRING)
     private NovelSize novelSize;
 
-    @Schema(description = "소설 회차 List", example = "Chapter_01, Chapter_02, ...")
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author mainAuthor;
+
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Chapter> chapters = new ArrayList<>();
 
-    @Schema(description = "소설 지분 List", example = "Stake_01, Stake_02, ...")
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Stake> stakes = new ArrayList<>();
 
-    @Schema(description = "소설 댓글 List", example = "Comment_01, Comment_02, ...")
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
@@ -109,5 +95,19 @@ public class Novel extends BaseEntity {
 
     public void setIdForTest(Long id) {
         this.id = id;
+    }
+    public void changeSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+    public void changeAuthorDescription(String authorDescription) {
+        this.authorDescription = authorDescription;
+    }
+    public void upHitCnt() {
+        this.hit += 1;
+    }
+
+    public void addChapter(Chapter chapter) {
+        this.chapters.add(chapter);
+        this.recentlyUpdated = LocalDateTime.now();
     }
 }

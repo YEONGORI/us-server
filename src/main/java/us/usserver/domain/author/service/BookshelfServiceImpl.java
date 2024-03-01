@@ -16,6 +16,7 @@ import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -29,14 +30,12 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
         Author author = entityFacade.getAuthor(authorId);
-        List<Novel> viewedNovels = author.getViewedNovels();
+        Set<Long> viewedNovelIds = author.getViewedNovelIds();
 
-        List<NovelPreview> novelPreviews = viewedNovels.stream()
-                .map(novel -> NovelPreview.fromNovel(
-                        novel,
-                        getTotalJoinedAuthor(novel),
-                        getShortcuts(novel)
-                )).toList();
+        List<NovelPreview> novelPreviews = viewedNovelIds.stream()
+                .map(entityFacade::getNovel)
+                .map(novel -> NovelPreview.fromNovel(novel, getTotalJoinedAuthor(novel), getShortcuts(novel)))
+                .toList();
 
         return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
     }
@@ -44,9 +43,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public void deleteRecentViewedNovels(Long authorId, Long novelId) {
         Author author = entityFacade.getAuthor(authorId);
-        Novel novel = entityFacade.getNovel(novelId);
-
-        author.getViewedNovels().remove(novel);
+        author.deleteViewedNovelId(novelId);
     }
 
     @Override

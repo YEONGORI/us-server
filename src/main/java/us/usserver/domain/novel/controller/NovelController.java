@@ -115,14 +115,14 @@ public class NovelController {
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
-            content = @Content(schema = @Schema(implementation = HomeNovelListResponse.class))),
+            content = @Content(schema = @Schema(implementation = MainPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/main")
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
-    public ResponseEntity<ApiCsResponse<?>> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
-        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo(member);
+    public ResponseEntity<ApiCsResponse<?>> getMainPage(@AuthenticationPrincipal Member member) {
+        MainPageResponse homeNovelList = novelService.getMainPage(member);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -139,8 +139,8 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/main/more")
-    public ResponseEntity<ApiCsResponse<?>> moreNovel(@Valid MoreInfoOfNovel moreInfoOfNovel) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.moreNovel(moreInfoOfNovel);
+    public ResponseEntity<ApiCsResponse<?>> getMoreNovels(@Valid MoreInfoOfNovel moreInfoOfNovel) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.getMoreNovels(moreInfoOfNovel);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.OK.value())

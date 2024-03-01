@@ -16,6 +16,7 @@ import us.usserver.domain.novel.constant.Hashtag;
 import us.usserver.domain.novel.constant.NovelStatus;
 import us.usserver.domain.novel.constant.NovelSize;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -64,6 +65,7 @@ public class CreateNovelReq {
                 .novelSize(novelSize)
                 .hit(0)
                 .novelStatus(NovelStatus.IN_PROGRESS)
+                .recentlyUpdated(LocalDateTime.now())
                 .build();
     }
 }

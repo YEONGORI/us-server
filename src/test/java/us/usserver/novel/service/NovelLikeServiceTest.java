@@ -1,4 +1,4 @@
-package us.usserver.novel;
+package us.usserver.novel.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
