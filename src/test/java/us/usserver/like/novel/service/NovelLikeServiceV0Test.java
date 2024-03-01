@@ -7,19 +7,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.DuplicatedLikeException;
 import us.usserver.global.exception.NovelNotFoundException;
-import us.usserver.domain.like.novel.NovelLike;
-import us.usserver.domain.like.novel.repository.NovelLikeJpaRepository;
-import us.usserver.domain.like.novel.service.NovelLikeServiceV0;
+import us.usserver.domain.novel.entity.NovelLike;
+import us.usserver.domain.novel.repository.NovelLikeRepository;
+import us.usserver.domain.novel.service.NovelLikeServiceV0;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.domain.member.repository.MemberRepository;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.domain.novel.repository.NovelRepository;
 
@@ -37,7 +37,7 @@ class NovelLikeServiceV0Test {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelLikeJpaRepository novelLikeJpaRepository;
+    private NovelLikeRepository novelLikeCustomRepository;
 
     @Autowired
     private NovelLikeServiceV0 novelLikeServiceV0;
@@ -59,12 +59,12 @@ class NovelLikeServiceV0Test {
     @DisplayName("소설 좋아요 테스트")
     void setNovelLike() {
         // given
-        List<NovelLike> beforeNovelLike = novelLikeJpaRepository.findAllByNovel(novel);
+        List<NovelLike> beforeNovelLike = novelLikeCustomRepository.findAllByNovel(novel);
 
         // when
         Assertions.assertDoesNotThrow(
                 () -> novelLikeServiceV0.setNovelLike(novel.getId(), author.getId()));
-        List<NovelLike> afterNovelLike = novelLikeJpaRepository.findAllByNovel(novel);
+        List<NovelLike> afterNovelLike = novelLikeCustomRepository.findAllByNovel(novel);
 
         // then
         assertThat(beforeNovelLike).isEqualTo(Collections.emptyList());
@@ -115,10 +115,10 @@ class NovelLikeServiceV0Test {
         NovelLike novelLike = NovelLike.builder().novel(novel).author(author).build();
 
         // when
-        novelLikeJpaRepository.save(novelLike);
+        novelLikeCustomRepository.save(novelLike);
         Assertions.assertDoesNotThrow(
                 () -> novelLikeServiceV0.deleteNovelLike(novel.getId(), author.getId()));
-        List<NovelLike> novelLikes = novelLikeJpaRepository.findAllByAuthor(author);
+        List<NovelLike> novelLikes = novelLikeCustomRepository.findAllByAuthor(author);
 
         // then
         assertThat(novelLikes.size()).isZero();

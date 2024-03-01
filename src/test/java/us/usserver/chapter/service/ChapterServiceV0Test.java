@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.domain.member.repository.AuthorRepository;
+import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.chapter.repository.ChapterRepository;
@@ -16,16 +16,16 @@ import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterServiceV0;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 import us.usserver.comment.CommentMother;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.domain.like.comment.CommentLike;
-import us.usserver.domain.like.comment.repository.CommentLikeRepository;
+import us.usserver.domain.comment.entity.CommentLike;
+import us.usserver.domain.comment.repository.CommentLikeDSLRepository;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.member.MemberMother;
 import us.usserver.domain.member.repository.MemberRepository;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.novel.NovelMother;
 import us.usserver.domain.novel.repository.NovelRepository;
 
@@ -53,7 +53,7 @@ class ChapterServiceV0Test {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private CommentLikeRepository commentLikeRepository;
+    private CommentLikeDSLRepository commentLikeDSLRepository;
 
     private Novel novel;
     private Author author;
@@ -254,10 +254,10 @@ class ChapterServiceV0Test {
         commentRepository.save(comment2);
         commentRepository.save(comment3);
         commentRepository.save(comment4);
-        commentLikeRepository.save(commentLike1);
-        commentLikeRepository.save(commentLike2);
-        commentLikeRepository.save(commentLike3);
-        commentLikeRepository.save(commentLike4);
+        commentLikeDSLRepository.save(commentLike1);
+        commentLikeDSLRepository.save(commentLike2);
+        commentLikeDSLRepository.save(commentLike3);
+        commentLikeDSLRepository.save(commentLike4);
 
         // when
         ChapterDetailInfo chapterDetailInfo = chapterServiceV0.getChapterDetailInfo(novel.getId(), author.getId(), chapter1.getId());

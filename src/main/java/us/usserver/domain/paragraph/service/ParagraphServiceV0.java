@@ -4,21 +4,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.domain.member.entity.Author;
-import us.usserver.domain.authority.Authority;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.constant.ChapterStatus;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.dto.*;
+import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
+import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteJpaRepository;
-import us.usserver.domain.stake.service.StakeService;
-import us.usserver.global.EntityService;
+import us.usserver.domain.authority.service.StakeService;
+import us.usserver.global.EntityFacade;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -32,7 +34,7 @@ import java.util.*;
 @Transactional
 @RequiredArgsConstructor
 public class ParagraphServiceV0 implements ParagraphService {
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final StakeService stakeService;
 
     private final ParagraphRepository paragraphRepository;
@@ -43,8 +45,8 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public ParagraphsOfChapter getParagraphs(Long authorId, Long chapterId) {
-        Author author = entityService.getAuthor(authorId);
-        Chapter chapter = entityService.getChapter(chapterId);
+        Author author = entityFacade.getAuthor(authorId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
         if (paragraphs.isEmpty()) {
@@ -58,7 +60,7 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public GetParagraphResponse getInVotingParagraphs(Long chapterId) {
-        Chapter chapter = entityService.getChapter(chapterId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
@@ -70,8 +72,8 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
-        Author author = entityService.getAuthor(authorId);
-        Chapter chapter = entityService.getChapter(chapterId);
+        Author author = entityFacade.getAuthor(authorId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
         if (req.getContent().length() > 300 || req.getContent().length() < 50) {
@@ -103,10 +105,10 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId) {
-        Novel novel = entityService.getNovel(novelId);
-        Chapter chapter = entityService.getChapter(chapterId);
-        Paragraph paragraph = entityService.getParagraph(paragraphId);
-        Author author = entityService.getAuthor(authorId);
+        Novel novel = entityFacade.getNovel(novelId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
+        Paragraph paragraph = entityFacade.getParagraph(paragraphId);
+        Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(authorId)) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
@@ -134,8 +136,8 @@ public class ParagraphServiceV0 implements ParagraphService {
 
     @Override
     public void reportParagraph(Long authorId, Long paragraphId) {
-        Author author = entityService.getAuthor(authorId);
-        Paragraph paragraph = entityService.getParagraph(paragraphId);
+        Author author = entityFacade.getAuthor(authorId);
+        Paragraph paragraph = entityFacade.getParagraph(paragraphId);
 
 
     }

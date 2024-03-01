@@ -4,19 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.global.EntityService;
+import us.usserver.global.EntityFacade;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.chapter.repository.ScoreRepository;
@@ -28,7 +28,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ChapterServiceV0 implements ChapterService {
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final ParagraphService paragraphService;
 
     private final ChapterRepository chapterRepository;
@@ -46,9 +46,9 @@ public class ChapterServiceV0 implements ChapterService {
 
     @Override
     public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId) {
-        Author author = entityService.getAuthor(authorId);
-        Chapter chapter = entityService.getChapter(chapterId);
-        Novel novel = entityService.getNovel(novelId);
+        Author author = entityFacade.getAuthor(authorId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
+        Novel novel = entityFacade.getNovel(novelId);
         ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
 
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
@@ -89,8 +89,8 @@ public class ChapterServiceV0 implements ChapterService {
 
     @Override
     public void createChapter(Long novelId, Long authorId) {
-        Novel novel = entityService.getNovel(novelId);
-        Author author = entityService.getAuthor(authorId);
+        Novel novel = entityFacade.getNovel(novelId);
+        Author author = entityFacade.getAuthor(authorId);
         Integer curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {

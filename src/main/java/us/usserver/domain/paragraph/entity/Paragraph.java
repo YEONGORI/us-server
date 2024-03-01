@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.global.BaseEntity;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;

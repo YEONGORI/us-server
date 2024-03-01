@@ -2,9 +2,9 @@ package us.usserver.domain.authority.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.member.entity.Author;
-import us.usserver.domain.authority.Authority;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.authority.entity.Authority;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 

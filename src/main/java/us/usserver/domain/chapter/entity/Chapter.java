@@ -8,8 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.global.BaseEntity;
 import us.usserver.domain.chapter.constant.ChapterStatus;
-import us.usserver.domain.comment.Comment;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.comment.entity.Comment;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.entity.Paragraph;
 
 import java.util.ArrayList;

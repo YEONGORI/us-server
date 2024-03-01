@@ -16,8 +16,8 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.service.MemberService;
 import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.jwt.TokenProvider;
-import us.usserver.domain.member.dto.JoinMemberReq;
+import us.usserver.domain.member.service.TokenProvider;
+import us.usserver.domain.member.dto.req.JoinMemberRequest;
 
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -30,8 +30,8 @@ public class MemberController {
     @ApiResponse(responseCode = "201", description = "회원가입 성공",
             content = @Content(schema = @Schema(implementation = Long.class)))
     @PostMapping("/join")
-    public ResponseEntity<ApiCsResponse<?>> joinMember(@Valid @RequestBody JoinMemberReq joinMemberReq) {
-        Long memberId = memberService.join(joinMemberReq);
+    public ResponseEntity<ApiCsResponse<?>> joinMember(@Valid @RequestBody JoinMemberRequest joinMemberRequest) {
+        Long memberId = memberService.join(joinMemberRequest);
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.getReasonPhrase())

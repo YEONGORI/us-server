@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-@MappedSuperclass // Entity Class 에서 일반 Class 상속을 위해 사용
+@MappedSuperclass
 public class BaseEntity {
     @CreatedDate
     @Column(updatable = false)

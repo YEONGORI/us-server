@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 
 @Entity
 @Getter

@@ -3,7 +3,7 @@ package us.usserver.domain.chapter.service;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 

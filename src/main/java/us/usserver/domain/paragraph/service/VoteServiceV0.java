@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.domain.paragraph.repository.VoteJpaRepository;
-import us.usserver.global.EntityService;
+import us.usserver.global.EntityFacade;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.global.exception.DuplicatedVoteException;
@@ -21,13 +21,13 @@ import java.util.Objects;
 @Transactional
 @RequiredArgsConstructor
 public class VoteServiceV0 implements VoteService {
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final VoteJpaRepository voteJpaRepository;
 
     @Override
     public void voting(Long paragraphId, Long authorId) {
-        Paragraph paragraph = entityService.getParagraph(paragraphId);
-        Author author = entityService.getAuthor(authorId);
+        Paragraph paragraph = entityFacade.getParagraph(paragraphId);
+        Author author = entityFacade.getAuthor(authorId);
 
         List<Vote> allByAuthor = voteJpaRepository.findAllByAuthor(author);
         if (allByAuthor.stream()
@@ -48,8 +48,8 @@ public class VoteServiceV0 implements VoteService {
 
     @Override
     public void unvoting(Long voteId, Long authorId) {
-        Vote vote = entityService.getVote(voteId);
-        Author author = entityService.getAuthor(authorId);
+        Vote vote = entityFacade.getVote(voteId);
+        Author author = entityFacade.getAuthor(authorId);
 
         if (!vote.getAuthor().getId().equals(author.getId())) {
             throw new AuthorNotAuthorizedException(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);

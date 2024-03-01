@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.global.BaseEntity;
 import us.usserver.domain.member.constant.Role;
-import us.usserver.global.oauth.oauthEnum.OauthProvider;
+import us.usserver.domain.member.constant.OauthProvider;
 import us.usserver.domain.member.constant.Gender;
 
 @Entity

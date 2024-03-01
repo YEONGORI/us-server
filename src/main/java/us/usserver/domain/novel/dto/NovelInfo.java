@@ -2,8 +2,8 @@ package us.usserver.domain.novel.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import us.usserver.domain.member.dto.AuthorInfo;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.author.dto.AuthorInfo;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.constant.Genre;
 import us.usserver.domain.novel.constant.Hashtag;
 

@@ -1,7 +1,7 @@
 package us.usserver.domain.comment.repository;
 
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 
 import java.util.List;
 

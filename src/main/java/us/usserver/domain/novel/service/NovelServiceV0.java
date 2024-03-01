@@ -9,22 +9,22 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
-import us.usserver.domain.member.entity.Author;
-import us.usserver.domain.member.repository.AuthorRepository;
-import us.usserver.domain.authority.Authority;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterService;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.constant.Orders;
 import us.usserver.domain.novel.constant.Sorts;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.domain.stake.dto.GetStakeResponse;
-import us.usserver.domain.stake.dto.StakeInfo;
-import us.usserver.domain.stake.service.StakeService;
-import us.usserver.global.EntityService;
+import us.usserver.domain.authority.dto.res.StakeInfoResponse;
+import us.usserver.domain.authority.dto.StakeInfo;
+import us.usserver.domain.authority.service.StakeService;
+import us.usserver.global.EntityFacade;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class NovelServiceV0 implements NovelService {
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final StakeService stakeService;
     private final ChapterService chapterService;
 
@@ -76,7 +76,7 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public NovelInfo getNovelInfo(Long novelId) {
-        Novel novel = entityService.getNovel(novelId);
+        Novel novel = entityFacade.getNovel(novelId);
         return NovelInfo.mapNovelToNovelInfo(novel);
 //        AuthorInfo authorInfo = AuthorInfo.fromAuthor(novel.getMainAuthor()); TODO: 리펙토링으로 삭제 예정
 //
@@ -94,8 +94,8 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
-        Novel novel = entityService.getNovel(novelId);
-        GetStakeResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
+        Novel novel = entityFacade.getNovel(novelId);
+        StakeInfoResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
         List<StakeInfo> stakeInfos = stakeResponse.getStakeInfos();
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
@@ -115,8 +115,8 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis) {
-        Novel novel = entityService.getNovel(novelId);
-        Author author = entityService.getAuthor(authorId);
+        Novel novel = entityFacade.getNovel(novelId);
+        Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
@@ -128,8 +128,8 @@ public class NovelServiceV0 implements NovelService {
 
     @Override
     public AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req) {
-        Novel novel = entityService.getNovel(novelId);
-        Author author = entityService.getAuthor(authorId);
+        Novel novel = entityFacade.getNovel(novelId);
+        Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);

@@ -1,10 +1,10 @@
 package us.usserver.domain.comment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.comment.Comment;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.comment.entity.Comment;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 import java.util.Optional;

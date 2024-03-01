@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.notification.Notification;
 import us.usserver.domain.notification.repository.NotificationRepository;
 import us.usserver.domain.notification.dto.NotificationMessage;
 import us.usserver.domain.notification.dto.NotificationType;
-import us.usserver.global.EntityService;
+import us.usserver.global.EntityFacade;
 import us.usserver.domain.notification.repository.EmitterRepository;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.Set;
 public class NotificationServiceImpl implements NotificationService {
     private static final long DEFAULT_TIMEOUT = 60L * 1000 * 60;
 
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
 
@@ -82,7 +82,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void send(Set<Long> receiversId, String title, String content, String url, NotificationType notificationType) {
         receiversId.stream()
-                .map(entityService::getAuthor)
+                .map(entityFacade::getAuthor)
                 .map(receiver -> createNotification(receiver, title, content, notificationType, url))
                 .forEach(notification -> {
                     Long receiverId = notification.getReceiver().getId();

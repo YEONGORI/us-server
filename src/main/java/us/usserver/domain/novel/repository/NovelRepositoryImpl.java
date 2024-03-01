@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.dto.MoreInfoOfNovel;
 import us.usserver.domain.novel.dto.SearchNovelReq;
 import us.usserver.domain.novel.dto.SortDto;

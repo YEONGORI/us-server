@@ -1,8 +1,8 @@
 package us.usserver.domain.paragraph.service;
 
 import org.springframework.stereotype.Service;
-import us.usserver.domain.paragraph.dto.GetParagraphResponse;
-import us.usserver.domain.paragraph.dto.PostParagraphReq;
+import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
+import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
 

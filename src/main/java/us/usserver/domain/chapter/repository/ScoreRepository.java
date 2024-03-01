@@ -3,7 +3,7 @@ package us.usserver.domain.chapter.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.entity.Score;
 

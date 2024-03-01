@@ -2,7 +2,7 @@ package us.usserver.domain.paragraph.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
 

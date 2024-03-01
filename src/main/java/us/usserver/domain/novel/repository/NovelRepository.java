@@ -2,7 +2,7 @@ package us.usserver.domain.novel.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.util.Optional;
 

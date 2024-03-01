@@ -2,7 +2,7 @@ package us.usserver.domain.paragraph.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.entity.Paragraph;
 

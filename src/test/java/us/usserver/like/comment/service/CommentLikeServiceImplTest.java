@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import us.usserver.domain.like.comment.service.CommentLikeServiceImpl;
+import us.usserver.domain.comment.service.CommentLikeServiceImpl;
 
 @SpringBootTest
 class CommentLikeServiceImplTest {

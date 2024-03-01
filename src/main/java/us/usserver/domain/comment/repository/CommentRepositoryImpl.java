@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 
 import java.util.List;
 

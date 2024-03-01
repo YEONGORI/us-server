@@ -6,7 +6,7 @@ import org.jeasy.random.randomizers.EmailRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.global.oauth.oauthEnum.OauthProvider;
+import us.usserver.domain.member.constant.OauthProvider;
 import us.usserver.domain.member.constant.Gender;
 import us.usserver.domain.member.constant.Role;
 

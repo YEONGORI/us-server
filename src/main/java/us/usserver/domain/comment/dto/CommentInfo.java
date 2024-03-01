@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 
 import java.time.LocalDateTime;
 

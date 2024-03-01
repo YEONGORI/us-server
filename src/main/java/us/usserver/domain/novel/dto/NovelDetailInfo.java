@@ -6,7 +6,7 @@ import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
 import us.usserver.domain.novel.constant.Hashtag;
-import us.usserver.domain.stake.dto.StakeInfo;
+import us.usserver.domain.authority.dto.StakeInfo;
 
 import java.util.List;
 import java.util.Set;

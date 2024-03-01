@@ -5,18 +5,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.domain.member.entity.Author;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.comment.Comment;
+import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentJpaRepository;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentResponse;
-import us.usserver.global.EntityService;
+import us.usserver.global.EntityFacade;
 import us.usserver.global.ExceptionMessage;
 import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.global.exception.CommentLengthOutOfRangeException;
-import us.usserver.domain.novel.Novel;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class CommentServiceV1 implements CommentService {
-    private final EntityService entityService;
+    private final EntityFacade entityFacade;
     private final CommentJpaRepository commentJpaRepository;
 
     @Override
     public GetCommentResponse getCommentsOfNovel(Long novelId) {
-        Novel novel = entityService.getNovel(novelId);
+        Novel novel = entityFacade.getNovel(novelId);
         List<Comment> commentsOfNovel = commentJpaRepository.findAllByNovel(novel);
 
         String novelTitle = novel.getTitle();
@@ -43,7 +43,7 @@ public class CommentServiceV1 implements CommentService {
 
     @Override
     public GetCommentResponse getCommentsOfChapter(Long chapterId) {
-        Chapter chapter = entityService.getChapter(chapterId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
         List<Comment> commentsOfChapter = commentJpaRepository.findAllByChapter(chapter);
 
         String chapterTitle = chapter.getTitle();
@@ -56,8 +56,8 @@ public class CommentServiceV1 implements CommentService {
 
     @Override
     public CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent) {
-        Author author = entityService.getAuthor(authorId);
-        Novel novel = entityService.getNovel(novelId);
+        Author author = entityFacade.getAuthor(authorId);
+        Novel novel = entityFacade.getNovel(novelId);
         Integer ZeroLikeCnt = 0;
 
         if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
@@ -77,8 +77,8 @@ public class CommentServiceV1 implements CommentService {
 
     @Override
     public CommentInfo writeCommentOnChapter(Long chapterId, Long authorId, CommentContent commentContent) {
-        Author author = entityService.getAuthor(authorId);
-        Chapter chapter = entityService.getChapter(chapterId);
+        Author author = entityFacade.getAuthor(authorId);
+        Chapter chapter = entityFacade.getChapter(chapterId);
         Novel novel = chapter.getNovel();
         Integer ZeroLikeCnt = 0;
 
@@ -104,7 +104,7 @@ public class CommentServiceV1 implements CommentService {
 
     @Override
     public GetCommentResponse getCommentsByAuthor(Long authorId) {
-        Author author = entityService.getAuthor(authorId);
+        Author author = entityFacade.getAuthor(authorId);
         List<Comment> commentsByAuthor = commentJpaRepository.findAllByAuthor(author);
 
         List<CommentInfo> commentInfos = commentsByAuthor.stream()
@@ -121,8 +121,8 @@ public class CommentServiceV1 implements CommentService {
 
     @Override
     public void deleteComment(Long commentId, Long authorId) {
-        Comment comment = entityService.getComment(commentId);
-        Author author = entityService.getAuthor(authorId);
+        Comment comment = entityFacade.getComment(commentId);
+        Author author = entityFacade.getAuthor(authorId);
 
         if (!comment.getAuthor().getId().equals(author.getId())) {
             throw new AuthorNotAuthorizedException(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
