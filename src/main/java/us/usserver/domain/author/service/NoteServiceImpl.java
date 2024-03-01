@@ -8,7 +8,7 @@ import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.author.dto.res.GetParagraphNote;
 import us.usserver.domain.author.dto.ParagraphPreview;
-import us.usserver.domain.paragraph.repository.VoteJpaRepository;
+import us.usserver.domain.paragraph.repository.VoteRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.entity.Paragraph;
@@ -25,7 +25,7 @@ public class NoteServiceImpl implements NoteService {
     private final EntityFacade entityFacade;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteJpaRepository voteJpaRepository;
+    private final VoteRepository voteJpaRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override

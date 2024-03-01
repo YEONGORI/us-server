@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface StakeRepository extends JpaRepository<Stake, Long> {
-
     List<Stake> findAllByNovel(Novel novel);
 
     Optional<Stake> findByNovelAndAuthor(Novel novel, Author author);

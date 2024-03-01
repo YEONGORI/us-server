@@ -1,26 +1,22 @@
-package us.usserver.stake;
+package us.usserver.chapter.controller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
+import us.usserver.comment.CommentMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
-import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
@@ -32,17 +28,12 @@ import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@SpringBootTest
 @Rollback
 @AutoConfigureMockMvc
-@SpringBootTest
-class StakeControllerTest {
+class ChapterControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private StakeService stakeService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -73,6 +64,10 @@ class StakeControllerTest {
     private Paragraph paragraph6;
     private Paragraph paragraph7;
     private Paragraph paragraph8;
+    private Comment comment1;
+    private Comment comment2;
+    private Comment comment3;
+    private Comment comment4;
 
     @BeforeEach
     void setUp() {
@@ -99,6 +94,8 @@ class StakeControllerTest {
         chapter2.setPartForTest(2);
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
+
+        CommentMother.generateComment(author1, novel, chapter1);
 
         paragraph1 = ParagraphMother.generateParagraph(author1, chapter1);
         paragraph2 = ParagraphMother.generateParagraph(author2, chapter1);
@@ -169,23 +166,18 @@ class StakeControllerTest {
     }
 
     @Test
-    @DisplayName("지분 조회 api test")
-    void getStakes() throws Exception {
+    void getChapterDetailInfo() {
         // given
+        Paragraph newParagraph = ParagraphMother.generateParagraph(author1, chapter2);
+        newParagraph.setSequenceForTest(5);
 
         // when
-        stakeService.setStakeInfoOfNovel(novel);
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/stake/" + novel.getId())
-                .contentType(MediaType.APPLICATION_JSON));
-        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
 
         // then
-        resultActions.andExpect(status().isOk());
-        Assertions.assertThat(resultString).contains(author1.getNickname());
-        Assertions.assertThat(resultString).contains(author2.getNickname());
-        Assertions.assertThat(resultString).contains(author3.getNickname());
-        Assertions.assertThat(resultString).contains(author4.getNickname());
-        Assertions.assertThat(resultString).contains(author5.getNickname());
+    }
+
+    @Test
+    void createChapter() {
     }
 }

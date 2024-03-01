@@ -12,23 +12,22 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import us.usserver.domain.author.entity.Author;
 import us.usserver.author.AuthorMother;
+import us.usserver.chapter.ChapterMother;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.entity.Novel;
-import us.usserver.domain.novel.repository.NovelDSLRepository;
-import us.usserver.member.MemberMother;
 import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.entity.Novel;
+import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.member.MemberMother;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
@@ -45,7 +44,7 @@ class NovelControllerTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private NovelDSLRepository novelCustomRepository;
+    private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
 
@@ -78,7 +77,7 @@ class NovelControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
-        novelCustomRepository.save(novel);
+        novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);

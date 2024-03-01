@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface NovelLikeRepository extends JpaRepository<NovelLike, Long>, NovelLikeDSLRepository {
+public interface NovelLikeRepository extends JpaRepository<NovelLike, Long>, NovelLikeRepositoryCustom {
     List<NovelLike> findAllByNovel(Novel novel);
 
     List<NovelLike> findAllByAuthor(Author author);

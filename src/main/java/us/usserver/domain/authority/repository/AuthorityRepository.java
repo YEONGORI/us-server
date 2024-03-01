@@ -15,5 +15,4 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     List<Authority> findAllByAuthor(Author author);
 
     List<Authority> findAllByNovel(Novel novel);
-
 }

@@ -7,7 +7,7 @@ import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.comment.entity.Comment;
-import us.usserver.domain.comment.repository.CommentJpaRepository;
+import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.global.exception.*;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
@@ -16,7 +16,7 @@ import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.entity.Vote;
-import us.usserver.domain.paragraph.repository.VoteJpaRepository;
+import us.usserver.domain.paragraph.repository.VoteRepository;
 
 import java.util.Optional;
 
@@ -28,8 +28,8 @@ public class EntityFacade {
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
-    private final CommentJpaRepository commentJpaRepository;
-    private final VoteJpaRepository voteJpaRepository;
+    private final CommentRepository commentJpaRepository;
+    private final VoteRepository voteJpaRepository;
 
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);

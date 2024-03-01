@@ -7,6 +7,6 @@ import us.usserver.domain.novel.entity.Novel;
 import java.util.Optional;
 
 @Repository
-public interface NovelRepository extends JpaRepository<Novel, Long>, NovelDSLRepository {
+public interface NovelRepository extends JpaRepository<Novel, Long>, NovelRepositoryCustom {
     Optional<Novel> getNovelById(Long id);
 }
