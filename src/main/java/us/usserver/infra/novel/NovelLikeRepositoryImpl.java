@@ -4,5 +4,5 @@ import org.springframework.stereotype.Repository;
 import us.usserver.domain.novel.repository.NovelLikeRepositoryCustom;
 
 @Repository
-public class NovelLikeRepositoryCustomImpl implements NovelLikeRepositoryCustom {
+public class NovelLikeRepositoryImpl implements NovelLikeRepositoryCustom {
 }

@@ -6,6 +6,6 @@ import us.usserver.domain.comment.entity.CommentLike;
 
 import java.util.Optional;
 
-public interface CommentLikeRepository extends JpaRepository<CommentLike, Long>, CommentLikeDSLRepository {
+public interface CommentLikeRepository extends JpaRepository<CommentLike, Long>, CommentLikeRepositoryDSL {
     Optional<CommentLike> findByComment(Comment comment);
 }

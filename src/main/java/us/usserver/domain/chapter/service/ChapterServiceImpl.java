@@ -11,7 +11,6 @@ import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.comment.entity.Comment;
-import us.usserver.domain.comment.repository.CommentDSLRepository;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.global.EntityFacade;

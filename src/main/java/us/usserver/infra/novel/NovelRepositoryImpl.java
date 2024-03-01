@@ -25,7 +25,7 @@ import static us.usserver.domain.novel.entity.QNovel.novel;
 
 @Repository
 @RequiredArgsConstructor
-public class NovelRepositoryCustomImpl implements NovelRepositoryCustom {
+public class NovelRepositoryImpl implements NovelRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override

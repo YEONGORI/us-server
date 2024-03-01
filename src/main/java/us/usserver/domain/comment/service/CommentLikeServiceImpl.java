@@ -2,7 +2,7 @@ package us.usserver.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import us.usserver.domain.comment.repository.CommentLikeDSLRepository;
+import us.usserver.domain.comment.repository.CommentLikeRepositoryDSL;
 import us.usserver.domain.comment.repository.CommentLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.comment.entity.Comment;
@@ -19,7 +19,6 @@ import java.util.Objects;
 public class CommentLikeServiceImpl implements CommentLikeService {
     private final EntityFacade entityFacade;
     private final CommentLikeRepository commentLikeRepository;
-    private final CommentLikeDSLRepository commentLikeDSLRepository;
 
     @Override
     public void postLike(Long commentId, Long authorId) {

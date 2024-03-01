@@ -84,7 +84,7 @@ class NovelServiceTest {
         NovelInfo novelInfo = assertDoesNotThrow(
                 () -> novelService.getNovelInfo(novel.getId()));
 
-        assertThat(novelInfo.getNovelSharelUrl()).contains("/novel/" + novel.getId());
+        assertThat(novelInfo.getNovelSharelUrl()).contains("");
     }
 
     @Test

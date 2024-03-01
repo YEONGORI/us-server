@@ -9,7 +9,7 @@ import us.usserver.domain.novel.entity.Novel;
 import java.util.List;
 import java.util.Optional;
 
-public interface CommentRepository extends JpaRepository<Comment, Long>, CommentDSLRepository {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryDSL {
     Optional<Comment> getCommentById(Long commentId);
 
     Integer countAllByNovel(Novel novel);

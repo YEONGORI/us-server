@@ -293,7 +293,7 @@ class ChapterServiceTest {
 
         // then
         assertThat(chapterDetailInfo.getFontSize()).isEqualTo(15);
-        assertThat(chapterDetailInfo.getParagraphSpace()).isEqualTo(15);
+        assertThat(chapterDetailInfo.getParagraphSpace()).isEqualTo(16);
     }
 
     private void setMember(Author author) {

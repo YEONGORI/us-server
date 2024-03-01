@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.comment.entity.Comment;
-import us.usserver.domain.comment.repository.CommentDSLRepository;
+import us.usserver.domain.comment.repository.CommentRepositoryDSL;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import static us.usserver.domain.comment.entity.QComment.comment;
 
 @Repository
 @RequiredArgsConstructor
-public class CommentDSLRepositoryImpl implements CommentDSLRepository {
+public class CommentRepositoryImpl implements CommentRepositoryDSL {
     private final JPAQueryFactory queryFactory;
 
     @Override

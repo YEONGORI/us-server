@@ -7,6 +7,6 @@ import us.usserver.domain.comment.entity.Comment;
 import java.util.List;
 
 @NoRepositoryBean
-public interface CommentDSLRepository {
+public interface CommentRepositoryDSL {
     List<Comment> getTop3CommentOfChapter(Chapter chapter);
 }
