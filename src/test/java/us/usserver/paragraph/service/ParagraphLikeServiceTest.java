@@ -21,7 +21,7 @@ import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.service.ParagraphLikeService;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;

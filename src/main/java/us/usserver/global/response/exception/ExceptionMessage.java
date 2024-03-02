@@ -1,4 +1,4 @@
-package us.usserver.global;
+package us.usserver.global.response.exception;
 
 import lombok.NoArgsConstructor;
 

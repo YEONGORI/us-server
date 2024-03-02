@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
 import us.usserver.domain.author.service.BookshelfService;
-import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "보관함(소설) API")

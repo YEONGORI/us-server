@@ -2,15 +2,14 @@ package us.usserver.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import us.usserver.domain.comment.repository.CommentLikeRepositoryDSL;
 import us.usserver.domain.comment.repository.CommentLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
 import us.usserver.domain.comment.entity.CommentLike;
-import us.usserver.global.exception.CommentNotFoundException;
+import us.usserver.global.response.exception.CommentNotFoundException;
 
 import java.util.Objects;
 

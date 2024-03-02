@@ -23,10 +23,10 @@ import us.usserver.domain.member.dto.parameter.KakaoParams;
 import us.usserver.domain.member.dto.req.OauthRequest;
 import us.usserver.domain.member.service.OauthService;
 import us.usserver.domain.member.service.TokenProvider;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.TokenInvalidException;
-import us.usserver.global.exception.UnsupportedSocialProviderException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.TokenInvalidException;
+import us.usserver.global.response.exception.UnsupportedSocialProviderException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Slf4j

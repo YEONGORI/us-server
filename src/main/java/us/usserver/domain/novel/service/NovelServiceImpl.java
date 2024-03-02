@@ -25,9 +25,9 @@ import us.usserver.domain.authority.dto.res.StakeInfoResponse;
 import us.usserver.domain.authority.dto.StakeInfo;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 
 import java.util.Comparator;
 import java.util.List;

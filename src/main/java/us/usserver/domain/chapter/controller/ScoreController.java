@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.chapter.dto.PostScore;
 import us.usserver.domain.chapter.service.ScoreService;
-import us.usserver.global.exception.ScoreOutOfRangeException;
+import us.usserver.global.response.exception.ScoreOutOfRangeException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "평점 API")

@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.utils.RedisUtils;
-import us.usserver.global.exception.TokenInvalidException;
+import us.usserver.global.response.exception.TokenInvalidException;
 import us.usserver.domain.member.repository.MemberRepository;
 
 import java.util.Date;
 import java.util.Optional;
 
-import static us.usserver.global.ExceptionMessage.*;
+import static us.usserver.global.response.exception.ExceptionMessage.*;
 
 @Slf4j
 @Getter

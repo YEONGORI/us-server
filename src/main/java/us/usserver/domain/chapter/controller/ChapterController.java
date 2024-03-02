@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.service.ChapterService;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "회차 API")

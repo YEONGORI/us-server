@@ -23,7 +23,7 @@ import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 

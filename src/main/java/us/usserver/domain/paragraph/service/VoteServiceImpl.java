@@ -9,9 +9,9 @@ import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.domain.paragraph.repository.VoteRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotAuthorizedException;
-import us.usserver.global.exception.DuplicatedVoteException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.DuplicatedVoteException;
 
 import java.util.List;
 import java.util.Objects;

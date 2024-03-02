@@ -7,7 +7,7 @@ import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 
 @Service

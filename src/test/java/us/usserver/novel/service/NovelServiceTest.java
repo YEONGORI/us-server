@@ -22,8 +22,8 @@ import us.usserver.domain.novel.dto.NovelSynopsis;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelService;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 

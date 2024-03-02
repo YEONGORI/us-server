@@ -1,8 +1,7 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import us.usserver.global.ExceptionMessage;
 
 @Getter
 public enum ErrorCode {

@@ -9,8 +9,8 @@ import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.entity.Score;
 import us.usserver.domain.chapter.repository.ScoreRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.ScoreOutOfRangeException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.ScoreOutOfRangeException;
 import us.usserver.domain.chapter.dto.PostScore;
 
 import java.util.Optional;

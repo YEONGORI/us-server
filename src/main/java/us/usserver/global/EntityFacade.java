@@ -1,5 +1,6 @@
 package us.usserver.global;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
@@ -8,17 +9,22 @@ import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
-import us.usserver.global.exception.*;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.entity.Vote;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
-
-import java.util.Optional;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.ChapterNotFoundException;
+import us.usserver.global.response.exception.CommentNotFoundException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.MemberNotFoundException;
+import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.ParagraphNotFoundException;
+import us.usserver.global.response.exception.VoteNotFoundException;
 
 @Service
 @RequiredArgsConstructor

@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.paragraph.service.VoteService;
-import us.usserver.global.exception.AuthorNotAuthorizedException;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.DuplicatedVoteException;
-import us.usserver.global.exception.ParagraphNotFoundException;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.DuplicatedVoteException;
+import us.usserver.global.response.exception.ParagraphNotFoundException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "투표 API")

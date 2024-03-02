@@ -18,7 +18,7 @@ import us.usserver.domain.member.dto.req.JoinMemberRequest;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.service.MemberService;
 import us.usserver.domain.member.service.TokenProvider;
-import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.ApiCsResponse;
 
 @RequiredArgsConstructor

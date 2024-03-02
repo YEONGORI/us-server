@@ -21,11 +21,11 @@ import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.ChapterNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.ParagraphLengthOutOfRangeException;
-import us.usserver.global.exception.ParagraphNotFoundException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.ChapterNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.ParagraphLengthOutOfRangeException;
+import us.usserver.global.response.exception.ParagraphNotFoundException;
 
 import java.util.*;
 

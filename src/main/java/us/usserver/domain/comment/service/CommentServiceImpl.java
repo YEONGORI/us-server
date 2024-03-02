@@ -13,9 +13,9 @@ import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentResponse;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotAuthorizedException;
-import us.usserver.global.exception.CommentLengthOutOfRangeException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
 import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 public class TokenInvalidException extends RuntimeException {
     public TokenInvalidException(String message) {

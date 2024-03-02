@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.paragraph.service.ParagraphLikeService;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "한줄 좋아요 API")

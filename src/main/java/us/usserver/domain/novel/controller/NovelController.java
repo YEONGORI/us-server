@@ -34,9 +34,9 @@ import us.usserver.domain.novel.dto.ReadInfoOfNovel;
 import us.usserver.domain.novel.dto.SearchKeywordResponse;
 import us.usserver.domain.novel.dto.SearchNovelReq;
 import us.usserver.domain.novel.service.NovelService;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "소설 API")

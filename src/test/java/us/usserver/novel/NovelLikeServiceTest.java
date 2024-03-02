@@ -17,11 +17,10 @@ import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelLikeService;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.DuplicatedLikeException;
-import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
-import us.usserver.novel.NovelMother;
 
 import java.util.Collections;
 import java.util.List;

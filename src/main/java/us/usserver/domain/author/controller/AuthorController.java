@@ -19,8 +19,8 @@ import us.usserver.domain.author.dto.req.ParagraphSpaceReq;
 import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.domain.author.service.AuthorService;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.FontSizeOutOfRangeException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.FontSizeOutOfRangeException;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "사용자 정보 API")

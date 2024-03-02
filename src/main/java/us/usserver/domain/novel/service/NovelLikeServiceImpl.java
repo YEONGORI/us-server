@@ -7,8 +7,8 @@ import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.domain.novel.entity.NovelLike;
 
 import java.util.Optional;

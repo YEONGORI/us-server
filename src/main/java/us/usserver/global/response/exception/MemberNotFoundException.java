@@ -1,4 +1,4 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 public class MemberNotFoundException extends RuntimeException {
     public MemberNotFoundException(String message) {

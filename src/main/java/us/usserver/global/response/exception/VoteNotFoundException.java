@@ -1,4 +1,4 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 public class VoteNotFoundException extends RuntimeException {
     public VoteNotFoundException(String message) {

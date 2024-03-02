@@ -13,8 +13,8 @@ import us.usserver.domain.member.dto.token.AppleToken;
 import us.usserver.domain.member.dto.member.GoogleMember;
 import us.usserver.domain.member.dto.member.OauthMember;
 import us.usserver.domain.member.dto.parameter.OauthParams;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.TokenInvalidException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.TokenInvalidException;
 import us.usserver.domain.member.constant.OauthProvider;
 
 @Slf4j

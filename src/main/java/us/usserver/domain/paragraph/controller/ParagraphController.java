@@ -15,9 +15,9 @@ import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.global.response.ApiCsResponse;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.ChapterNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.ChapterNotFoundException;
+import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
 
 import java.net.URI;

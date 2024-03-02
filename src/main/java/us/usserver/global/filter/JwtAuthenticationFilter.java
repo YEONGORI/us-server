@@ -17,8 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.TokenInvalidException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.TokenInvalidException;
 
 import java.io.IOException;
 import java.util.Collections;

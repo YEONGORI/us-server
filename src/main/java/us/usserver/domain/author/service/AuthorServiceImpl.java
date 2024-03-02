@@ -7,10 +7,10 @@ import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.FontSizeOutOfRangeException;
-import us.usserver.global.exception.ParagraphSpaceOutOfRangeException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.FontSizeOutOfRangeException;
+import us.usserver.global.response.exception.ParagraphSpaceOutOfRangeException;
 
 @Transactional
 @RequiredArgsConstructor

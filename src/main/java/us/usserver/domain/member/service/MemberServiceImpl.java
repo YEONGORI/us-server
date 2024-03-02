@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.member.constant.Role;
-import us.usserver.global.ExceptionMessage;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.utils.RedisUtils;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MemberNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.MemberNotFoundException;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.member.dto.req.JoinMemberRequest;
@@ -19,7 +19,7 @@ import us.usserver.domain.member.dto.req.JoinMemberRequest;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-import static us.usserver.global.ExceptionMessage.*;
+import static us.usserver.global.response.exception.ExceptionMessage.*;
 
 @Slf4j
 @RequiredArgsConstructor
