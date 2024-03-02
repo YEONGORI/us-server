@@ -3,7 +3,9 @@ package us.usserver.global;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.author.repository.ReadNovelRepository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.comment.entity.Comment;
@@ -30,6 +32,7 @@ public class EntityFacade {
     private final ParagraphRepository paragraphRepository;
     private final CommentRepository commentJpaRepository;
     private final VoteRepository voteJpaRepository;
+    private final ReadNovelRepository readNovelRepository;
 
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);
@@ -85,5 +88,13 @@ public class EntityFacade {
             throw new VoteNotFoundException(ExceptionMessage.VOTE_NOT_FOUND);
         }
         return voteById.get();
+    }
+
+    public ReadNovel getReadNovel(Long readNovelId) {
+        Optional<ReadNovel> readNovelById = readNovelRepository.findReadNovelById(readNovelId);
+        if (readNovelById.isEmpty()) { // TODO: 이부분 global 수정 중이라 컨플릭트 날까봐 일단 이렇게만 작성했음
+            throw new VoteNotFoundException(ExceptionMessage.VOTE_NOT_FOUND);
+        }
+        return readNovelById.get();
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
@@ -30,10 +31,10 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
         Author author = entityFacade.getAuthor(authorId);
-        Set<Long> viewedNovelIds = author.getViewedNovelIds();
+        Set<ReadNovel> readNovels = author.getReadNovels();
 
-        List<NovelPreview> novelPreviews = viewedNovelIds.stream()
-                .map(entityFacade::getNovel)
+        List<NovelPreview> novelPreviews = readNovels.stream()
+                .map(ReadNovel::getNovel)
                 .map(novel -> NovelPreview.fromNovel(novel, getTotalJoinedAuthor(novel), getShortcuts(novel)))
                 .toList();
 
@@ -41,9 +42,10 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public void deleteRecentViewedNovels(Long authorId, Long novelId) {
+    public void deleteRecentViewedNovels(Long authorId, Long readNovelId) {
         Author author = entityFacade.getAuthor(authorId);
-        author.deleteViewedNovelId(novelId);
+        ReadNovel readNovel = entityFacade.getReadNovel(readNovelId);
+        author.deleteReadNovel(readNovel);
     }
 
     @Override

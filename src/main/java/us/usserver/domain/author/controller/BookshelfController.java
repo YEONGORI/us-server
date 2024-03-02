@@ -44,10 +44,10 @@ public class BookshelfController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/viewed/{novelId}") // 내가 최근에 본 소설 삭제
-    public ResponseEntity<ApiCsResponse<?>> deleteRecentViewedNovels(@PathVariable Long novelId) {
+    @DeleteMapping("/viewed/{readNovelId}") // 내가 최근에 본 소설 삭제
+    public ResponseEntity<ApiCsResponse<?>> deleteRecentViewedNovels(@PathVariable Long readNovelId) {
         Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteRecentViewedNovels(authorId, novelId);
+        bookshelfService.deleteRecentViewedNovels(authorId, readNovelId);
 
         ApiCsResponse<Object> response = ApiCsResponse.builder()
                 .status(HttpStatus.NO_CONTENT.value())

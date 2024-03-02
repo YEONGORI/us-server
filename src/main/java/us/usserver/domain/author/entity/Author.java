@@ -65,8 +65,8 @@ public class Author {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ElementCollection
-    private Set<Long> viewedNovelIds = new HashSet<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private Set<ReadNovel> readNovels = new HashSet<>();
 
     @OneToMany
     private List<Novel> createdNovels = new ArrayList<>();
@@ -104,11 +104,11 @@ public class Author {
         this.authorities.add(authority);
     }
 
-    public void addViewedNovelId(Long id) {
-        this.getViewedNovelIds().add(id);
+    public void addReadNovel(ReadNovel readNovel) {
+        this.readNovels.add(readNovel);
     }
-    public void deleteViewedNovelId(Long id) {
-        this.getViewedNovelIds().remove(id);
+    public void deleteReadNovel(ReadNovel readNovel) {
+        this.readNovels.remove(readNovel);
     }
     public void changeNickname(String nickname) {
         this.nickname = nickname;

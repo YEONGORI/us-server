@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.dto.StakeInfo;
 import us.usserver.domain.authority.dto.res.StakeInfoResponse;
@@ -120,7 +121,7 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public MainPageResponse getMainPage(Member member) {
-        Author author = getAuthor(member);
+        List<NovelInfo> readNovels = getReadNovels(member);
 
         PageRequest realTimeUpdates = PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, SortColumn.recentlyUpdated.toString()));
         PageRequest recentlyCreated = PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, SortColumn.createdAt.toString()));
@@ -136,7 +137,7 @@ public class NovelServiceImpl implements NovelService {
                 .map(NovelInfo::mapNovelToNovelInfo)
                 .toList();
 
-        return new MainPageResponse(popularNovels, null, realTimeUpdatesNovels, recentlyCreatedNovels);
+        return new MainPageResponse(popularNovels, readNovels, realTimeUpdatesNovels, recentlyCreatedNovels);
     }
 
     @Override
@@ -173,6 +174,16 @@ public class NovelServiceImpl implements NovelService {
         } else {
             return null;
         }
+    }
+
+    private List<NovelInfo> getReadNovels(Member member) {
+        Author author = getAuthor(member);
+        return  author.getReadNovels().stream()
+                .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
+                .limit(6)
+                .map(ReadNovel::getNovel)
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
     }
 
     private PageRequest getPageRequest(MoreInfoOfNovel moreInfoOfNovel) {

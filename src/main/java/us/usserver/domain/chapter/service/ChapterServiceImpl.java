@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.chapter.constant.ChapterStatus;
@@ -21,6 +22,7 @@ import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.chapter.repository.ScoreRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -69,7 +71,7 @@ public class ChapterServiceImpl implements ChapterService {
             score = 0.0;
         }
 
-        author.addViewedNovelId(novelId);
+        author.addReadNovel(ReadNovel.builder().author(author).novel(novel).readDate(LocalDateTime.now()).build()); // Set 이라 중복 검사를 하지 않아도 됨
         return ChapterDetailInfo.builder()
                 .part(part)
                 .title(chapter.getTitle())
