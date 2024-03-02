@@ -7,14 +7,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import us.usserver.domain.chapter.service.ScoreService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.ScoreOutOfRangeException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.chapter.dto.PostScore;
+import us.usserver.domain.chapter.service.ScoreService;
+import us.usserver.global.exception.ScoreOutOfRangeException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "평점 API")
 @ResponseBody
@@ -31,18 +34,12 @@ public class ScoreController {
                     content = @Content(schema = @Schema(implementation = ScoreOutOfRangeException.class)))
     })
     @PostMapping("/{chapterId}")
-    public ResponseEntity<ApiCsResponse<?>> setScore(
+    public ApiCsResponse<Void> setScore(
             @PathVariable Long chapterId,
             @Validated @RequestBody PostScore score
             ) {
         Long authorId = 500L;
         scoreService.postScore(chapterId, authorId, score);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

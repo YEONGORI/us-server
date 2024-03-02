@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.service.ParagraphService;
-import us.usserver.global.ApiCsResponse;
+import us.usserver.global.response.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.ChapterNotFoundException;
 import us.usserver.global.exception.MainAuthorIsNotMatchedException;
@@ -38,15 +38,9 @@ public class ParagraphController {
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/{chapterId}/voting")
-    public ResponseEntity<ApiCsResponse<?>> getParagraphsInVoting(@PathVariable Long chapterId) {
+    public ApiCsResponse<GetParagraphResponse> getParagraphsInVoting(@PathVariable Long chapterId) {
         GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(chapterId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(paragraphs)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(paragraphs);
     }
 
     @Operation(summary = "한줄 작성하기", description = "다음 한줄에 대한 내 의견 작성")
@@ -59,18 +53,13 @@ public class ParagraphController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
     })
     @PostMapping("/{chapterId}")
-    public ResponseEntity<ApiCsResponse<?>> postParagraph(
+    public ResponseEntity<ApiCsResponse<ParagraphInVoting>> postParagraph(
             @PathVariable Long chapterId,
             @Validated @RequestBody PostParagraphReq req
     ) {
         Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         ParagraphInVoting paragraph = paragraphService.postParagraph(authorId, chapterId, req);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(paragraph)
-                .build();
+        ApiCsResponse<ParagraphInVoting> response = ApiCsResponse.success(paragraph);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -83,19 +72,13 @@ public class ParagraphController {
                     content = @Content(schema = @Schema(implementation = MainAuthorIsNotMatchedException.class))),
     })
     @PatchMapping("/{novelId}/{chapterId}/{paragraphId}")
-    public ResponseEntity<ApiCsResponse<?>> selectParagraph(
+    public ResponseEntity<ApiCsResponse<Void>> selectParagraph(
             @PathVariable Long novelId, @PathVariable Long chapterId, @PathVariable Long paragraphId
     ) {
         Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         paragraphService.selectParagraph(authorId, novelId, chapterId, paragraphId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(null)
-                .build();
+        ApiCsResponse<Void> response = ApiCsResponse.success();
         URI redirectUri = URI.create("/paragraph/" + chapterId);
-
         return ResponseEntity.created(redirectUri).body(response);
     }
 
@@ -104,15 +87,10 @@ public class ParagraphController {
             @ApiResponse(responseCode = "201", description = "작성 성공")
     })
     @PostMapping("/call/{paragraphId}") // 신고 하기
-    public ResponseEntity<ApiCsResponse<?>> reportParagraph(@PathVariable Long paragraphId) {
+    public ResponseEntity<ApiCsResponse<Void>> reportParagraph(@PathVariable Long paragraphId) {
         Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         paragraphService.reportParagraph(authorId, paragraphId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        ApiCsResponse<Void> response = ApiCsResponse.success();
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

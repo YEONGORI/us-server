@@ -7,15 +7,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.paragraph.service.VoteService;
-import us.usserver.global.ApiCsResponse;
 import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.global.exception.AuthorNotFoundException;
 import us.usserver.global.exception.DuplicatedVoteException;
 import us.usserver.global.exception.ParagraphNotFoundException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "투표 API")
 @ResponseBody
@@ -36,16 +39,10 @@ public class VoteController {
                     content = @Content(schema = @Schema(implementation = DuplicatedVoteException.class))),
     })
     @PostMapping("/{paragraphId}")
-    public ResponseEntity<ApiCsResponse<?>> voting(@PathVariable Long paragraphId) {
+    public ApiCsResponse<Void> voting(@PathVariable Long paragraphId) {
         Long authorId = 500L;
         voteService.voting(paragraphId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.NO_CONTENT.value())
-                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 
     @Operation(summary = "투표 취소 하기", description = "본인 투표 취소 하기")
@@ -59,15 +56,9 @@ public class VoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class))),
     })
     @DeleteMapping("/{voteId}")
-    public ResponseEntity<ApiCsResponse<?>> cancelVote(@PathVariable Long voteId) {
+    public ApiCsResponse<Void> cancelVote(@PathVariable Long voteId) {
         Long authorId = 500L;
         voteService.unvoting(voteId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.NO_CONTENT.value())
-                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }
