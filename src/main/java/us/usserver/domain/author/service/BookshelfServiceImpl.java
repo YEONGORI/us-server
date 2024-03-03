@@ -38,7 +38,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .map(novel -> NovelPreview.fromNovel(novel, getTotalJoinedAuthor(novel), getShortcuts(novel)))
                 .toList();
 
-        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).count(readNovels.size()).build();
     }
 
     @Override

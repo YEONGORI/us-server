@@ -181,7 +181,7 @@ class NovelServiceTest {
     @DisplayName("소설 생성")
     void 소설생성_성공() {
         //given
-        CreateNovelReq createNovelReq = CreateNovelReq.builder()
+        NovelBlueprint createNovelReq = NovelBlueprint.builder()
                 .title("TEST TITLE")
                 .thumbnail("TEST THUMBNAIL")
                 .synopsis("TEST SYNOPSIS")
@@ -324,7 +324,7 @@ class NovelServiceTest {
 //        //given
 //        MainPageResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
 //        Novel realTimeNovel = homeNovelListResponse.getRealTimeNovels().get(homeNovelListResponse.getRealTimeNovels().size() - 1);
-//        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
+//        MoreNovelRequest moreInfoOfNovel = MoreNovelRequest.builder()
 //                .lastNovelId(realTimeNovel.getId())
 //                .size(3)
 //                .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
@@ -344,7 +344,7 @@ class NovelServiceTest {
 //        //given
 //        MainPageResponse homeNovelListResponse = novelServiceV0.homeNovelInfo();
 //        Novel newNovel = homeNovelListResponse.getNewNovels().get(homeNovelListResponse.getNewNovels().size() - 1);
-//        MoreInfoOfNovel moreInfoOfNovel = MoreInfoOfNovel.builder()
+//        MoreNovelRequest moreInfoOfNovel = MoreNovelRequest.builder()
 //                .lastNovelId(newNovel.getId())
 //                .size(3)
 //                .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())

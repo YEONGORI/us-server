@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class NovelInfo {
     @Schema(description = "소설 ID", example = "1")
-    private Long id;
+    private MoreNovelRequest id;
 
     @Schema(description = "소설 제목", example = "주술 회전")
     private String title;

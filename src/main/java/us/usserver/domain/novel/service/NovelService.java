@@ -7,21 +7,21 @@ import us.usserver.domain.novel.dto.*;
 
 @Service
 public interface NovelService {
-    NovelInfo getNovelInfo(Long novelId);
+    NovelInfo getNovelInfo(java.lang.Long novelId);
 
-    NovelDetailInfo getNovelDetailInfo(Long novelId);
+    NovelDetailInfo getNovelDetailInfo(java.lang.Long novelId);
 
-    String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis);
+    String modifyNovelSynopsis(java.lang.Long novelId, java.lang.Long authorId, String synopsis);
 
-    AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription description);
+    AuthorDescription modifyAuthorDescription(java.lang.Long novelId, java.lang.Long authorId, AuthorDescription description);
 
-    NovelInfo createNovel(Member member, CreateNovelReq createNovelReq);
+    NovelInfo createNovel(Member member, NovelBlueprint novelBlueprint);
 
     MainPageResponse getMainPage(Member member);
 
-    NovelPageInfoResponse getMoreNovels(MoreInfoOfNovel moreInfoOfNovel);
+    MoreNovelResponse getMoreNovels(Member member, MoreNovelRequest moreNovelRequest);
 
-    NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel);
+    MoreNovelResponse readMoreNovel(Member member);
 
     NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq);
 

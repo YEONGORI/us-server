@@ -31,6 +31,7 @@ import us.usserver.global.exception.MainAuthorIsNotMatchedException;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,10 +53,11 @@ public class NovelServiceImpl implements NovelService {
     private static final Integer DEFAULT_PAGE_SIZE = 6;
 
     @Override
-    public NovelInfo createNovel(Member member, CreateNovelReq createNovelReq) {
-        Author author = getAuthor(member);
+    public NovelInfo createNovel(Member member, NovelBlueprint novelBlueprint) {
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
-        Novel novel = createNovelReq.toEntity(author);
+        Novel novel = novelBlueprint.toEntity(author);
         Novel saveNovel = novelRepository.save(novel);
 
         author.getCreatedNovels().add(novel);
@@ -76,6 +78,7 @@ public class NovelServiceImpl implements NovelService {
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
         StakeInfoResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
+
         List<StakeInfo> stakeInfos = stakeResponse.getStakeInfos();
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
@@ -123,62 +126,59 @@ public class NovelServiceImpl implements NovelService {
     public MainPageResponse getMainPage(Member member) {
         List<NovelInfo> readNovels = getReadNovels(member);
 
-        PageRequest realTimeUpdates = PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, SortColumn.recentlyUpdated.toString()));
-        PageRequest recentlyCreated = PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, SortColumn.createdAt.toString()));
-        PageRequest popular = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, SortColumn.hit.toString()));
+        PageRequest realTimeUpdates = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+        PageRequest recentlyCreated = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+        PageRequest popular = getPageRequest(0, 3, Sort.Direction.DESC, SortColumn.hit);
 
         List<NovelInfo> realTimeUpdatesNovels = novelRepository.findSliceBy(realTimeUpdates)
-                .map(NovelInfo::mapNovelToNovelInfo)
-                .toList();
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
         List<NovelInfo> recentlyCreatedNovels = novelRepository.findSliceBy(recentlyCreated)
-                .map(NovelInfo::mapNovelToNovelInfo)
-                .toList();
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
         List<NovelInfo> popularNovels = novelRepository.findSliceBy(popular)
-                .map(NovelInfo::mapNovelToNovelInfo)
-                .toList();
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
 
         return new MainPageResponse(popularNovels, readNovels, realTimeUpdatesNovels, recentlyCreatedNovels);
     }
 
     @Override
-    public NovelPageInfoResponse getMoreNovels(MoreInfoOfNovel moreInfoOfNovel) {
-        PageRequest pageable = getPageRequest(moreInfoOfNovel);
-        Slice<Novel> novelSlice = novelRepository.moreNovelList(moreInfoOfNovel, pageable);
+    public MoreNovelResponse getMoreNovels(Member member, MoreNovelRequest moreNovelRequest) {
+        PageRequest pageRequest = switch (moreNovelRequest.mainNovelType()) {
+            case NEW -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+            case UPDATE -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+            case POPULAR -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
+        };
 
-        return getNovelPageInfoResponse(novelSlice, moreInfoOfNovel.getSortDto());
+        Slice<Novel> novelSlice = novelRepository.findSliceBy(pageRequest);
+        List<NovelInfo> novelInfos = novelSlice
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
+        return new MoreNovelResponse(novelInfos, novelSlice.getNumber(), novelSlice.hasNext());
     }
 
+
     @Override
-    public NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel){
-        Author author = getAuthor(member);
+    public MoreNovelResponse readMoreNovel(Member member){
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
-        if (author != null) {
-            int author_readNovel_cnt = author.getViewedNovels().size();
-            int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
-            int endPoint = Math.min(author_readNovel_cnt, getSize);
+        List<NovelInfo> novelInfos = author.getReadNovels().stream()
+                .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
+                .map(ReadNovel::getNovel)
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
 
-            List<Novel> novelList = author
-                    .getViewedNovels()
-                    .stream()
-                    .sorted(Comparator.comparing(Novel::getId))
-                    .toList()
-                    .subList(readInfoOfNovel.getGetNovelSize(), endPoint);
-            boolean hasNext = getSize == endPoint;
+        return new MoreNovelResponse(novelInfos, 0, Boolean.FALSE);
+    }
 
-            return NovelPageInfoResponse.builder()
-                    .novelList(novelList.stream().map(NovelInfo::mapNovelToNovelInfo).toList())
-                    .lastNovelId(novelList.get(novelList.size()-1).getId())
-                    .hasNext(hasNext)
-                    .sorts(null)
-                    .build();
-        } else {
-            return null;
-        }
+    private PageRequest getPageRequest(int pageNum, int pageSize, Sort.Direction direction, SortColumn sortColumn) {
+        return PageRequest.of(pageNum, pageSize, Sort.by(direction, sortColumn.toString()));
     }
 
     private List<NovelInfo> getReadNovels(Member member) {
-        Author author = getAuthor(member);
-        return  author.getReadNovels().stream()
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+
+        return author.getReadNovels().stream()
                 .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
                 .limit(6)
                 .map(ReadNovel::getNovel)
@@ -186,37 +186,15 @@ public class NovelServiceImpl implements NovelService {
                 .toList();
     }
 
-    private PageRequest getPageRequest(MoreInfoOfNovel moreInfoOfNovel) {
-        if (moreInfoOfNovel.getSize() == null) {
-            moreInfoOfNovel.setSize(6);
-        }
-        return PageRequest.ofSize(moreInfoOfNovel.getSize());
-    }
-
-    private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
-        Long newLastNovelId = getLastNovelId(novelSlice);
-
-        return NovelPageInfoResponse
-                .builder()
-                .novelList(mapNovelsToNovelInfos(novelSlice))
-                .lastNovelId(newLastNovelId)
-                .hasNext(novelSlice.hasNext())
-                .sorts(novelMoreDto.getSorts())
-                .build();
-    }
-
-    private Long getLastNovelId(Slice<Novel> novelSlice){
-        return novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
-    }
-
     @Override
     public NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq) {
-        Author author = getAuthor(member);
+        Optional<Author> authorByMember = authorRepository.getAuthorByMember(member);
+
         PageRequest pageable = PageRequest.ofSize(searchNovelReq.getSize());
-        if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
-            increaseKeywordScore(searchNovelReq.getTitle());
-            recentKeyword((author == null) ? null : author.getId(), searchNovelReq.getTitle());
-        }
+//        if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
+//            increaseKeywordScore(searchNovelReq.getTitle());
+//            recentKeyword((author == null) ? null : author.getId(), searchNovelReq.getTitle());
+//        }
         Slice<Novel> novelSlice = novelRepository.searchNovelList(searchNovelReq, pageable);
 
         return getNovelPageInfoResponse(novelSlice, searchNovelReq.getSortDto());
@@ -242,12 +220,30 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public void deleteSearchKeyword(Member member) {
-        Author author = getAuthor(member);
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
         String key = String.valueOf(author.getId());
         Long size = redisTemplate.opsForList().size(key);
 
         redisTemplate.opsForList().rightPop(key, size);
+    }
+
+    private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
+        Long newLastNovelId = getLastNovelId(novelSlice);
+//        novelSlice.getNumber()
+
+        return NovelPageInfoResponse
+                .builder()
+                .novelList(mapNovelsToNovelInfos(novelSlice))
+//                .lastNovelId(newLastNovelId)
+                .hasNext(novelSlice.hasNext())
+                .sorts(novelMoreDto.getSorts())
+                .build();
+    }
+
+    private Long getLastNovelId(Slice<Novel> novelSlice){
+        return novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
     }
 
     private void increaseKeywordScore(String keyword) {
@@ -294,7 +290,8 @@ public class NovelServiceImpl implements NovelService {
         if (member == null) {
             return null;
         }
-        return authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        return authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
     }
 
     private List<NovelInfo> mapNovelsToNovelInfos(Slice<Novel> novels) {
