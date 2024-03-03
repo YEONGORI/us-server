@@ -3,14 +3,12 @@ package us.usserver.domain.author.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.FontSizeOutOfRangeException;
-import us.usserver.global.response.exception.ParagraphSpaceOutOfRangeException;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Transactional
 @RequiredArgsConstructor
@@ -20,7 +18,8 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
     @Override
     public void updateAuthor(Long memberId, UpdateAuthorReq updateAuthorReq) {
-        Author author = authorRepository.getAuthorByMemberId(memberId).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        Author author = authorRepository.getAuthorByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
 
         if (updateAuthorReq.getNickname() != null) {
             author.changeNickname(updateAuthorReq.getNickname());
@@ -42,7 +41,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void changeFontSize(Long authorId, int fontSize) {
         if (fontSize < 1 || fontSize > 30) {
-            throw new FontSizeOutOfRangeException(ExceptionMessage.FONT_SIZE_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.FONT_SIZE_OUT_OF_RANGE);
         }
         Author author = entityFacade.getAuthor(authorId);
         author.changeFontSize(fontSize);
@@ -51,7 +50,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void changeParagraphSpace(Long authorId, int paragraphSpace) {
         if (paragraphSpace < 1 || paragraphSpace > 30) {
-            throw new ParagraphSpaceOutOfRangeException(ExceptionMessage.PARAGRAPH_SPACE_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.PARAGRAPH_SPACE_OUT_OF_RANGE);
         }
         Author author = entityFacade.getAuthor(authorId);
         author.changeParagraphSpace(paragraphSpace);

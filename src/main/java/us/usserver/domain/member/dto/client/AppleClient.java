@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import us.usserver.domain.member.dto.token.AppleToken;
+import us.usserver.domain.member.constant.OauthProvider;
 import us.usserver.domain.member.dto.member.GoogleMember;
 import us.usserver.domain.member.dto.member.OauthMember;
 import us.usserver.domain.member.dto.parameter.OauthParams;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.TokenInvalidException;
-import us.usserver.domain.member.constant.OauthProvider;
+import us.usserver.domain.member.dto.token.AppleToken;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Component
@@ -62,7 +62,7 @@ public class AppleClient implements OauthClient{
         AppleToken appleToken = rt.postForObject(url, tokenRequest, AppleToken.class);
 
         if (appleToken == null) {
-            throw new TokenInvalidException(ExceptionMessage.TOKEN_VERIFICATION);
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
         }
 
         return appleToken.getAccess_token();

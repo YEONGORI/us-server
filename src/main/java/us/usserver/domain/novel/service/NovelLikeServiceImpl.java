@@ -1,17 +1,16 @@
 package us.usserver.domain.novel.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.novel.entity.Novel;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.domain.novel.entity.NovelLike;
-
-import java.util.Optional;
+import us.usserver.domain.novel.repository.NovelLikeRepository;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Service
 @Transactional
@@ -27,7 +26,7 @@ public class NovelLikeServiceImpl implements NovelLikeService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (novelLikeRepository.findFirstByNovelAndAuthor(novel, author).isPresent()) {
-            throw new DuplicatedLikeException(ExceptionMessage.LIKE_DUPLICATED);
+            throw new BaseException(ErrorCode.LIKE_DUPLICATED);
         }
 
         NovelLike novelLike = NovelLike
@@ -44,6 +43,7 @@ public class NovelLikeServiceImpl implements NovelLikeService {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthor(authorId);
 
+        // TODO : 처음부터 찾아오면 아이디 두개로 안됨?
         Optional<NovelLike> novelLike = novelLikeRepository.findFirstByNovelAndAuthor(novel, author);
         novelLike.ifPresent(novelLikeRepository::delete);
     }

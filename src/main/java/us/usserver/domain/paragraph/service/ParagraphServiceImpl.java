@@ -1,5 +1,10 @@
 package us.usserver.domain.paragraph.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
-import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
-import us.usserver.domain.paragraph.dto.*;
+import us.usserver.domain.paragraph.dto.ParagraphInVoting;
+import us.usserver.domain.paragraph.dto.ParagraphSelected;
+import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.entity.Paragraph;
@@ -19,15 +27,9 @@ import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
-import us.usserver.domain.authority.service.StakeService;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.ChapterNotFoundException;
-import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.response.exception.ParagraphLengthOutOfRangeException;
-import us.usserver.global.response.exception.ParagraphNotFoundException;
-
-import java.util.*;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -77,7 +79,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
         if (req.getContent().length() > 300 || req.getContent().length() < 50) {
-            throw new ParagraphLengthOutOfRangeException(ExceptionMessage.PARAGRAPH_LENGTH_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.PARAGRAPH_LENGTH_OUT_OF_RANGE);
         }
 
         Paragraph paragraph = paragraphRepository.save(
@@ -111,13 +113,13 @@ public class ParagraphServiceImpl implements ParagraphService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(authorId)) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
         if (!novel.getChapters().contains(chapter)) {
-            throw new ChapterNotFoundException(ExceptionMessage.CHAPTER_NOT_FOUND);
+            throw new BaseException(ErrorCode.CHAPTER_NOT_FOUND);
         }
         if (!chapter.getParagraphs().contains(paragraph)) {
-            throw new ParagraphNotFoundException(ExceptionMessage.PARAGRAPH_NOT_FOUND);
+            throw new BaseException(ErrorCode.PARAGRAPH_NOT_FOUND);
         }
 
         addAuthority(author, novel);

@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.TokenInvalidException;
-import us.usserver.domain.member.dto.token.KakaoToken;
-import us.usserver.domain.member.dto.member.KakaoMember;
-import us.usserver.domain.member.dto.parameter.OauthParams;
-import us.usserver.domain.member.dto.member.OauthMember;
 import us.usserver.domain.member.constant.OauthProvider;
+import us.usserver.domain.member.dto.member.KakaoMember;
+import us.usserver.domain.member.dto.member.OauthMember;
+import us.usserver.domain.member.dto.parameter.OauthParams;
+import us.usserver.domain.member.dto.token.KakaoToken;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Component
@@ -66,7 +66,7 @@ public class KakaoClient implements OauthClient{
 
         if (kakaoToken == null) {
             log.error("token을 정상적으로 가져오지 못했습니다.");
-            throw new TokenInvalidException(ExceptionMessage.TOKEN_VERIFICATION);
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
         }
 
         return kakaoToken.getAccess_token();

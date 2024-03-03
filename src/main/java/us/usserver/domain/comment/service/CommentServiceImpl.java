@@ -1,24 +1,22 @@
 package us.usserver.domain.comment.service;
 
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.comment.entity.Comment;
-import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentResponse;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.AuthorNotAuthorizedException;
-import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
+import us.usserver.domain.comment.entity.Comment;
+import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.novel.entity.Novel;
-
-import java.util.List;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -61,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
         Integer ZeroLikeCnt = 0;
 
         if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
-            throw new CommentLengthOutOfRangeException(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
         Comment comment = commentJpaRepository.save(Comment.builder()
@@ -83,7 +81,7 @@ public class CommentServiceImpl implements CommentService {
         Integer ZeroLikeCnt = 0;
 
         if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
-            throw new CommentLengthOutOfRangeException(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
         Comment comment = commentJpaRepository.save(Comment.builder()
@@ -125,7 +123,7 @@ public class CommentServiceImpl implements CommentService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (!comment.getAuthor().getId().equals(author.getId())) {
-            throw new AuthorNotAuthorizedException(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
+            throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
 
         commentJpaRepository.delete(comment);

@@ -1,5 +1,7 @@
 package us.usserver.domain.paragraph.service;
 
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,12 +11,8 @@ import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.domain.paragraph.repository.VoteRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.AuthorNotAuthorizedException;
-import us.usserver.global.response.exception.DuplicatedVoteException;
-
-import java.util.List;
-import java.util.Objects;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -35,7 +33,7 @@ public class VoteServiceImpl implements VoteService {
                 .anyMatch(vote ->
                         vote.getParagraph().getSequence() == paragraph.getSequence())
         ) {
-            throw new DuplicatedVoteException(ExceptionMessage.VOTE_ONLY_ONE_PARAGRAPH);
+            throw new BaseException(ErrorCode.VOTE_ONLY_ONE_PARAGRAPH);
         }
 
         Vote vote = Vote.builder()
@@ -52,7 +50,7 @@ public class VoteServiceImpl implements VoteService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (!vote.getAuthor().getId().equals(author.getId())) {
-            throw new AuthorNotAuthorizedException(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
+            throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
 
         voteRepository.delete(vote);

@@ -23,11 +23,11 @@ import us.usserver.domain.member.dto.parameter.KakaoParams;
 import us.usserver.domain.member.dto.req.OauthRequest;
 import us.usserver.domain.member.service.OauthService;
 import us.usserver.domain.member.service.TokenProvider;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.TokenInvalidException;
-import us.usserver.global.response.exception.UnsupportedSocialProviderException;
 import us.usserver.global.response.ApiCsResponse;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.TokenInvalidException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +59,7 @@ public class OauthController {
         switch (oauthRequest.getOauthProvider()) {
             case KAKAO -> memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
             case GOOGLE -> memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthRequest.getCode()));
-            default -> throw new UnsupportedSocialProviderException(ExceptionMessage.UNSUPPORTED_SOCIAL_PROVIDER);
+            default -> throw new BaseException(ErrorCode.UNSUPPORTED_SOCIAL_PROVIDER);
         }
 //        if (oauthRequest.getOauthProvider() == OauthProvider.KAKAO) {
 //            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));

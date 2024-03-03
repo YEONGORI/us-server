@@ -5,6 +5,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,11 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.TokenInvalidException;
-
-import java.io.IOException;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = tokenProvider.extractToken(request, "AccessToken");
         if (accessToken == null) {
             log.error(ExceptionMessage.TOKEN_NOT_FOUND);
-            throw new TokenInvalidException(ExceptionMessage.TOKEN_NOT_FOUND);
+            throw new BaseException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         //TODO: redis blacklist에 accessToken 값이 있는지(로그아웃을 한 사용자인지) 체크

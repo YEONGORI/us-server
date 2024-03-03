@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
+import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Service
 @Transactional
@@ -24,7 +25,7 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
 
         paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
-                    throw new DuplicatedLikeException("PARAGRAPH_LIKE");
+                    throw new BaseException(ErrorCode.LIKE_DUPLICATED);
                 });
 
         ParagraphLike paragraphLike = ParagraphLike.builder()
@@ -40,6 +41,6 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
         Author author = entityFacade.getAuthor(authorId);
 
         paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
-                .ifPresent(paragraphLikeRepository::delete);
+                .ifPresent(paragraphLikeRepository::delete); // TODO: 처음부터 id 두개로 찾으면 되지 않을까?
     }
 }

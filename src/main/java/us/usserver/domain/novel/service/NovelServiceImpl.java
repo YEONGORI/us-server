@@ -1,6 +1,10 @@
 package us.usserver.domain.novel.service;
 
 import jakarta.transaction.Transactional;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -11,28 +15,32 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.authority.dto.StakeInfo;
+import us.usserver.domain.authority.dto.res.StakeInfoResponse;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterService;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.entity.Novel;
-import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.constant.Orders;
 import us.usserver.domain.novel.constant.Sorts;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.CreateNovelReq;
+import us.usserver.domain.novel.dto.HomeNovelListResponse;
+import us.usserver.domain.novel.dto.MoreInfoOfNovel;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
+import us.usserver.domain.novel.dto.NovelPageInfoResponse;
+import us.usserver.domain.novel.dto.ReadInfoOfNovel;
+import us.usserver.domain.novel.dto.SearchKeywordResponse;
+import us.usserver.domain.novel.dto.SearchNovelReq;
+import us.usserver.domain.novel.dto.SortDto;
+import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.domain.authority.dto.res.StakeInfoResponse;
-import us.usserver.domain.authority.dto.StakeInfo;
-import us.usserver.domain.authority.service.StakeService;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -119,7 +127,7 @@ public class NovelServiceImpl implements NovelService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
         novel.setSynopsis(synopsis);
@@ -132,7 +140,7 @@ public class NovelServiceImpl implements NovelService {
         Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
         novel.setAuthorDescription(req.getDescription());
@@ -306,7 +314,8 @@ public class NovelServiceImpl implements NovelService {
         if (member == null) {
             return null;
         }
-        return authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        return authorRepository.getAuthorByMemberId(member.getId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
     }
 
     private List<NovelInfo> mapNovelsToNovelInfos(Slice<Novel> novels) {
