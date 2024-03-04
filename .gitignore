@@ -8,7 +8,6 @@ build/
 
 src/main/resources/application-auth.yml
 src/main/resources/application-db.yml
-src/test/resources/application-auth.yml
 
 ### STS ###
 .apt_generated
