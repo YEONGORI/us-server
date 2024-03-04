@@ -161,7 +161,7 @@ class StakeServiceTest {
         // then
         StakeInfoResponse stakeInfoResponse = stakeService.getStakeInfoOfNovel(novelForOne.getId());
         assertThat(stakeInfoResponse.getStakeInfos().size()).isEqualTo(1);
-        assertThat(stakeInfoResponse.getStakeInfos().get(0).getAuthorInfo().getId()).isEqualTo(author1.getId());
+        assertThat(stakeInfoResponse.getStakeInfos().get(0).getAuthorInfo().id()).isEqualTo(author1.getId());
         assertThat(stakeInfoResponse.getStakeInfos().get(0).getPercentage()).isEqualTo(1F);
     }
 

@@ -11,6 +11,7 @@ import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
 import us.usserver.domain.author.dto.NovelPreview;
+import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.entity.Novel;
@@ -27,6 +28,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final EntityFacade entityFacade;
     private final AuthorityRepository authorityRepository;
     private final NovelLikeRepository novelLikeRepository;
+    private final NovelRepository novelRepository;
 
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
@@ -51,9 +53,10 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public BookshelfDefaultResponse createdNovels(Long authorId) {
         Author author = entityFacade.getAuthor(authorId);
+        List<Novel> allByMainAuthor = novelRepository.findAllByMainAuthor(author);
 
-        List<Novel> createdNovels = author.getCreatedNovels();
-        List<NovelPreview> novelPreviews = createdNovels.stream()
+        List<NovelPreview> novelPreviews = allByMainAuthor.stream()
+                .filter(novel -> novel.getMainAuthor().equals(author))
                 .map(novel -> NovelPreview.fromNovel(
                         novel,
                         getTotalJoinedAuthor(novel),

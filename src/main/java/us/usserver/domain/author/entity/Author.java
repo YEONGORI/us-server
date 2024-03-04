@@ -68,9 +68,6 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<ReadNovel> readNovels = new HashSet<>();
 
-    @OneToMany
-    private List<Novel> createdNovels = new ArrayList<>();
-
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Paragraph> paragraphs = new ArrayList<>();
 

@@ -47,7 +47,7 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom {
                 .select(novel)
                 .from(novel)
                 .where(ltNovelId(lastNovelId))
-                .orderBy(pageable.getSort())
+//                .orderBy(pageable.getSort())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
@@ -87,7 +87,6 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom {
     private OrderSpecifier<?> novelSort(SortDto sortDto) {
         if (sortDto == null) {
             //Default:사전순
-            OrderSpecifier<>()
             return new OrderSpecifier<>(Order.ASC, novel.title);
         }
 

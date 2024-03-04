@@ -88,9 +88,9 @@ class NoteServiceTest {
         // then
         assertThat(getParagraphNote.getParagraphPreviews().size()).isEqualTo(2);
         for (ParagraphPreview paragraphPreview : getParagraphNote.getParagraphPreviews()) {
-            assertThat(paragraphPreview.getAuthorId()).isEqualTo(author.getId());
-            assertThat(paragraphPreview.getChapterTitle()).isEqualTo(chapter.getTitle());
-            assertThat(paragraphPreview.getNovelTitle()).isEqualTo(novel.getTitle());
+            assertThat(paragraphPreview.authorId()).isEqualTo(author.getId());
+            assertThat(paragraphPreview.chapterTitle()).isEqualTo(chapter.getTitle());
+            assertThat(paragraphPreview.novelTitle()).isEqualTo(novel.getTitle());
         }
     }
 
@@ -111,7 +111,7 @@ class NoteServiceTest {
         // then
         assertThat(getParagraphNote.getParagraphPreviews().size()).isOne();
         for (ParagraphPreview paragraphPreview : getParagraphNote.getParagraphPreviews()) {
-            assertThat(paragraphPreview.getAuthorId()).isNotEqualTo(newAuthor.getId());
+            assertThat(paragraphPreview.authorId()).isNotEqualTo(newAuthor.getId());
         }
     }
 
@@ -159,7 +159,7 @@ class NoteServiceTest {
 
         // then
         assertThat(getParagraphNote.getParagraphPreviews().size()).isOne();
-        assertThat(getParagraphNote.getParagraphPreviews().get(0).getParagraphContent()).isEqualTo(paragraph.getContent());
+        assertThat(getParagraphNote.getParagraphPreviews().get(0).paragraphContent()).isEqualTo(paragraph.getContent());
     }
 
     @Test
@@ -174,7 +174,7 @@ class NoteServiceTest {
 
         // then
         assertThat(getParagraphNote.getParagraphPreviews().size()).isOne();
-        assertThat(getParagraphNote.getParagraphPreviews().get(0).getParagraphContent()).isEqualTo(paragraph.getContent());
+        assertThat(getParagraphNote.getParagraphPreviews().get(0).paragraphContent()).isEqualTo(paragraph.getContent());
 
     }
 
