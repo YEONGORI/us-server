@@ -25,9 +25,10 @@ import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -35,9 +36,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class NovelServiceImpl implements NovelService {
     private final EntityFacade entityFacade;
@@ -53,14 +54,14 @@ public class NovelServiceImpl implements NovelService {
     private static final Integer DEFAULT_PAGE_SIZE = 6;
 
     @Override
+    @Transactional
     public NovelInfo createNovel(Member member, NovelBlueprint novelBlueprint) {
-        Author author = authorRepository.getAuthorByMember(member)
-                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        Author author = authorRepository.getAuthorByMemberId(member.getId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
 
         Novel novel = novelBlueprint.toEntity(author);
         Novel saveNovel = novelRepository.save(novel);
 
-        author.getCreatedNovels().add(novel);
         authorityRepository.save(Authority.builder()
                 .author(author).novel(novel).build());
 
@@ -69,12 +70,14 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
         return NovelInfo.mapNovelToNovelInfo(novel);
     }
 
     @Override
+    @Transactional
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
         StakeInfoResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
@@ -97,12 +100,13 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
         novel.changeSynopsis(synopsis);
@@ -110,12 +114,13 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthor(authorId);
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
         novel.changeAuthorDescription(req.getDescription());
@@ -123,6 +128,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public MainPageResponse getMainPage(Member member) {
         List<NovelInfo> readNovels = getReadNovels(member);
 
@@ -141,22 +147,24 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public MoreNovelResponse getMoreNovels(Member member, MoreNovelRequest moreNovelRequest) {
         PageRequest pageRequest = switch (moreNovelRequest.mainNovelType()) {
-            case NEW -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
-            case UPDATE -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
-            case POPULAR -> getPageRequest(moreNovelRequest.currentPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
+            case NEW -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+            case UPDATE -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+            case POPULAR -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
         };
 
         Slice<Novel> novelSlice = novelRepository.findSliceBy(pageRequest);
         List<NovelInfo> novelInfos = novelSlice
                 .map(NovelInfo::mapNovelToNovelInfo)
                 .toList();
-        return new MoreNovelResponse(novelInfos, novelSlice.getNumber(), novelSlice.hasNext());
+        return new MoreNovelResponse(novelInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }
 
 
     @Override
+    @Transactional
     public MoreNovelResponse readMoreNovel(Member member){
         Author author = authorRepository.getAuthorByMember(member)
                 .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
@@ -187,6 +195,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq) {
         Optional<Author> authorByMember = authorRepository.getAuthorByMember(member);
 
@@ -201,6 +210,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public SearchKeywordResponse searchKeyword(Member member) {
         Author author = getAuthor(member);
 
@@ -219,6 +229,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public void deleteSearchKeyword(Member member) {
         Author author = authorRepository.getAuthorByMember(member)
                 .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
@@ -290,8 +301,9 @@ public class NovelServiceImpl implements NovelService {
         if (member == null) {
             return null;
         }
-        return authorRepository.getAuthorByMember(member)
-                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        return authorRepository.getAuthorByMemberId(member.getId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
+
     }
 
     private List<NovelInfo> mapNovelsToNovelInfos(Slice<Novel> novels) {

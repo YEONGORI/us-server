@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.comment.service.CommentLikeService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "댓글 좋아요 API")
 @ResponseBody
@@ -35,16 +38,10 @@ public class CommentLikeController {
                     content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class)))
     })
     @PostMapping("/{commentId}")
-    public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long commentId) {
+    public ApiCsResponse<Void> setLike(@PathVariable Long commentId) {
         Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
         commentLikeService.postLike(commentId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 
     @Operation(summary = "댓글 좋아요 취소", description = "댓글 하트 다시 누르기")
@@ -56,15 +53,9 @@ public class CommentLikeController {
             )
     })
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long commentId) {
+    public ApiCsResponse<Void> deleteLike(@PathVariable Long commentId) {
         Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
         commentLikeService.deleteLike(commentId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.NO_CONTENT.value())
-                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

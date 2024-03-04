@@ -7,16 +7,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.author.dto.res.GetParagraphNote;
 import us.usserver.domain.author.service.NoteService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "보관함(한줄) API")
 @ResponseBody
@@ -35,16 +33,10 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/viewed") // TODO: 내가 쓴 글
-    public ResponseEntity<ApiCsResponse<?>> wroteParagraphs() {
+    public ApiCsResponse<GetParagraphNote> wroteParagraphs() {
         Long authorId = 500L;
         GetParagraphNote paragraphPreviews = noteService.wroteParagraphs(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(paragraphPreviews)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(paragraphPreviews);
     }
 
     @Operation(summary = "내가 투표한 한줄 불러오기", description = "내가 투표한 모든 한줄 불러오기")
@@ -56,16 +48,10 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/voted") // TODO: 내가 투표한 글
-    public ResponseEntity<ApiCsResponse<?>> votedParagraphs() {
+    public ApiCsResponse<GetParagraphNote> votedParagraphs() {
         Long authorId = 500L;
         GetParagraphNote paragraphPreviews = noteService.votedParagraphs(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(paragraphPreviews)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(paragraphPreviews);
     }
     
     @Operation(summary = "내가 좋아요한 한줄 불러오기", description = "내가 좋아요한 모든 한줄 불러오기")
@@ -77,15 +63,9 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/liked") // TODO: 내가 좋아요한 글
-    public ResponseEntity<ApiCsResponse<?>> likedNovels() {
+    public ApiCsResponse<GetParagraphNote> likedNovels() {
         Long authorId = 500L;
         GetParagraphNote paragraphPreviews = noteService.likedParagraphs(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(paragraphPreviews)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(paragraphPreviews);
     }
 }

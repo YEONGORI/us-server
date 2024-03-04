@@ -6,19 +6,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentResponse;
 import us.usserver.domain.comment.service.CommentService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.*;
-
-import java.net.URI;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.ChapterNotFoundException;
+import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
+import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "댓글 API")
 @ResponseBody
@@ -37,15 +46,9 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
     })
     @GetMapping("/novel/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> getCommentsOfNovel(@PathVariable Long novelId) {
+    public ApiCsResponse<GetCommentResponse> getCommentsOfNovel(@PathVariable Long novelId) {
         GetCommentResponse comments = commentService.getCommentsOfNovel(novelId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(comments)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(comments);
     }
 
     @Operation(summary = "회차의 댓글 불러오기", description = "한 회차에서 작성된 댓글 전부 불러오기")
@@ -57,15 +60,9 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/chapter/{chapterId}")
-    public ResponseEntity<ApiCsResponse<?>> getCommentsOfChapter(@PathVariable Long chapterId) {
+    public ApiCsResponse<GetCommentResponse> getCommentsOfChapter(@PathVariable Long chapterId) {
         GetCommentResponse comments = commentService.getCommentsOfChapter(chapterId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(comments)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(comments);
     }
 
     @Operation(summary = "소설에 댓글 작성하기", description = "한 소설에 대한 댓글 작성하기")
@@ -80,18 +77,14 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class)))
     })
     @PostMapping("/novel/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> postCommentOnNovel(
+    public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnNovel(
             @PathVariable Long novelId,
             @Validated @RequestBody CommentContent commentContent
     ) {
         Long authorId = 500L;
         CommentInfo comment = commentService.writeCommentOnNovel(novelId, authorId, commentContent);
 
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(comment)
-                .build();
+        ApiCsResponse<CommentInfo> response = ApiCsResponse.success(comment);
         URI redirectUri = URI.create("/novel/" + novelId);
 
         return ResponseEntity.created(redirectUri).body(response);
@@ -109,21 +102,19 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class)))
     })
     @PostMapping("/chapter/{chapterId}")
-    public ResponseEntity<ApiCsResponse<?>> postCommentOnChapter(
+    public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnChapter(
             @PathVariable Long chapterId,
             @Validated @RequestBody CommentContent commentContent
     ) {
         Long authorId = 500L;
         CommentInfo comment = commentService.writeCommentOnChapter(chapterId, authorId, commentContent);
 
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(comment)
-                .build();
+        ApiCsResponse<CommentInfo> response = ApiCsResponse.success(comment);
         URI redirectUri = URI.create("/chapter/" + chapterId);
 
-        return ResponseEntity.created(redirectUri).body(response);
+        return ResponseEntity
+                .created(redirectUri)
+                .body(response);
     }
 
     @Operation(summary = "내가 작성한 댓글 불러오기", description = "내가 작성한 모든 댓글 불러오기")
@@ -135,16 +126,10 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/author")
-    public ResponseEntity<ApiCsResponse<?>> getCommentsOfAuthor() {
+    public ApiCsResponse<GetCommentResponse> getCommentsOfAuthor() {
         Long authorId = 500L; // TODO: 토큰 에서 뺴올 예정
         GetCommentResponse comments = commentService.getCommentsByAuthor(authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(comments)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(comments);
     }
 
     @Operation(summary = "작성한 댓글 삭제하기", description = "내가 작성한 댓글 삭제하기")
@@ -159,16 +144,9 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class)))
     })
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiCsResponse<?>> deleteComment(@PathVariable Long commentId) {
+    public ApiCsResponse<Void> deleteComment(@PathVariable Long commentId) {
         Long authorId = 500L;
         commentService.deleteComment(commentId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.NO_CONTENT.value())
-                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
-                .data(null)
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

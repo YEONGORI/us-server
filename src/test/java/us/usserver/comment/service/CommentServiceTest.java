@@ -1,5 +1,13 @@
 package us.usserver.comment.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,16 +32,14 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.exception.*;
+import us.usserver.global.response.exception.AuthorNotAuthorizedException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.ChapterNotFoundException;
+import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
+import us.usserver.global.response.exception.CommentNotFoundException;
+import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Rollback
 @SpringBootTest

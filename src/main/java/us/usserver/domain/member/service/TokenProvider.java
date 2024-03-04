@@ -6,21 +6,19 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.utils.RedisUtils;
-import us.usserver.global.exception.TokenInvalidException;
 import us.usserver.domain.member.repository.MemberRepository;
-
-import java.util.Date;
-import java.util.Optional;
-
-import static us.usserver.global.ExceptionMessage.*;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.utils.RedisUtils;
 
 @Slf4j
 @Getter
@@ -102,10 +100,10 @@ public class TokenProvider {
             return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
         } catch (TokenExpiredException e) {
             log.error("token expired");
-            throw new TokenInvalidException(TOKEN_EXPIRED);
+            throw new BaseException(ErrorCode.TOKEN_EXPIRED);
         } catch (JWTVerificationException e) {
             log.error("token verify fail");
-            throw new TokenInvalidException(TOKEN_VERIFICATION);
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
         } catch (Exception e) {
             throw new RuntimeException("Token Error!");
         }
@@ -131,9 +129,9 @@ public class TokenProvider {
         String findToken = redisUtils.getData(String.valueOf(id));
 
         if (findToken == null) {
-            throw new TokenInvalidException(TOKEN_NOT_FOUND);
+            throw new BaseException(ErrorCode.TOKEN_NOT_FOUND);
         } else if (!findToken.equals(refreshToken)) {
-            throw new TokenInvalidException(TOKEN_VERIFICATION);
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
         }
 
         Author author = entityFacade.getAuthor(id);

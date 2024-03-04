@@ -2,24 +2,20 @@ package us.usserver.domain.member.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.member.constant.Role;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.utils.RedisUtils;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.MemberNotFoundException;
+import us.usserver.domain.member.dto.req.JoinMemberRequest;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
-import us.usserver.domain.member.dto.req.JoinMemberRequest;
-
-import java.time.LocalDateTime;
-import java.util.Random;
-
-import static us.usserver.global.ExceptionMessage.*;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.utils.RedisUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,13 +68,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void withdraw(Member member) {
-        Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+        Author author = authorRepository.getAuthorByMemberId(member.getId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
         authorRepository.deleteById(author.getId());
         memberRepository.deleteById(member.getId());
     }
 
     @Override
     public Member getMyInfo(String socialId) {
-        return memberRepository.findBySocialId(socialId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
+        return memberRepository.findBySocialId(socialId).orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

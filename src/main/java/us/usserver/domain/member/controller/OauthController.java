@@ -10,21 +10,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import us.usserver.domain.member.dto.parameter.GoogleParams;
-import us.usserver.domain.member.dto.parameter.KakaoParams;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.member.dto.LoginDto;
 import us.usserver.domain.member.dto.MemberInfoDto;
+import us.usserver.domain.member.dto.parameter.GoogleParams;
+import us.usserver.domain.member.dto.parameter.KakaoParams;
 import us.usserver.domain.member.dto.req.OauthRequest;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.TokenInvalidException;
-import us.usserver.global.exception.UnsupportedSocialProviderException;
-import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.domain.member.service.OauthService;
+import us.usserver.domain.member.service.TokenProvider;
+import us.usserver.global.response.ApiCsResponse;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.TokenInvalidException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,7 +59,7 @@ public class OauthController {
         switch (oauthRequest.getOauthProvider()) {
             case KAKAO -> memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
             case GOOGLE -> memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthRequest.getCode()));
-            default -> throw new UnsupportedSocialProviderException(ExceptionMessage.UNSUPPORTED_SOCIAL_PROVIDER);
+            default -> throw new BaseException(ErrorCode.UNSUPPORTED_SOCIAL_PROVIDER);
         }
 //        if (oauthRequest.getOauthProvider() == OauthProvider.KAKAO) {
 //            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
@@ -81,15 +84,10 @@ public class OauthController {
                     content = @Content(schema = @Schema(implementation = TokenInvalidException.class)))
     })
     @GetMapping("/renew-token")
-    public ResponseEntity<ApiCsResponse<?>> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
+    public ApiCsResponse<Void> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
         String refreshToken = tokenProvider.extractToken(request, "RefreshToken");
         String accessToken = tokenProvider.renewToken(refreshToken);
         servletResponse.addHeader(tokenProvider.getAccessHeader(), "Bearer " + accessToken);
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.CREATED.value())
-                .message(HttpStatus.CREATED.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

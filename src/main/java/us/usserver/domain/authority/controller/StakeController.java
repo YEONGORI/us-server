@@ -7,14 +7,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.authority.dto.res.StakeInfoResponse;
 import us.usserver.domain.authority.service.StakeService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.UsApiResponse;
-import us.usserver.global.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "지분 API")
 @ResponseBody
@@ -32,14 +33,8 @@ public class StakeController {
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
     })
     @GetMapping("/{novelId}")
-    public ResponseEntity<UsApiResponse<?>> getStakes(@PathVariable Long novelId) {
+    public ApiCsResponse<StakeInfoResponse> getStakes(@PathVariable Long novelId) {
         StakeInfoResponse stakeInfos = stakeService.getStakeInfoOfNovel(novelId);
-
-        UsApiResponse<Object> response = UsApiResponse.builder()
-                .status(HttpStatus.OK)
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(stakeInfos)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success(stakeInfos);
     }
 }

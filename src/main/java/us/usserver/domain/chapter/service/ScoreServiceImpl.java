@@ -1,19 +1,18 @@
 package us.usserver.domain.chapter.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.chapter.dto.PostScore;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.entity.Score;
 import us.usserver.domain.chapter.repository.ScoreRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.ScoreOutOfRangeException;
-import us.usserver.domain.chapter.dto.PostScore;
-
-import java.util.Optional;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -29,7 +28,7 @@ public class ScoreServiceImpl implements ScoreService {
         Chapter chapter = entityFacade.getChapter(chapterId);
 
         if (postScore.getScore() > 10 || postScore.getScore() < 1) {
-            throw new ScoreOutOfRangeException(ExceptionMessage.SCORE_OUT_OF_RANGE);
+            throw new BaseException(ErrorCode.SCORE_OUT_OF_RANGE);
         }
         Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
         if (scoreByAuthorAndChapter.isEmpty()) {

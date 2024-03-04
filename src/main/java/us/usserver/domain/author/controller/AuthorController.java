@@ -7,19 +7,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.author.dto.req.FontSizeReq;
 import us.usserver.domain.author.dto.req.ParagraphSpaceReq;
 import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.domain.author.service.AuthorService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.FontSizeOutOfRangeException;
 import us.usserver.domain.member.entity.Member;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.FontSizeOutOfRangeException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "사용자 정보 API")
 @RequiredArgsConstructor
@@ -34,16 +36,10 @@ public class AuthorController {
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PatchMapping
-    public ResponseEntity<ApiCsResponse<?>> updateAuthor(@AuthenticationPrincipal Member member,
+    public ApiCsResponse<Void> updateAuthor(@AuthenticationPrincipal Member member,
                                                          @ModelAttribute UpdateAuthorReq updateAuthorReq) {
         authorService.updateAuthor(member.getId(), updateAuthorReq);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 
     @Operation(summary = "글씨 크기 수정", description = "글씨 크기 조정 API")
@@ -53,16 +49,10 @@ public class AuthorController {
                     content = @Content(schema = @Schema(implementation = FontSizeOutOfRangeException.class)))
     })
     @PatchMapping("/fontsize")
-    public ResponseEntity<ApiCsResponse<?>> changeFontSize(@Validated @RequestBody FontSizeReq req) {
+    public ApiCsResponse<Void> changeFontSize(@Validated @RequestBody FontSizeReq req) {
         Long authorId = 500L;
         authorService.changeFontSize(authorId, req.getFontSize());
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 
     @Operation(summary = "단란 간격 수정", description = "단락 간격 조정 API")
@@ -72,15 +62,9 @@ public class AuthorController {
                     content = @Content(schema = @Schema(implementation = FontSizeOutOfRangeException.class)))
     })
     @PatchMapping("/paragraph-space")
-    public ResponseEntity<ApiCsResponse<?>> changeParagraphSpace(@Validated @RequestBody ParagraphSpaceReq req) {
+    public ApiCsResponse<Void> changeParagraphSpace(@Validated @RequestBody ParagraphSpaceReq req) {
         Long authorId = 500L;
         authorService.changeParagraphSpace(authorId, req.getParagraphSpace());
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

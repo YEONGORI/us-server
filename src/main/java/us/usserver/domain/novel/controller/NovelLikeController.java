@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.novel.service.NovelLikeService;
-import us.usserver.global.ApiCsResponse;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.global.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.DuplicatedLikeException;
+import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "소설 좋아요(구독) API")
 @ResponseBody
@@ -35,17 +38,11 @@ public class NovelLikeController {
                     content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class)))
     })
     @PostMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> setLike(@PathVariable Long novelId) {
+    public ApiCsResponse<Void> setLike(@PathVariable Long novelId) {
         Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
 
         novelLikeService.setNovelLike(novelId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 
     @Operation(summary = "소설 좋아요 취소", description = "소설 메인 옆 하트 다시 누르기")
@@ -57,15 +54,9 @@ public class NovelLikeController {
             )
     })
     @DeleteMapping("/{novelId}")
-    public ResponseEntity<ApiCsResponse<?>> deleteLike(@PathVariable Long novelId) {
+    public ApiCsResponse<Void> deleteLike(@PathVariable Long novelId) {
         Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
         novelLikeService.deleteNovelLike(novelId, authorId);
-
-        ApiCsResponse<Object> response = ApiCsResponse.builder()
-                .status(HttpStatus.NO_CONTENT.value())
-                .message(HttpStatus.NO_CONTENT.getReasonPhrase())
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        return ApiCsResponse.success();
     }
 }

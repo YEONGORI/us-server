@@ -1,4 +1,4 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 public class DuplicatedLikeException extends RuntimeException {
     public DuplicatedLikeException(String message) {

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
@@ -17,6 +18,8 @@ import us.usserver.domain.novel.constant.NovelStatus;
 import us.usserver.domain.novel.constant.NovelSize;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 
 @Getter
@@ -72,7 +75,12 @@ public class NovelBlueprint {
                 .novelSize(novelSize)
                 .hit(0)
                 .novelStatus(NovelStatus.IN_PROGRESS)
+                .mainAuthor(author)
                 .recentlyUpdated(LocalDateTime.now())
+                .comments(new ArrayList<>())
+                .chapters(new ArrayList<>())
+                .authorities(new ArrayList<>())
+                .novelLikes(new ArrayList<>())
                 .build();
     }
 }

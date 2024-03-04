@@ -1,22 +1,21 @@
 package us.usserver.domain.member.service;
 
+import java.util.Optional;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotFoundException;
-import us.usserver.domain.member.dto.member.OauthMember;
-import us.usserver.domain.member.dto.parameter.OauthParams;
-import us.usserver.domain.member.dto.MemberInfoDto;
-import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.member.constant.Gender;
 import us.usserver.domain.member.constant.Role;
-
-import java.util.Optional;
-import java.util.Random;
+import us.usserver.domain.member.dto.MemberInfoDto;
+import us.usserver.domain.member.dto.member.OauthMember;
+import us.usserver.domain.member.dto.parameter.OauthParams;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,7 +41,8 @@ public class OauthService {
         //기존유저
         if (bySocialTypeAndSocialId.isPresent()) {
             Member member = bySocialTypeAndSocialId.get();
-            Author author = authorRepository.getAuthorByMemberId(member.getId()).orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+            Author author = authorRepository.getAuthorByMemberId(member.getId())
+                    .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
             String accessToken = tokenProvider.createAccessToken(author);
             String refreshToken = tokenProvider.createRefreshToken(author);
 

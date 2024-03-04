@@ -19,7 +19,7 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.exception.ScoreOutOfRangeException;
+import us.usserver.global.response.exception.ScoreOutOfRangeException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 

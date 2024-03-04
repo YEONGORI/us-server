@@ -22,7 +22,7 @@ public class SearchNovelReq {
         NovelStatus status;
         @Schema(description = "마지막 소설 ID", example = "5")
         @NotNull
-        MoreNovelRequest lastNovelId;
+        Long lastNovelId;
         @Schema(description = "불러올 소설 개수", example = "6")
         Integer size;
         @Schema(description = "소설 정렬", example = "NEW, DESC")

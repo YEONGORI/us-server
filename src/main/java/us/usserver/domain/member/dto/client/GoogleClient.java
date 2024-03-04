@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.TokenInvalidException;
+import us.usserver.domain.member.constant.OauthProvider;
 import us.usserver.domain.member.dto.member.GoogleMember;
-import us.usserver.domain.member.dto.token.GoogleToken;
 import us.usserver.domain.member.dto.member.OauthMember;
 import us.usserver.domain.member.dto.parameter.OauthParams;
-import us.usserver.domain.member.constant.OauthProvider;
+import us.usserver.domain.member.dto.token.GoogleToken;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Slf4j
 @Component
@@ -65,7 +65,7 @@ public class GoogleClient implements OauthClient {
         GoogleToken googleToken = rt.postForObject(url, tokenRequest, GoogleToken.class);
 
         if (googleToken == null) {
-            throw new TokenInvalidException(ExceptionMessage.TOKEN_VERIFICATION);
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
         }
 
         return googleToken.getAccess_token();

@@ -6,13 +6,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
+import us.usserver.domain.authority.entity.Stake;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.novel.constant.*;
-import us.usserver.domain.authority.entity.Stake;
 import us.usserver.global.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -74,7 +77,7 @@ public class Novel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NovelSize novelSize;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "author_id")
     private Author mainAuthor;
 

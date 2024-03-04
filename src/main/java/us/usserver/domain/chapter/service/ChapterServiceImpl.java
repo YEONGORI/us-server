@@ -6,21 +6,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
-import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
-import us.usserver.domain.comment.entity.Comment;
-import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.domain.comment.repository.CommentRepository;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.MainAuthorIsNotMatchedException;
-import us.usserver.domain.novel.entity.Novel;
-import us.usserver.domain.paragraph.service.ParagraphService;
-import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.chapter.repository.ScoreRepository;
+import us.usserver.domain.comment.dto.CommentInfo;
+import us.usserver.domain.comment.entity.Comment;
+import us.usserver.domain.comment.repository.CommentRepository;
+import us.usserver.domain.novel.entity.Novel;
+import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
+import us.usserver.domain.paragraph.service.ParagraphService;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,7 +96,7 @@ public class ChapterServiceImpl implements ChapterService {
         Integer curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
-            throw new MainAuthorIsNotMatchedException(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
         Chapter chapter = Chapter.builder()

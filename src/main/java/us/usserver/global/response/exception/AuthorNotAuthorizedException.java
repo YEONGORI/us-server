@@ -1,4 +1,4 @@
-package us.usserver.global.exception;
+package us.usserver.global.response.exception;
 
 public class AuthorNotAuthorizedException extends RuntimeException {
     public AuthorNotAuthorizedException(String message) {

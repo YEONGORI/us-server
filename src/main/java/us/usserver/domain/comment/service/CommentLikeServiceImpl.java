@@ -1,18 +1,15 @@
 package us.usserver.domain.comment.service;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import us.usserver.domain.comment.repository.CommentLikeRepositoryDSL;
-import us.usserver.domain.comment.repository.CommentLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.comment.entity.Comment;
-import us.usserver.global.EntityFacade;
-import us.usserver.global.ExceptionMessage;
-import us.usserver.global.exception.AuthorNotAuthorizedException;
 import us.usserver.domain.comment.entity.CommentLike;
-import us.usserver.global.exception.CommentNotFoundException;
-
-import java.util.Objects;
+import us.usserver.domain.comment.repository.CommentLikeRepository;
+import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +32,10 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         Comment comment = entityFacade.getComment(commentId);
 
         CommentLike commentLike = commentLikeRepository.findByComment(comment)
-                .orElseThrow(() -> new CommentNotFoundException(ExceptionMessage.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!Objects.equals(commentLike.getAuthor().getId(), author.getId())) {
-            throw new AuthorNotAuthorizedException(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
+            throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
         comment.getCommentLikes().remove(commentLike); // EqualsAndHashCode 재정의 완료
     }
