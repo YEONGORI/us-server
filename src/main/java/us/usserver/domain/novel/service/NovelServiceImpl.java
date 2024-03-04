@@ -56,7 +56,7 @@ public class NovelServiceImpl implements NovelService {
     @Override
     @Transactional
     public NovelInfo createNovel(Member member, NovelBlueprint novelBlueprint) {
-        Author author = authorRepository.getAuthorByMemberId(member.getId())
+        Author author = authorRepository.getAuthorByMember(member)
                 .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
 
         Novel novel = novelBlueprint.toEntity(author);

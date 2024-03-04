@@ -25,6 +25,8 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
@@ -91,8 +93,9 @@ class ChapterServiceTest {
         authorRepository.save(newAuthor);
 
         // then
-        assertThrows(MainAuthorIsNotMatchedException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> chapterService.createChapter(novel.getId(), newAuthor.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
     }
 
     @Test

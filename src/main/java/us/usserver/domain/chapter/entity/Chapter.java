@@ -52,4 +52,11 @@ public class Chapter extends BaseEntity {
     public void setPartForTest(Integer part) {
         this.part = part;
     }
+
+    public void addParagraph(Paragraph paragraph) {
+        this.paragraphs.add(paragraph);
+    }
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
 }

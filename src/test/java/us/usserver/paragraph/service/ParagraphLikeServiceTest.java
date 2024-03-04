@@ -21,7 +21,9 @@ import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.service.ParagraphLikeService;
+import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;
@@ -99,10 +101,12 @@ class ParagraphLikeServiceTest {
         // when
         assertDoesNotThrow(
                 () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
+        BaseException baseException = assertThrows(BaseException.class,
+                () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
 
         // then
-        assertThrows(DuplicatedLikeException.class,
-                () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.LIKE_DUPLICATED);
+
     }
 
     @Test

@@ -16,6 +16,8 @@ import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.paragraph.service.ParagraphService;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 import us.usserver.global.response.exception.ParagraphLengthOutOfRangeException;
 import us.usserver.domain.member.entity.Member;
@@ -217,8 +219,12 @@ class ParagraphServiceTest {
         PostParagraphReq req = PostParagraphReq.builder().content(longContent).build();
 
         // when // then
-        Assertions.assertThrows(ParagraphLengthOutOfRangeException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> paragraphService.postParagraph(author.getId(), chapter.getId(), req));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.PARAGRAPH_LENGTH_OUT_OF_RANGE);
+
     }
 
     @Test
@@ -229,8 +235,12 @@ class ParagraphServiceTest {
         PostParagraphReq req = PostParagraphReq.builder().content(content).build();
 
         // when // then
-        Assertions.assertThrows(ParagraphLengthOutOfRangeException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> paragraphService.postParagraph(author.getId(), chapter.getId(), req));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.PARAGRAPH_LENGTH_OUT_OF_RANGE);
+
     }
 
     @Test
@@ -257,12 +267,13 @@ class ParagraphServiceTest {
 
         // when
         authorRepository.save(newAuthor);
-        assertThrows(MainAuthorIsNotMatchedException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> paragraphService.selectParagraph(newAuthor.getId(), novel.getId(), chapter.getId(), paragraph1.getId()));
         paragraph1 = paragraphRepository.getParagraphById(this.paragraph1.getId()).get();
         paragraph2 = paragraphRepository.getParagraphById(this.paragraph2.getId()).get();
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
         assertThat(paragraph1.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
         assertThat(paragraph2.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
     }

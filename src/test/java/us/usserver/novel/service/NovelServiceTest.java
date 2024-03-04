@@ -24,10 +24,7 @@ import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelService;
-import us.usserver.global.response.exception.BaseException;
-import us.usserver.global.response.exception.ErrorCode;
-import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.*;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
@@ -94,8 +91,12 @@ class NovelServiceTest {
     @Test
     @DisplayName("존재하지 않는 소설 정보 확인")
     void getNotExistNovel() {
-        assertThrows(NovelNotFoundException.class,
+        // when
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> novelService.getNovelInfo(novel.getId() + 9999));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.NOVEL_NOT_FOUND);
     }
 
     @Test
@@ -159,9 +160,16 @@ class NovelServiceTest {
     @Test
     @DisplayName("권한 없는 작가의 소설 소개 수정")
     void modifySysnopsisNotAuthority() {
+        // given
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
-        assertThrows(MainAuthorIsNotMatchedException.class,
+
+        // when
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> novelService.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest.getSynopsis()));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+
     }
 
     @Test
@@ -177,10 +185,15 @@ class NovelServiceTest {
     @Test
     @DisplayName("권한 없는 작가의 작가 소개 수정")
     void modifyDescriptionNotAuthority() {
+        // given
         AuthorDescription authorDescription = NovelMother.generateDescription();
-        assertThrows(MainAuthorIsNotMatchedException.class,
+
+        // when
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> novelService.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
 
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
     }
 
 

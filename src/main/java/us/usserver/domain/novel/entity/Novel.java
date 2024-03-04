@@ -77,7 +77,7 @@ public class Novel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NovelSize novelSize;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private Author mainAuthor;
 

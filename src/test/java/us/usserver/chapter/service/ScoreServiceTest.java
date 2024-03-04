@@ -19,6 +19,8 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.response.exception.ScoreOutOfRangeException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
@@ -82,10 +84,13 @@ class ScoreServiceTest {
         PostScore postScore2 = PostScore.builder().score(minInt).build();
 
         // when then
-        assertThrows(ScoreOutOfRangeException.class,
+        BaseException baseException1 = assertThrows(BaseException.class,
                 () -> scoreService.postScore(chapter.getId(), author.getId(), postScore1));
-        assertThrows(ScoreOutOfRangeException.class,
+        BaseException baseException2 = assertThrows(BaseException.class,
                 () -> scoreService.postScore(chapter.getId(), author.getId(), postScore2));
+
+        assertThat(baseException1.getMessage()).isEqualTo(ExceptionMessage.SCORE_OUT_OF_RANGE);
+        assertThat(baseException2.getMessage()).isEqualTo(ExceptionMessage.SCORE_OUT_OF_RANGE);
     }
 
     @Test

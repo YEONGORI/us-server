@@ -32,12 +32,7 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.response.exception.AuthorNotAuthorizedException;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.ChapterNotFoundException;
-import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
-import us.usserver.global.response.exception.CommentNotFoundException;
-import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.*;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
@@ -125,10 +120,11 @@ class CommentServiceTest {
         GetCommentResponse before = commentService.getCommentsOfNovel(newNovel.getId());
         novelRepository.delete(newNovel);
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
-        assertThrows(NovelNotFoundException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.getCommentsOfNovel(newNovel.getId()));
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.NOVEL_NOT_FOUND);
         assertThat(before.getCommentInfos().get(0).getLocation()).isEqualTo(newNovel.getTitle());
         for (Comment comment : afterComments) {
             assertThat(comment.getNovel().getTitle()).isNotEqualTo(newNovel.getTitle());
@@ -184,11 +180,12 @@ class CommentServiceTest {
         chapterRepository.save(newChapter);
         GetCommentResponse before = commentService.getCommentsOfChapter(newChapter.getId());
         chapterRepository.delete(newChapter);
-        assertThrows(ChapterNotFoundException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.getCommentsOfChapter(newChapter.getId()));
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.CHAPTER_NOT_FOUND);
         assertThat(before.getCommentInfos().size()).isEqualTo(1);
         assertThat(before.getCommentInfos().get(0).getLocation()).isEqualTo(newChapter.getTitle());
         for (Comment comment : afterComments) {
@@ -220,11 +217,12 @@ class CommentServiceTest {
         Author newAuthor = AuthorMother.generateAuthor();
 
         // when
-        assertThrows(AuthorNotFoundException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnNovel(novel.getId(), newAuthor.getId(), commentContent));
         List<Comment> comments = commentJpaRepository.findAllByNovel(novel);
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
         assertThat(comments.size()).isZero();
     }
 
@@ -237,11 +235,15 @@ class CommentServiceTest {
         CommentContent commentContent1 = CommentContent.builder().content(content1).build();
         CommentContent commentContent2 = CommentContent.builder().content(content2).build();
 
-        // when then
-        assertThrows(CommentLengthOutOfRangeException.class,
+        // when
+        BaseException baseException1 = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnNovel(novel.getId(), author.getId(), commentContent1));
-        assertThrows(CommentLengthOutOfRangeException.class,
+        BaseException baseException2 = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnNovel(novel.getId(), author.getId(), commentContent2));
+
+        // then
+        assertThat(baseException1.getMessage()).isEqualTo(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
+        assertThat(baseException2.getMessage()).isEqualTo(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
     }
 
     @Test
@@ -268,11 +270,12 @@ class CommentServiceTest {
         Author newAuthor = AuthorMother.generateAuthor();
 
         // when
-        assertThrows(AuthorNotFoundException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnChapter(chapter.getId(), newAuthor.getId(), commentContent));
         List<Comment> comments = commentJpaRepository.findAllByChapter(chapter);
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
         assertThat(comments.size()).isZero();
     }
 
@@ -286,10 +289,14 @@ class CommentServiceTest {
         CommentContent commentContent2 = CommentContent.builder().content(content2).build();
 
         // when then
-        assertThrows(CommentLengthOutOfRangeException.class,
+        BaseException baseException1 = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnChapter(chapter.getId(), author.getId(), commentContent1));
-        assertThrows(CommentLengthOutOfRangeException.class,
+        BaseException baseException2 = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnChapter(chapter.getId(), author.getId(), commentContent2));
+
+        // then
+        assertThat(baseException1.getMessage()).isEqualTo(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
+        assertThat(baseException2.getMessage()).isEqualTo(ExceptionMessage.COMMENT_LENGTH_OUT_OF_RANGE);
     }
 
     @Test
@@ -387,9 +394,12 @@ class CommentServiceTest {
         // given
         Comment comment = CommentMother.generateComment(author, novel, chapter);
 
-        // when then
-        assertThrows(CommentNotFoundException.class,
+        // when
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.deleteComment(comment.getId(), author.getId()));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.COMMENT_NOT_FOUND);
     }
 
     @Test
@@ -404,11 +414,12 @@ class CommentServiceTest {
         chapter.getComments().add(comment);
         commentJpaRepository.save(comment);
         authorRepository.save(newAuthor);
-        assertThrows(AuthorNotAuthorizedException.class,
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.deleteComment(comment.getId(), newAuthor.getId()));
         Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
 
         // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
         assertFalse(commentById.isEmpty());
     }
 

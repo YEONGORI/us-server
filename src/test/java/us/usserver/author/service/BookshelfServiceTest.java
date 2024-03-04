@@ -25,6 +25,8 @@ import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
@@ -347,15 +349,21 @@ class BookshelfServiceTest {
         Author newAuthor = AuthorMother.generateAuthor();
         setMember(newAuthor);
 
-        // when // then
-        assertThrows(AuthorNotFoundException.class,
+        // when
+        BaseException baseException1 = assertThrows(BaseException.class,
                 () -> bookshelfService.recentViewedNovels(newAuthor.getId()));
-        assertThrows(AuthorNotFoundException.class,
+        BaseException baseException2 = assertThrows(BaseException.class,
                 () -> bookshelfService.createdNovels(newAuthor.getId()));
-        assertThrows(AuthorNotFoundException.class,
+        BaseException baseException3 = assertThrows(BaseException.class,
                 () -> bookshelfService.joinedNovels(newAuthor.getId()));
-        assertThrows(AuthorNotFoundException.class,
+        BaseException baseException4 = assertThrows(BaseException.class,
                 () -> bookshelfService.likedNovels(newAuthor.getId()));
+
+        // then
+        assertThat(baseException1.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
+        assertThat(baseException2.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
+        assertThat(baseException3.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
+        assertThat(baseException4.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
 
     }
 

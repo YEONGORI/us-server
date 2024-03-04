@@ -21,9 +21,7 @@ import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
 import us.usserver.domain.paragraph.service.VoteService;
-import us.usserver.global.response.exception.AuthorNotAuthorizedException;
-import us.usserver.global.response.exception.DuplicatedVoteException;
-import us.usserver.global.response.exception.VoteNotFoundException;
+import us.usserver.global.response.exception.*;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;
@@ -95,10 +93,12 @@ class VoteServiceTest {
 
         // when
         voteService.voting(paragraph.getId(), author.getId());
+        BaseException baseException = assertThrows(BaseException.class,
+                () -> voteService.voting(paragraph.getId(), author.getId()));
 
         // then
-        assertThrows(DuplicatedVoteException.class,
-                () -> voteService.voting(paragraph.getId(), author.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.VOTE_ONLY_ONE_PARAGRAPH);
+
     }
 
     @Test
@@ -128,10 +128,12 @@ class VoteServiceTest {
         // when
         authorRepository.save(newAuthor);
         voteJpaRepository.save(vote);
+        BaseException baseException = assertThrows(BaseException.class,
+                () -> voteService.unvoting(vote.getId(), newAuthor.getId()));
 
         // then
-        assertThrows(AuthorNotAuthorizedException.class,
-                () -> voteService.unvoting(vote.getId(), newAuthor.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
+
     }
 
     @Test
@@ -144,10 +146,12 @@ class VoteServiceTest {
         voteJpaRepository.save(vote);
         assertDoesNotThrow(
                 () -> voteService.unvoting(vote.getId(), author.getId()));
+        BaseException baseException = assertThrows(BaseException.class,
+                () -> voteService.unvoting(vote.getId(), author.getId()));
 
         // then
-        assertThrows(VoteNotFoundException.class,
-                () -> voteService.unvoting(vote.getId(), author.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.VOTE_NOT_FOUND);
+
     }
 
     private void setMember(Author author) {

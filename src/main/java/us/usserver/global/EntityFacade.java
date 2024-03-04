@@ -93,7 +93,7 @@ public class EntityFacade {
     public ReadNovel getReadNovel(Long readNovelId) {
         Optional<ReadNovel> readNovelById = readNovelRepository.findReadNovelById(readNovelId);
         if (readNovelById.isEmpty()) { // TODO: 이부분 global 수정 중이라 컨플릭트 날까봐 일단 이렇게만 작성했음
-            throw new VoteNotFoundException(ExceptionMessage.VOTE_NOT_FOUND);
+            throw new BaseException(ErrorCode.VOTE_NOT_FOUND);
         }
         return readNovelById.get();
     }

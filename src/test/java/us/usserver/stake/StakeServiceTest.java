@@ -178,13 +178,13 @@ class StakeServiceTest {
         // when
         authorRepository.save(newAuthor);
         authorityRepository.save(authority);
-        chapter3.getParagraphs().add(newParagraph);
+        chapter3.addParagraph(newParagraph);
         paragraphRepository.save(newParagraph);
         stakeService.setStakeInfoOfNovel(novel);
 
         // then
         StakeInfoResponse curStakeResponse = stakeService.getStakeInfoOfNovel(novel.getId());
-        assertThat(prevStakeResponse.getStakeInfos().size()).isEqualTo(curStakeResponse.getStakeInfos().size() + 1);
+        assertThat(curStakeResponse.getStakeInfos().size()).isEqualTo(prevStakeResponse.getStakeInfos().size() + 1);
 
         for (StakeInfo prevStake : prevStakeResponse.getStakeInfos()) {
             for (StakeInfo curStake : curStakeResponse.getStakeInfos()) {

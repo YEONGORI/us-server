@@ -3,6 +3,7 @@ package us.usserver.domain.authority.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
@@ -29,6 +30,7 @@ public class StakeServiceImpl implements StakeService {
     private final EntityFacade entityFacade;
 
     @Override
+    @Transactional
     public void setStakeInfoOfNovel(Novel novel) {
         List<Chapter> chapters = novel.getChapters();
         float totalParagraphs = (float) getTotalParagraphs(chapters);

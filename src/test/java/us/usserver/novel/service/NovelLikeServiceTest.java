@@ -17,8 +17,9 @@ import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelLikeService;
-import us.usserver.global.response.exception.AuthorNotFoundException;
+import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.DuplicatedLikeException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
@@ -78,9 +79,13 @@ class NovelLikeServiceTest {
         // given
         Long notExistNovelId = 9999L;
 
-        // when then
-        Assertions.assertThrows(NovelNotFoundException.class,
+        // when
+        BaseException baseException = Assertions.assertThrows(BaseException.class,
                 () -> novelLikeService.setNovelLike(notExistNovelId, author.getId()));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.NOVEL_NOT_FOUND);
+
     }
 
     @Test
@@ -91,8 +96,11 @@ class NovelLikeServiceTest {
 
 
         // when then
-        Assertions.assertThrows(AuthorNotFoundException.class,
+        BaseException baseException = Assertions.assertThrows(BaseException.class,
                 () -> novelLikeService.setNovelLike(novel.getId(), notExistAuthorId));
+
+        // then
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
     }
 
     @Test
@@ -105,8 +113,9 @@ class NovelLikeServiceTest {
                 () -> novelLikeService.setNovelLike(novel.getId(), author.getId()));
 
         // then
-        Assertions.assertThrows(DuplicatedLikeException.class,
+        BaseException baseException = Assertions.assertThrows(BaseException.class,
                 () -> novelLikeService.setNovelLike(novel.getId(), author.getId()));
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.LIKE_DUPLICATED);
     }
 
     @Test
