@@ -12,6 +12,7 @@ import us.usserver.domain.novel.dto.NovelSynopsis;
 import us.usserver.domain.novel.constant.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -30,9 +31,10 @@ public class NovelMother {
                 .randomize(Genre.class, new EnumRandomizer<>(Genre.class))
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
                 .randomize(NovelStatus.class, new EnumRandomizer<>(NovelStatus.class))
-                .randomize(named("hit").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 100))
+                .randomize(named("hit").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 0))
                 .randomize(NovelSize.class, new EnumRandomizer<>(NovelSize.class))
-                .randomize(Author.class, () -> author);
+                .randomize(Author.class, () -> author)
+                .randomize(named("recentlyUpdated"), LocalDateTime::now);
 
         EasyRandom easyRandom = new EasyRandom(randomParameters);
         return easyRandom.nextObject(Novel.class);

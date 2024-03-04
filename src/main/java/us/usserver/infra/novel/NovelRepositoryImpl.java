@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
+import us.usserver.domain.novel.dto.MoreNovelRequest;
 import us.usserver.domain.novel.entity.Novel;
-import us.usserver.domain.novel.dto.MoreInfoOfNovel;
 import us.usserver.domain.novel.dto.SearchNovelReq;
 import us.usserver.domain.novel.dto.SortDto;
 import us.usserver.domain.novel.constant.Hashtag;
@@ -29,8 +29,8 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<Novel> moreNovelList(MoreInfoOfNovel moreInfoOfNovel, Pageable pageable) {
-        List<Novel> novels = getMoreNovel(moreInfoOfNovel, pageable);
+    public Slice<Novel> moreNovelList(Long lastNovelId, Pageable pageable) {
+        List<Novel> novels = getMoreNovel(lastNovelId, pageable);
 
         return checkLastPage(pageable, novels);
     }
@@ -42,12 +42,12 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom {
         return checkLastPage(pageable, novels);
     }
 
-    private List<Novel> getMoreNovel(MoreInfoOfNovel moreInfoOfNovel, Pageable pageable) {
+    private List<Novel> getMoreNovel(Long lastNovelId, Pageable pageable) {
         return queryFactory
                 .select(novel)
                 .from(novel)
-                .where(ltNovelId(moreInfoOfNovel.getLastNovelId()))
-                .orderBy(novelSort(moreInfoOfNovel.getSortDto()))
+                .where(ltNovelId(lastNovelId))
+//                .orderBy(pageable.getSort())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();

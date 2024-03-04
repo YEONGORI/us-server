@@ -1,19 +1,17 @@
 package us.usserver.domain.novel.service;
 
 import jakarta.transaction.Transactional;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.dto.StakeInfo;
 import us.usserver.domain.authority.dto.res.StakeInfoResponse;
@@ -23,28 +21,24 @@ import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterService;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.constant.Orders;
-import us.usserver.domain.novel.constant.Sorts;
-import us.usserver.domain.novel.dto.AuthorDescription;
-import us.usserver.domain.novel.dto.CreateNovelReq;
-import us.usserver.domain.novel.dto.HomeNovelListResponse;
-import us.usserver.domain.novel.dto.MoreInfoOfNovel;
-import us.usserver.domain.novel.dto.NovelDetailInfo;
-import us.usserver.domain.novel.dto.NovelInfo;
-import us.usserver.domain.novel.dto.NovelPageInfoResponse;
-import us.usserver.domain.novel.dto.ReadInfoOfNovel;
-import us.usserver.domain.novel.dto.SearchKeywordResponse;
-import us.usserver.domain.novel.dto.SearchNovelReq;
-import us.usserver.domain.novel.dto.SortDto;
+import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
+import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class NovelServiceImpl implements NovelService {
     private final EntityFacade entityFacade;
@@ -57,53 +51,37 @@ public class NovelServiceImpl implements NovelService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final Integer RECENT_KEYWORD_SIZE = 10;
+    private static final Integer DEFAULT_PAGE_SIZE = 6;
 
     @Override
-    public NovelInfo createNovel(Member member, CreateNovelReq createNovelReq) {
-        Author author = getAuthor(member);
+    @Transactional
+    public NovelInfo createNovel(Member member, NovelBlueprint novelBlueprint) {
+        Author author = authorRepository.getAuthorByMemberId(member.getId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
 
-        Novel novel = createNovelReq.toEntity(author);
+        Novel novel = novelBlueprint.toEntity(author);
         Novel saveNovel = novelRepository.save(novel);
 
-        author.getCreatedNovels().add(novel);
-        authorityRepository.save(Authority.builder().author(author).novel(novel).build());
+        authorityRepository.save(Authority.builder()
+                .author(author).novel(novel).build());
 
         chapterService.createChapter(saveNovel.getId(), author.getId());
         return NovelInfo.mapNovelToNovelInfo(novel);
-
-//        return NovelInfo.builder() TODO: 리펙토링으로 삭제 예정
-//                .title(novel.getTitle())
-//                .createdAuthor(AuthorInfo.fromAuthor(author))
-//                .genre(novel.getGenre())
-//                .hashtag(novel.getHashtags())
-//                .joinedAuthorCnt(1)
-//                .commentCnt(0)
-//                .likeCnt(0)
-//                .build();
     }
 
     @Override
+    @Transactional
     public NovelInfo getNovelInfo(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
         return NovelInfo.mapNovelToNovelInfo(novel);
-//        AuthorInfo authorInfo = AuthorInfo.fromAuthor(novel.getMainAuthor()); TODO: 리펙토링으로 삭제 예정
-//
-//        return NovelInfo.builder()
-//                .title(novel.getTitle())
-//                .createdAuthor(authorInfo)
-//                .genre(novel.getGenre())
-//                .hashtag(novel.getHashtags())
-//                .joinedAuthorCnt(authorityRepository.countAllByNovel(novel))
-//                .commentCnt(commentJpaRepository.countAllByNovel(novel))
-//                .likeCnt(novelLikeRepository.countAllByNovel(novel))
-//                .novelSharelUrl("http://localhost:8080/novel/" + novel.getId())
-//                .build();
     }
 
     @Override
+    @Transactional
     public NovelDetailInfo getNovelDetailInfo(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
         StakeInfoResponse stakeResponse = stakeService.getStakeInfoOfNovel(novelId);
+
         List<StakeInfo> stakeInfos = stakeResponse.getStakeInfos();
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
 
@@ -122,6 +100,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public String modifyNovelSynopsis(Long novelId, Long authorId, String synopsis) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthor(authorId);
@@ -130,11 +109,12 @@ public class NovelServiceImpl implements NovelService {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
-        novel.setSynopsis(synopsis);
+        novel.changeSynopsis(synopsis);
         return synopsis;
     }
 
     @Override
+    @Transactional
     public AuthorDescription modifyAuthorDescription(Long novelId, Long authorId, AuthorDescription req) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthor(authorId);
@@ -143,106 +123,94 @@ public class NovelServiceImpl implements NovelService {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
-        novel.setAuthorDescription(req.getDescription());
+        novel.changeAuthorDescription(req.getDescription());
         return req;
     }
 
     @Override
-    public HomeNovelListResponse homeNovelInfo(Member member) {
-        Author author = getAuthor(member);
-        MoreInfoOfNovel realTimeNovels = MoreInfoOfNovel.builder()
-                .lastNovelId(501L)
-                .sortDto(SortDto.builder().sorts(Sorts.LATEST).orders(Orders.DESC).build())
-                .build();
+    @Transactional
+    public MainPageResponse getMainPage(Member member) {
+        List<NovelInfo> readNovels = getReadNovels(member);
 
-        MoreInfoOfNovel newNovels = MoreInfoOfNovel.builder()
-                .lastNovelId(501L)
-                .sortDto(SortDto.builder().sorts(Sorts.NEW).orders(Orders.DESC).build())
-                .build();
+        PageRequest realTimeUpdates = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+        PageRequest recentlyCreated = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+        PageRequest popular = getPageRequest(0, 3, Sort.Direction.DESC, SortColumn.hit);
 
-        return HomeNovelListResponse.builder()
-                .realTimeNovels(mapNovelsToNovelInfos(novelRepository.moreNovelList(realTimeNovels, getPageRequest(realTimeNovels))))
-                .newNovels(mapNovelsToNovelInfos(novelRepository.moreNovelList(newNovels, getPageRequest(newNovels))))
-                .readNovels((author == null) ? null : author.getViewedNovels()
-                        .stream().limit(8)
-                        .sorted(Comparator.comparing(Novel::getId))
-                        .map(NovelInfo::mapNovelToNovelInfo)
-                        .toList())
-                .build();
+        List<NovelInfo> realTimeUpdatesNovels = novelRepository.findSliceBy(realTimeUpdates)
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
+        List<NovelInfo> recentlyCreatedNovels = novelRepository.findSliceBy(recentlyCreated)
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
+        List<NovelInfo> popularNovels = novelRepository.findSliceBy(popular)
+                .map(NovelInfo::mapNovelToNovelInfo).toList();
+
+        return new MainPageResponse(popularNovels, readNovels, realTimeUpdatesNovels, recentlyCreatedNovels);
     }
 
     @Override
-    public NovelPageInfoResponse moreNovel(MoreInfoOfNovel moreInfoOfNovel) {
-        PageRequest pageable = getPageRequest(moreInfoOfNovel);
-        Slice<Novel> novelSlice = novelRepository.moreNovelList(moreInfoOfNovel, pageable);
+    @Transactional
+    public MoreNovelResponse getMoreNovels(Member member, MoreNovelRequest moreNovelRequest) {
+        PageRequest pageRequest = switch (moreNovelRequest.mainNovelType()) {
+            case NEW -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+            case UPDATE -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+            case POPULAR -> getPageRequest(moreNovelRequest.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
+        };
 
-        return getNovelPageInfoResponse(novelSlice, moreInfoOfNovel.getSortDto());
+        Slice<Novel> novelSlice = novelRepository.findSliceBy(pageRequest);
+        List<NovelInfo> novelInfos = novelSlice
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
+        return new MoreNovelResponse(novelInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }
+
+
     @Override
-    public NovelPageInfoResponse readMoreNovel(Member member, ReadInfoOfNovel readInfoOfNovel){
-        Author author = getAuthor(member);
+    @Transactional
+    public MoreNovelResponse readMoreNovel(Member member){
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
-        if (author != null) {
-            int author_readNovel_cnt = author.getViewedNovels().size();
-            int getSize = readInfoOfNovel.getGetNovelSize() + readInfoOfNovel.getSize();
-            int endPoint = Math.min(author_readNovel_cnt, getSize);
+        List<NovelInfo> novelInfos = author.getReadNovels().stream()
+                .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
+                .map(ReadNovel::getNovel)
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
 
-            List<Novel> novelList = author
-                    .getViewedNovels()
-                    .stream()
-                    .sorted(Comparator.comparing(Novel::getId))
-                    .toList()
-                    .subList(readInfoOfNovel.getGetNovelSize(), endPoint);
-            boolean hasNext = getSize == endPoint;
-
-            return NovelPageInfoResponse.builder()
-                    .novelList(novelList.stream().map(NovelInfo::mapNovelToNovelInfo).toList())
-                    .lastNovelId(novelList.get(novelList.size()-1).getId())
-                    .hasNext(hasNext)
-                    .sorts(null)
-                    .build();
-        } else {
-            return null;
-        }
+        return new MoreNovelResponse(novelInfos, 0, Boolean.FALSE);
     }
 
-    private PageRequest getPageRequest(MoreInfoOfNovel moreInfoOfNovel) {
-        if (moreInfoOfNovel.getSize() == null) {
-            moreInfoOfNovel.setSize(6);
-        }
-        return PageRequest.ofSize(moreInfoOfNovel.getSize());
+    private PageRequest getPageRequest(int pageNum, int pageSize, Sort.Direction direction, SortColumn sortColumn) {
+        return PageRequest.of(pageNum, pageSize, Sort.by(direction, sortColumn.toString()));
     }
 
-    private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
-        Long newLastNovelId = getLastNovelId(novelSlice);
+    private List<NovelInfo> getReadNovels(Member member) {
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
-        return NovelPageInfoResponse
-                .builder()
-                .novelList(mapNovelsToNovelInfos(novelSlice))
-                .lastNovelId(newLastNovelId)
-                .hasNext(novelSlice.hasNext())
-                .sorts(novelMoreDto.getSorts())
-                .build();
-    }
-
-    private Long getLastNovelId(Slice<Novel> novelSlice){
-        return novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
+        return author.getReadNovels().stream()
+                .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
+                .limit(6)
+                .map(ReadNovel::getNovel)
+                .map(NovelInfo::mapNovelToNovelInfo)
+                .toList();
     }
 
     @Override
+    @Transactional
     public NovelPageInfoResponse searchNovel(Member member, SearchNovelReq searchNovelReq) {
-        Author author = getAuthor(member);
+        Optional<Author> authorByMember = authorRepository.getAuthorByMember(member);
+
         PageRequest pageable = PageRequest.ofSize(searchNovelReq.getSize());
-        if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
-            increaseKeywordScore(searchNovelReq.getTitle());
-            recentKeyword((author == null) ? null : author.getId(), searchNovelReq.getTitle());
-        }
+//        if (searchNovelReq.getTitle() != null && searchNovelReq.getLastNovelId() == 0L) {
+//            increaseKeywordScore(searchNovelReq.getTitle());
+//            recentKeyword((author == null) ? null : author.getId(), searchNovelReq.getTitle());
+//        }
         Slice<Novel> novelSlice = novelRepository.searchNovelList(searchNovelReq, pageable);
 
         return getNovelPageInfoResponse(novelSlice, searchNovelReq.getSortDto());
     }
 
     @Override
+    @Transactional
     public SearchKeywordResponse searchKeyword(Member member) {
         Author author = getAuthor(member);
 
@@ -261,13 +229,32 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    @Transactional
     public void deleteSearchKeyword(Member member) {
-        Author author = getAuthor(member);
+        Author author = authorRepository.getAuthorByMember(member)
+                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
 
         String key = String.valueOf(author.getId());
         Long size = redisTemplate.opsForList().size(key);
 
         redisTemplate.opsForList().rightPop(key, size);
+    }
+
+    private NovelPageInfoResponse getNovelPageInfoResponse(Slice<Novel> novelSlice, SortDto novelMoreDto) {
+        Long newLastNovelId = getLastNovelId(novelSlice);
+//        novelSlice.getNumber()
+
+        return NovelPageInfoResponse
+                .builder()
+                .novelList(mapNovelsToNovelInfos(novelSlice))
+//                .lastNovelId(newLastNovelId)
+                .hasNext(novelSlice.hasNext())
+                .sorts(novelMoreDto.getSorts())
+                .build();
+    }
+
+    private Long getLastNovelId(Slice<Novel> novelSlice){
+        return novelSlice.isEmpty() ? null : novelSlice.getContent().get(novelSlice.getNumberOfElements() - 1).getId();
     }
 
     private void increaseKeywordScore(String keyword) {
@@ -316,6 +303,7 @@ public class NovelServiceImpl implements NovelService {
         }
         return authorRepository.getAuthorByMemberId(member.getId())
                 .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
+
     }
 
     private List<NovelInfo> mapNovelsToNovelInfos(Slice<Novel> novels) {

@@ -1,4 +1,4 @@
-package us.usserver.novel;
+package us.usserver.novel.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +21,7 @@ import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
+import us.usserver.novel.NovelMother;
 
 import java.util.Collections;
 import java.util.List;

@@ -42,9 +42,9 @@ public class BookshelfController {
     }
 
     @DeleteMapping("/viewed/{novelId}") // 내가 최근에 본 소설 삭제
-    public ApiCsResponse<Void> deleteRecentViewedNovels(@PathVariable Long novelId) {
+    public ApiCsResponse<Void> deleteRecentViewedNovels(@PathVariable Long readNovelId) {
         Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteRecentViewedNovels(authorId, novelId);
+        bookshelfService.deleteRecentViewedNovels(authorId, readNovelId);
         return ApiCsResponse.success();
     }
 

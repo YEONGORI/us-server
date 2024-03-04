@@ -4,18 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
 import us.usserver.domain.author.dto.NovelPreview;
+import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.entity.Novel;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -25,36 +28,35 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final EntityFacade entityFacade;
     private final AuthorityRepository authorityRepository;
     private final NovelLikeRepository novelLikeRepository;
+    private final NovelRepository novelRepository;
 
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
         Author author = entityFacade.getAuthor(authorId);
-        List<Novel> viewedNovels = author.getViewedNovels();
+        Set<ReadNovel> readNovels = author.getReadNovels();
 
-        List<NovelPreview> novelPreviews = viewedNovels.stream()
-                .map(novel -> NovelPreview.fromNovel(
-                        novel,
-                        getTotalJoinedAuthor(novel),
-                        getShortcuts(novel)
-                )).toList();
+        List<NovelPreview> novelPreviews = readNovels.stream()
+                .map(ReadNovel::getNovel)
+                .map(novel -> NovelPreview.fromNovel(novel, getTotalJoinedAuthor(novel), getShortcuts(novel)))
+                .toList();
 
-        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).build();
+        return BookshelfDefaultResponse.builder().novelPreviews(novelPreviews).count(readNovels.size()).build();
     }
 
     @Override
-    public void deleteRecentViewedNovels(Long authorId, Long novelId) {
+    public void deleteRecentViewedNovels(Long authorId, Long readNovelId) {
         Author author = entityFacade.getAuthor(authorId);
-        Novel novel = entityFacade.getNovel(novelId);
-
-        author.getViewedNovels().remove(novel);
+        ReadNovel readNovel = entityFacade.getReadNovel(readNovelId);
+        author.deleteReadNovel(readNovel);
     }
 
     @Override
     public BookshelfDefaultResponse createdNovels(Long authorId) {
         Author author = entityFacade.getAuthor(authorId);
+        List<Novel> allByMainAuthor = novelRepository.findAllByMainAuthor(author);
 
-        List<Novel> createdNovels = author.getCreatedNovels();
-        List<NovelPreview> novelPreviews = createdNovels.stream()
+        List<NovelPreview> novelPreviews = allByMainAuthor.stream()
+                .filter(novel -> novel.getMainAuthor().equals(author))
                 .map(novel -> NovelPreview.fromNovel(
                         novel,
                         getTotalJoinedAuthor(novel),

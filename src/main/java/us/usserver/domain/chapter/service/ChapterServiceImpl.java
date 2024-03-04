@@ -1,11 +1,11 @@
 package us.usserver.domain.chapter.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
@@ -21,6 +21,9 @@ import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -68,7 +71,7 @@ public class ChapterServiceImpl implements ChapterService {
             score = 0.0;
         }
 
-        author.getViewedNovels().add(novel);
+        author.addReadNovel(ReadNovel.builder().author(author).novel(novel).readDate(LocalDateTime.now()).build()); // Set 이라 중복 검사를 하지 않아도 됨
         return ChapterDetailInfo.builder()
                 .part(part)
                 .title(chapter.getTitle())
@@ -103,7 +106,7 @@ public class ChapterServiceImpl implements ChapterService {
                 .novel(novel)
                 .build();
 
-        novel.getChapters().add(chapter);
+        novel.addChapter(chapter);
         chapterRepository.save(chapter);
     }
 }

@@ -22,17 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.dto.AuthorDescription;
-import us.usserver.domain.novel.dto.CreateNovelReq;
-import us.usserver.domain.novel.dto.HomeNovelListResponse;
-import us.usserver.domain.novel.dto.MoreInfoOfNovel;
-import us.usserver.domain.novel.dto.NovelDetailInfo;
-import us.usserver.domain.novel.dto.NovelInfo;
-import us.usserver.domain.novel.dto.NovelPageInfoResponse;
-import us.usserver.domain.novel.dto.NovelSynopsis;
-import us.usserver.domain.novel.dto.ReadInfoOfNovel;
-import us.usserver.domain.novel.dto.SearchKeywordResponse;
-import us.usserver.domain.novel.dto.SearchNovelReq;
+import us.usserver.domain.novel.dto.*;
+
 import us.usserver.domain.novel.service.NovelService;
 import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
@@ -54,9 +45,10 @@ public class NovelController {
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PostMapping
-    public ApiCsResponse<NovelInfo> createNovel(@AuthenticationPrincipal Member member, @Valid @RequestBody CreateNovelReq createNovelReq) {
-        NovelInfo novelInfo = novelService.createNovel(member, createNovelReq);
+    public ApiCsResponse<NovelInfo> createNovel(@AuthenticationPrincipal Member member, @Valid @RequestBody NovelBlueprint novelBlueprint) {
+        NovelInfo novelInfo = novelService.createNovel(member, novelBlueprint);
         return ApiCsResponse.success(novelInfo);
+
     }
 
     @Operation(summary = "소설 정보 조회", description = "소설 기본 정보 조회")
@@ -81,6 +73,7 @@ public class NovelController {
     })
     @GetMapping("/{novelId}/detail")
     public ApiCsResponse<NovelDetailInfo> getNovelDetailInfo(@PathVariable Long novelId) {
+
         NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
         return ApiCsResponse.success(detailInfo);
     }
@@ -99,7 +92,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody NovelSynopsis req
     ) {
-        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
+        java.lang.Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         String synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req.getSynopsis());
         ApiCsResponse<String> response = ApiCsResponse.success(synopsis);
         return ResponseEntity.created(URI.create("")).body(response);
@@ -108,14 +101,15 @@ public class NovelController {
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
-            content = @Content(schema = @Schema(implementation = HomeNovelListResponse.class))),
+            content = @Content(schema = @Schema(implementation = MainPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/main")
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
-    public ApiCsResponse<HomeNovelListResponse> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
-        HomeNovelListResponse homeNovelList = novelService.homeNovelInfo(member);
+    public ApiCsResponse<MainPageResponse> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
+
+        MainPageResponse homeNovelList = novelService.getMainPage(member);
         return ApiCsResponse.success(homeNovelList);
     }
 
@@ -126,9 +120,12 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/main/more")
-    public ApiCsResponse<NovelPageInfoResponse> moreNovel(@Valid MoreInfoOfNovel moreInfoOfNovel) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.moreNovel(moreInfoOfNovel);
-        return ApiCsResponse.success(novelPageInfoResponse);
+    public ApiCsResponse<MoreNovelResponse> getMoreNovels(
+            @AuthenticationPrincipal Member member,
+            @Valid MoreNovelRequest moreNovelRequest
+    ) {
+        MoreNovelResponse moreNovels = novelService.getMoreNovels(member, moreNovelRequest);
+        return ApiCsResponse.success(moreNovels);
     }
 
     @Operation(summary = "읽은 소설 더보기", description = "내가 읽었던 소설 더보기 API")
@@ -137,10 +134,10 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/main/more/read")
-    public ApiCsResponse<NovelPageInfoResponse> readNovel(@AuthenticationPrincipal Member member,
-                                                      @Valid ReadInfoOfNovel readInfoOfNovel) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.readMoreNovel(member, readInfoOfNovel);
-        return ApiCsResponse.success(novelPageInfoResponse);
+    public ApiCsResponse<MoreNovelResponse> readNovel(@AuthenticationPrincipal Member member) {
+        MoreNovelResponse moreNovelResponse = novelService.readMoreNovel(member);
+        return ApiCsResponse.success(moreNovelResponse);
+
     }
 
     @Operation(summary = "소설 검색", description = "사용자 소설 검색 API")
@@ -164,7 +161,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Validated @RequestBody AuthorDescription req
     ) {
-        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
+        java.lang.Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
         AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
         return ApiCsResponse.success(description);
     }

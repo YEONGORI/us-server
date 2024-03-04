@@ -1,4 +1,4 @@
-package us.usserver.novel;
+package us.usserver.novel.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +23,7 @@ import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.member.MemberMother;
+import us.usserver.novel.NovelMother;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -6,7 +6,7 @@ import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
 @Service
 public interface BookshelfService {
     BookshelfDefaultResponse recentViewedNovels(Long authorId);
-    void deleteRecentViewedNovels(Long authorId, Long novelId);
+    void deleteRecentViewedNovels(Long authorId, Long readNovelId);
 
     BookshelfDefaultResponse createdNovels(Long authorId);
     void deleteCreatedNovels(Long authorId, Long novelId);

@@ -11,6 +11,7 @@ import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.author.service.BookshelfService;
 import us.usserver.domain.authority.entity.Authority;
@@ -26,6 +27,8 @@ import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -70,7 +73,7 @@ class BookshelfServiceTest {
 
     @AfterEach
     void setOff() {
-        author.getViewedNovels().clear();
+        author.getReadNovels().clear();
     }
 
     @Test
@@ -84,13 +87,13 @@ class BookshelfServiceTest {
         // when
         novelRepository.save(newNovel);
         chapterRepository.save(newChapter);
-        author.getViewedNovels().add(novel);
-        author.getViewedNovels().add(newNovel);
+        author.addReadNovel(ReadNovel.builder().author(author).novel(novel).readDate(LocalDateTime.now()).build());
+        author.addReadNovel(ReadNovel.builder().author(author).novel(newNovel).readDate(LocalDateTime.now()).build());
         authorRepository.save(author);
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(2);
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(2);
     }
 
 
@@ -106,7 +109,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(newAuthor.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isZero();
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isZero();
     }
 
     @Test
@@ -118,11 +121,11 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(1);
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getTitle()).isEqualTo(novel.getTitle());
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getMainAuthor().getNickname()).isEqualTo(author.getNickname());
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getJoinedAuthor()).isEqualTo(1);
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getShortcuts()).contains(novel.getId().toString());
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(1);
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).title()).isEqualTo(novel.getTitle());
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).mainAuthor().nickname()).isEqualTo(author.getNickname());
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).joinedAuthor()).isEqualTo(1);
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).shortcuts()).contains(novel.getId().toString());
     }
 
     @Test
@@ -137,7 +140,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(newAuthor.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isZero();
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isZero();
     }
 
     @Test
@@ -158,7 +161,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(4);
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(4);
     }
 
     @Test
@@ -185,8 +188,8 @@ class BookshelfServiceTest {
 
 
         // then
-        assertThat(before.getNovelPreviews().size()).isEqualTo(4);
-        assertThat(after.getNovelPreviews().size()).isEqualTo(1);
+        assertThat(before.novelPreviews().size()).isEqualTo(4);
+        assertThat(after.novelPreviews().size()).isEqualTo(1);
     }
 
     @Test
@@ -198,9 +201,9 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(1);
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getTitle()).isEqualTo(novel.getTitle());
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(1);
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).title()).isEqualTo(novel.getTitle());
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).thumbnail()).isEqualTo(novel.getThumbnail());
     }
 
     @Test
@@ -215,7 +218,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(newAuthor.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isZero();
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isZero();
     }
 
     @Test
@@ -237,7 +240,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(newAuthor.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(3);
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(3);
     }
 
     @Test
@@ -262,8 +265,8 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse after = bookshelfService.joinedNovels(newAuthor.getId());
         
         // then
-        assertThat(before.getNovelPreviews().size()).isEqualTo(2);
-        assertThat(after.getNovelPreviews().size()).isZero();
+        assertThat(before.novelPreviews().size()).isEqualTo(2);
+        assertThat(after.novelPreviews().size()).isZero();
     }
 
 
@@ -278,9 +281,9 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(1);
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getTitle()).isEqualTo(novel.getTitle());
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().get(0).getThumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(1);
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).title()).isEqualTo(novel.getTitle());
+        assertThat(bookshelfDefaultResponse.novelPreviews().get(0).thumbnail()).isEqualTo(novel.getThumbnail());
     }
 
     @Test
@@ -292,7 +295,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isZero();
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isZero();
     }
 
 
@@ -313,7 +316,7 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(author.getId());
 
         // then
-        assertThat(bookshelfDefaultResponse.getNovelPreviews().size()).isEqualTo(2);
+        assertThat(bookshelfDefaultResponse.novelPreviews().size()).isEqualTo(2);
     }
 
     @Test
@@ -331,8 +334,8 @@ class BookshelfServiceTest {
         BookshelfDefaultResponse after = bookshelfService.likedNovels(author.getId());
 
         // then
-        assertThat(before.getNovelPreviews().size()).isEqualTo(1);
-        assertThat(after.getNovelPreviews().size()).isZero();
+        assertThat(before.novelPreviews().size()).isEqualTo(1);
+        assertThat(after.novelPreviews().size()).isZero();
     }
 
 
