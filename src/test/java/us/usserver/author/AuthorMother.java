@@ -3,6 +3,7 @@ package us.usserver.author;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.text.StringRandomizer;
+import us.usserver.domain.author.entity.Author;
 
 import java.nio.charset.StandardCharsets;
 

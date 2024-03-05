@@ -14,18 +14,18 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import us.usserver.author.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.author.AuthorRepository;
-import us.usserver.chapter.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.chapter.ChapterRepository;
-import us.usserver.member.Member;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.novel.entity.Novel;
+import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.member.MemberMother;
-import us.usserver.member.MemberRepository;
-import us.usserver.novel.Novel;
 import us.usserver.novel.NovelMother;
-import us.usserver.novel.NovelRepository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
