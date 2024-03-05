@@ -3,10 +3,11 @@ package us.usserver.comment;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.text.StringRandomizer;
-import us.usserver.author.Author;
-import us.usserver.chapter.Chapter;
-import us.usserver.comment.dto.CommentContent;
-import us.usserver.novel.Novel;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.comment.entity.Comment;
+import us.usserver.domain.comment.dto.CommentContent;
+import us.usserver.domain.novel.entity.Novel;
 
 import java.nio.charset.StandardCharsets;
 
