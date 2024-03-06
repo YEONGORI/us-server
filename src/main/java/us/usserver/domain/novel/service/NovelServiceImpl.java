@@ -30,10 +30,7 @@ import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
 import us.usserver.global.response.exception.ExceptionMessage;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -183,15 +180,13 @@ public class NovelServiceImpl implements NovelService {
     }
 
     private List<NovelInfo> getReadNovels(Member member) {
-        Author author = authorRepository.getAuthorByMember(member)
-                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
-
-        return author.getReadNovels().stream()
+        Optional<Author> author = authorRepository.getAuthorByMember(member);
+        return author.map(value -> value.getReadNovels().stream()
                 .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
                 .limit(6)
                 .map(ReadNovel::getNovel)
                 .map(NovelInfo::mapNovelToNovelInfo)
-                .toList();
+                .toList()).orElse(Collections.emptyList());
     }
 
     @Override
