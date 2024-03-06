@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/", "/login**", "/oauth**", "/member/join",
             "/resources/**", "/favicon.ico", //resource
             "/swagger-ui/**", "/api-docs/**", //swagger
+            "/**" // TODO: 사용자 리펙토링 때 이것도 바꿔야함
     };
 
     @Override
