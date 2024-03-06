@@ -63,7 +63,7 @@ jobs:
 
       - name: 🐋 Push a Docker Image to DockerHub
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}g
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
 #  test:
 #    # if: github.event.pull_request.merged == true
 #    runs-on: ubuntu-latest
