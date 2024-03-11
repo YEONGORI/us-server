@@ -102,10 +102,10 @@ class BookshelfControllerTest {
 //        assertDoesNotThrow(() -> chapterService.getChapterDetailInfo(novel.getId(), author.getId(), chapter.getId()));
 //
 //        // when
-//        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-//                .get("/bookshelf/viewed")
-//                .contentType(MediaType.APPLICATION_JSON));
-//        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/bookshelf/viewed")
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 //
 //        JacksonJsonParser jacksonJsonParser = new JacksonJsonParser();
 //        Map<String, Object> resultJson = jacksonJsonParser.parseMap(resultString);

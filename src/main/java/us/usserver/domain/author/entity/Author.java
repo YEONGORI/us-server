@@ -30,12 +30,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "author_id")
+    @Column(name = "member_id")
     private Long id;
 
-    @Id
-    @Setter
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -123,5 +121,7 @@ public class Author {
     public void changeParagraphSpace(Integer paragraphSpace) {
         this.paragraphSpace = paragraphSpace;
     }
-
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

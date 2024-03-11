@@ -66,11 +66,12 @@ public class ParagraphServiceImpl implements ParagraphService {
         Chapter chapter = entityFacade.getChapter(chapterId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
+        // paragraph랑 member 정보를 넘겨서
+
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
                 .map(paragraph -> ParagraphInVoting.fromParagraph(
                         paragraph,
                         voteRepository.countAllByParagraph(paragraph)),
-                        voteRepository.
                         )
                 .toList();
 

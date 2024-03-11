@@ -1,5 +1,5 @@
 package us.usserver.domain.member.constant;
 
 public enum OauthProvider {
-    NAVER, KAKAO, GOOGLE, APPLE
+    NAVER, KAKAO, APPLE
 }

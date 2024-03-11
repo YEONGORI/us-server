@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import us.usserver.domain.author.entity.Author;
 import us.usserver.global.BaseEntity;
 import us.usserver.domain.member.constant.Role;
 import us.usserver.domain.member.constant.OauthProvider;
@@ -43,4 +44,11 @@ public class Member extends BaseEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private Author author;
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
 }

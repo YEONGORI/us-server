@@ -51,6 +51,7 @@ public record ParagraphInVoting(
                 .status(paragraph.getParagraphStatus())
                 .authorId(paragraph.getAuthor().getId())
                 .authorName(paragraph.getAuthor().getNickname())
+                .iVoted(paragraph.getVotes().contains())
                 .build();
     }
 }
