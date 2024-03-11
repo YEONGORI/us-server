@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.paragraph.service.VoteService;
 import us.usserver.global.response.exception.AuthorNotAuthorizedException;
 import us.usserver.global.response.exception.AuthorNotFoundException;
@@ -39,9 +41,11 @@ public class VoteController {
                     content = @Content(schema = @Schema(implementation = DuplicatedVoteException.class))),
     })
     @PostMapping("/{paragraphId}")
-    public ApiCsResponse<Void> voting(@PathVariable Long paragraphId) {
-        Long authorId = 500L;
-        voteService.voting(paragraphId, authorId);
+    public ApiCsResponse<Void> voting(
+            @AuthenticationPrincipal Member member,
+            @PathVariable Long paragraphId
+    ) {
+        voteService.voting(member, paragraphId);
         return ApiCsResponse.success();
     }
 
@@ -55,10 +59,12 @@ public class VoteController {
             @ApiResponse(responseCode = "401", description = "본인이 아닙니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class))),
     })
-    @DeleteMapping("/{voteId}")
-    public ApiCsResponse<Void> cancelVote(@PathVariable Long voteId) {
-        Long authorId = 500L;
-        voteService.unvoting(voteId, authorId);
+    @DeleteMapping("/{paragraphId}")
+    public ApiCsResponse<Void> cancelVote(
+            @AuthenticationPrincipal Member member,
+            @PathVariable Long paragraphId
+    ) {
+        voteService.unvoting(member, paragraphId);
         return ApiCsResponse.success();
     }
 }

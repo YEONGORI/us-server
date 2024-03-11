@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.service.ParagraphService;
@@ -38,8 +40,11 @@ public class ParagraphController {
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/{chapterId}/voting")
-    public ApiCsResponse<GetParagraphResponse> getParagraphsInVoting(@PathVariable Long chapterId) {
-        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(chapterId);
+    public ApiCsResponse<GetParagraphResponse> getParagraphsInVoting(
+            @AuthenticationPrincipal Member member,
+            @PathVariable Long chapterId
+    ) {
+        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(member, chapterId);
         return ApiCsResponse.success(paragraphs);
     }
 

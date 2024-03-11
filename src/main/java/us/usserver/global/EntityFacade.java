@@ -34,6 +34,15 @@ public class EntityFacade {
     private final VoteRepository voteJpaRepository;
     private final ReadNovelRepository readNovelRepository;
 
+    public Author getAuthorByMember(Member member) {
+        authorRepository.get
+        Optional<Author> authorById = authorRepository.getAuthorById(authorId);
+        if (authorById.isEmpty()) {
+            throw new BaseException(ErrorCode.AUTHOR_NOT_FOUND);
+        }
+        return authorById.get();
+    }
+
     public Author getAuthor(Long authorId) {
         Optional<Author> authorById = authorRepository.getAuthorById(authorId);
         if (authorById.isEmpty()) {

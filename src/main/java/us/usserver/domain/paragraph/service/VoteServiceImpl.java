@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
 import us.usserver.domain.paragraph.repository.VoteRepository;
@@ -23,8 +24,9 @@ public class VoteServiceImpl implements VoteService {
     private final VoteRepository voteRepository;
 
     @Override
-    public void voting(Long paragraphId, Long authorId) {
+    public void voting(Member member, Long paragraphId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
+        member.
         Author author = entityFacade.getAuthor(authorId);
 
         List<Vote> allByAuthor = voteRepository.findAllByAuthor(author);
@@ -36,16 +38,13 @@ public class VoteServiceImpl implements VoteService {
             throw new BaseException(ErrorCode.VOTE_ONLY_ONE_PARAGRAPH);
         }
 
-        Vote vote = Vote.builder()
-                .paragraph(paragraph)
-                .author(author)
-                .build();
-
+        Vote vote = Vote.builder().author(author).paragraph(paragraph).build();
+        paragraph.addVote(vote);
         voteRepository.save(vote);
     }
 
     @Override
-    public void unvoting(Long voteId, Long authorId) {
+    public void unvoting(Member member, Long voteId) {
         Vote vote = entityFacade.getVote(voteId);
         Author author = entityFacade.getAuthor(authorId);
 
@@ -53,6 +52,7 @@ public class VoteServiceImpl implements VoteService {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
 
+        vote.getParagraph().removeVote(vote);
         voteRepository.delete(vote);
     }
 }

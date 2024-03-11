@@ -6,16 +6,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import us.usserver.domain.author.dto.NovelPreview;
 import us.usserver.domain.authority.entity.Authority;
+import us.usserver.domain.authority.entity.Stake;
+import us.usserver.domain.chapter.entity.Score;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.entity.CommentLike;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.entity.Novel;
+import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.domain.chapter.entity.Score;
-import us.usserver.domain.authority.entity.Stake;
 import us.usserver.domain.paragraph.entity.Vote;
 
 import java.util.ArrayList;
@@ -35,6 +34,12 @@ public class Author {
     @Column(name = "author_id")
     private Long id;
 
+    @Id
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @NotBlank
     @Size(max = 11)
     private String nickname;
@@ -46,12 +51,10 @@ public class Author {
     @Size(max = 500)
     private String profileImg;
 
-    @Min(1)
-    @Max(30)
+    @Min(1) @Max(30)
     private Integer fontSize = 15;
 
-    @Min(1)
-    @Max(30)
+    @Min(1) @Max(30)
     private Integer paragraphSpace = 16;
 
     @Setter
@@ -59,11 +62,6 @@ public class Author {
 
     @Setter
     private Boolean collectionNovelsPublic;
-
-    @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<ReadNovel> readNovels = new HashSet<>();
@@ -99,7 +97,7 @@ public class Author {
         this.id = id;
     }
 
-    public void addAuthorNovel(Authority authority) {
+    public void addAuthority(Authority authority) {
         authority.setAuthor(this);
         this.authorities.add(authority);
     }

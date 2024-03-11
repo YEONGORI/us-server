@@ -15,6 +15,7 @@ import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
@@ -40,7 +41,7 @@ public class ParagraphServiceImpl implements ParagraphService {
     private final StakeService stakeService;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteRepository voteJpaRepository;
+    private final VoteRepository voteRepository;
     private final AuthorityRepository authorityRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
@@ -61,12 +62,16 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public GetParagraphResponse getInVotingParagraphs(Long chapterId) {
+    public GetParagraphResponse getInVotingParagraphs(Member member, Long chapterId) {
         Chapter chapter = entityFacade.getChapter(chapterId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
-                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, voteJpaRepository.countAllByParagraph(paragraph)))
+                .map(paragraph -> ParagraphInVoting.fromParagraph(
+                        paragraph,
+                        voteRepository.countAllByParagraph(paragraph)),
+                        voteRepository.
+                        )
                 .toList();
 
         return GetParagraphResponse.builder().paragraphInVotings(paragraphInVotings).build();
@@ -171,7 +176,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         int maxVoteCnt = 0, voteCnt;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
-            voteCnt = voteJpaRepository.countAllByParagraph(paragraph);
+            voteCnt = voteRepository.countAllByParagraph(paragraph);
 
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {
@@ -200,7 +205,7 @@ public class ParagraphServiceImpl implements ParagraphService {
 
         if (!isAuthorized) {
             Authority authority = new Authority();
-            author.addAuthorNovel(authority);
+            author.addAuthority(authority);
             authority.takeNovel(novel);
             authorityRepository.save(authority);
         }

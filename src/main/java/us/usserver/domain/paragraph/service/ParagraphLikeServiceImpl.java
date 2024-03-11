@@ -11,6 +11,8 @@ import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -23,24 +25,26 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
         Author author = entityFacade.getAuthor(authorId);
 
-        paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
+        paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
-                    throw new BaseException(ErrorCode.LIKE_DUPLICATED);
-                });
+                    throw new BaseException(ErrorCode.LIKE_DUPLICATED);});
 
         ParagraphLike paragraphLike = ParagraphLike.builder()
-                .paragraph(paragraph)
-                .author(author)
-                .build();
+                .paragraph(paragraph).author(author).build();
+        paragraph.addParagraphLike(paragraphLike);
         paragraphLikeRepository.save(paragraphLike);
     }
 
     @Override
     public void deleteParagraphLike(Long paragraphId, Long authorId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Optional<ParagraphLike> byParagraphIdAndAuthorId = paragraphLikeRepository.findByParagraphIdAndAuthorId(paragraphId, authorId);
 
-        paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
-                .ifPresent(paragraphLikeRepository::delete); // TODO: 처음부터 id 두개로 찾으면 되지 않을까?
+        if (byParagraphIdAndAuthorId.isPresent()) {
+            ParagraphLike paragraphLike = byParagraphIdAndAuthorId.get();
+
+            paragraph.removeParagraphLike(paragraphLike);
+            paragraphLikeRepository.delete(paragraphLike);
+        }
     }
 }

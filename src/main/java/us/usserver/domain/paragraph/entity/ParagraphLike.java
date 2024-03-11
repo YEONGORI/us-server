@@ -19,10 +19,10 @@ public class ParagraphLike {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn
     private Author author;
 
     @ManyToOne
-    @JoinColumn(name = "paragraph_id")
+    @JoinColumn
     private Paragraph paragraph;
 }

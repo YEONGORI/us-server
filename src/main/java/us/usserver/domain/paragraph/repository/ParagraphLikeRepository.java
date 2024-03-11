@@ -12,10 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ParagraphLikeRepository extends JpaRepository<ParagraphLike, Long> {
     List<ParagraphLike> findAllByParagraph(Paragraph paragraph);
-
     List<ParagraphLike> findAllByAuthor(Author author);
-
     Optional<ParagraphLike> findByParagraphAndAuthor(Paragraph paragraph, Author author);
-
-    Optional<ParagraphLike> findFirstByParagraphAndAuthor(Paragraph paragraph, Author author);
+    Optional<ParagraphLike> findByParagraphIdAndAuthorId(Long paragraphId, Long authorId);
 }
