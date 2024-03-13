@@ -33,7 +33,8 @@ public class AuthorController {
     @PatchMapping
     public ApiCsResponse<Void> updateAuthor(
             @AuthenticationPrincipal Long memberId,
-            @ModelAttribute UpdateAuthorReq updateAuthorReq) {
+            @ModelAttribute UpdateAuthorReq updateAuthorReq
+    ) {
         authorService.updateAuthor(memberId, updateAuthorReq);
         return ApiCsResponse.success();
     }
@@ -47,7 +48,8 @@ public class AuthorController {
     @PatchMapping("/fontsize")
     public ApiCsResponse<Void> changeFontSize(
             @AuthenticationPrincipal Long memberId,
-            @Validated @RequestBody FontSizeReq req) {
+            @Validated @RequestBody FontSizeReq req
+    ) {
         authorService.changeFontSize(memberId, req.getFontSize());
         return ApiCsResponse.success();
     }
@@ -61,7 +63,8 @@ public class AuthorController {
     @PatchMapping("/paragraph-space")
     public ApiCsResponse<Void> changeParagraphSpace(
             @AuthenticationPrincipal Long memberId,
-            @Validated @RequestBody ParagraphSpaceReq req) {
+            @Validated @RequestBody ParagraphSpaceReq req
+    ) {
         authorService.changeParagraphSpace(memberId, req.getParagraphSpace());
         return ApiCsResponse.success();
     }

@@ -21,9 +21,9 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override
-    public void setParagraphLike(Long paragraphId, Long authorId) {
+    public void setParagraphLike(Long paragraphId, Long memberId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
@@ -36,9 +36,9 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
     }
 
     @Override
-    public void deleteParagraphLike(Long paragraphId, Long authorId) {
+    public void deleteParagraphLike(Long paragraphId, Long memberId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Optional<ParagraphLike> byParagraphIdAndAuthorId = paragraphLikeRepository.findByParagraphIdAndAuthorId(paragraphId, authorId);
+        Optional<ParagraphLike> byParagraphIdAndAuthorId = paragraphLikeRepository.findByParagraphIdAndAuthorId(paragraphId, memberId);
 
         if (byParagraphIdAndAuthorId.isPresent()) {
             ParagraphLike paragraphLike = byParagraphIdAndAuthorId.get();

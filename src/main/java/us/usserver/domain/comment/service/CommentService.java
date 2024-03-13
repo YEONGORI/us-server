@@ -10,10 +10,10 @@ public interface CommentService {
     GetCommentResponse getCommentsOfNovel(Long novelId);
     GetCommentResponse getCommentsOfChapter(Long chapterId);
 
-    CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent);
-    CommentInfo writeCommentOnChapter(Long chapterId, Long authorId, CommentContent commentContent);
+    CommentInfo writeCommentOnNovel(Long novelId, Long memberId, CommentContent commentContent);
+    CommentInfo writeCommentOnChapter(Long chapterId, Long memberId, CommentContent commentContent);
 
-    GetCommentResponse getCommentsByAuthor(Long authorId);
+    GetCommentResponse getCommentsByAuthor(Long memberId);
 
-    void deleteComment(Long commentId, Long authorId);
+    void deleteComment(Long commentId, Long memberId);
 }

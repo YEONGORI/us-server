@@ -17,5 +17,7 @@ public interface NovelLikeRepository extends JpaRepository<NovelLike, Long>, Nov
 
     Optional<NovelLike> findFirstByNovelAndAuthor(Novel novel, Author author);
 
+    Optional<NovelLike> findByNovelIdAndAuthorId(Long novelId, Long AuthorId);
+
     Integer countAllByNovel(Novel novel);
 }

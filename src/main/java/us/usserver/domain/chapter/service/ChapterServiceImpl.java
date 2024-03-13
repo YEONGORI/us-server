@@ -15,6 +15,7 @@ import us.usserver.domain.chapter.repository.ScoreRepository;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.service.ParagraphService;
@@ -47,11 +48,11 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long memberId, Long chapterId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Novel novel = entityFacade.getNovel(novelId);
-        ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(authorId, chapterId);
+        ParagraphsOfChapter paragraphs = paragraphService.getParagraphs(author.getId(), chapterId);
 
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
         Integer commentCnt = commentRepository.countAllByChapter(chapter);
@@ -90,9 +91,9 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public void createChapter(Long novelId, Long authorId) {
+    public void createChapter(Long novelId, Long memberId) {
         Novel novel = entityFacade.getNovel(novelId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Integer curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
 
         if (!novel.getMainAuthor().getId().equals(author.getId())) {

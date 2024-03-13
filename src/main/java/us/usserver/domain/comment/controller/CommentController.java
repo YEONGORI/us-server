@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,11 +79,11 @@ public class CommentController {
     })
     @PostMapping("/novel/{novelId}")
     public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnNovel(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId,
             @Validated @RequestBody CommentContent commentContent
     ) {
-        Long authorId = 500L;
-        CommentInfo comment = commentService.writeCommentOnNovel(novelId, authorId, commentContent);
+        CommentInfo comment = commentService.writeCommentOnNovel(novelId, memberId, commentContent);
 
         ApiCsResponse<CommentInfo> response = ApiCsResponse.success(comment);
         URI redirectUri = URI.create("/novel/" + novelId);
@@ -103,18 +104,15 @@ public class CommentController {
     })
     @PostMapping("/chapter/{chapterId}")
     public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnChapter(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long chapterId,
             @Validated @RequestBody CommentContent commentContent
     ) {
-        Long authorId = 500L;
-        CommentInfo comment = commentService.writeCommentOnChapter(chapterId, authorId, commentContent);
+        CommentInfo comment = commentService.writeCommentOnChapter(chapterId, memberId, commentContent);
 
         ApiCsResponse<CommentInfo> response = ApiCsResponse.success(comment);
         URI redirectUri = URI.create("/chapter/" + chapterId);
-
-        return ResponseEntity
-                .created(redirectUri)
-                .body(response);
+        return ResponseEntity.created(redirectUri).body(response);
     }
 
     @Operation(summary = "내가 작성한 댓글 불러오기", description = "내가 작성한 모든 댓글 불러오기")
@@ -126,9 +124,8 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/author")
-    public ApiCsResponse<GetCommentResponse> getCommentsOfAuthor() {
-        Long authorId = 500L; // TODO: 토큰 에서 뺴올 예정
-        GetCommentResponse comments = commentService.getCommentsByAuthor(authorId);
+    public ApiCsResponse<GetCommentResponse> getCommentsOfAuthor(@AuthenticationPrincipal Long memberId) {
+        GetCommentResponse comments = commentService.getCommentsByAuthor(memberId);
         return ApiCsResponse.success(comments);
     }
 
@@ -144,9 +141,11 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class)))
     })
     @DeleteMapping("/{commentId}")
-    public ApiCsResponse<Void> deleteComment(@PathVariable Long commentId) {
-        Long authorId = 500L;
-        commentService.deleteComment(commentId, authorId);
+    public ApiCsResponse<Void> deleteComment(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(commentId, memberId);
         return ApiCsResponse.success();
     }
 }

@@ -53,8 +53,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentInfo writeCommentOnNovel(Long novelId, Long authorId, CommentContent commentContent) {
-        Author author = entityFacade.getAuthor(authorId);
+    public CommentInfo writeCommentOnNovel(Long novelId, Long memberId, CommentContent commentContent) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Novel novel = entityFacade.getNovel(novelId);
         Integer ZeroLikeCnt = 0;
 
@@ -74,8 +74,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentInfo writeCommentOnChapter(Long chapterId, Long authorId, CommentContent commentContent) {
-        Author author = entityFacade.getAuthor(authorId);
+    public CommentInfo writeCommentOnChapter(Long chapterId, Long memberId, CommentContent commentContent) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Novel novel = chapter.getNovel();
         Integer ZeroLikeCnt = 0;
@@ -101,8 +101,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public GetCommentResponse getCommentsByAuthor(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public GetCommentResponse getCommentsByAuthor(Long memberId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         List<Comment> commentsByAuthor = commentJpaRepository.findAllByAuthor(author);
 
         List<CommentInfo> commentInfos = commentsByAuthor.stream()
@@ -118,9 +118,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Long commentId, Long authorId) {
+    public void deleteComment(Long commentId, Long memberId) {
         Comment comment = entityFacade.getComment(commentId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         if (!comment.getAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);

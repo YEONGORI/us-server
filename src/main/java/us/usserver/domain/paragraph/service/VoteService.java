@@ -5,7 +5,7 @@ import us.usserver.domain.member.entity.Member;
 
 @Service
 public interface VoteService {
-    void voting(Member member, Long paragraphId);
+    void voting(Long memberId, Long paragraphId);
 
-    void unvoting(Member member, Long voteId);
+    void unvoting(Long memberId, Long voteId);
 }

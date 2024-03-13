@@ -36,7 +36,6 @@ import us.usserver.global.response.ApiCsResponse;
 @RequestMapping("/novel")
 @RequiredArgsConstructor
 public class NovelController {
-    //TODO: Swagger 공통적인 UsApiResponse 적용 방법 찾아보기!
     private final NovelService novelService;
 
     @Operation(summary = "소설 생성", description = "작가가 소설을 생성하는 API")
@@ -45,8 +44,11 @@ public class NovelController {
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PostMapping
-    public ApiCsResponse<NovelInfo> createNovel(@AuthenticationPrincipal Member member, @Valid @RequestBody NovelBlueprint novelBlueprint) {
-        NovelInfo novelInfo = novelService.createNovel(member, novelBlueprint);
+    public ApiCsResponse<NovelInfo> createNovel(
+            @AuthenticationPrincipal Long memberId,
+            @Valid @RequestBody NovelBlueprint novelBlueprint
+    ) {
+        NovelInfo novelInfo = novelService.createNovel(memberId, novelBlueprint);
         return ApiCsResponse.success(novelInfo);
 
     }
@@ -73,7 +75,6 @@ public class NovelController {
     })
     @GetMapping("/{novelId}/detail")
     public ApiCsResponse<NovelDetailInfo> getNovelDetailInfo(@PathVariable Long novelId) {
-
         NovelDetailInfo detailInfo = novelService.getNovelDetailInfo(novelId);
         return ApiCsResponse.success(detailInfo);
     }
@@ -89,11 +90,11 @@ public class NovelController {
     })
     @PatchMapping("/{novelId}/synopsis")
     public ResponseEntity<ApiCsResponse<String>> modifyNovelSynopsis(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId,
             @Validated @RequestBody NovelSynopsis req
     ) {
-        java.lang.Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        String synopsis = novelService.modifyNovelSynopsis(novelId, authorId, req.getSynopsis());
+        String synopsis = novelService.modifyNovelSynopsis(novelId, memberId, req.getSynopsis());
         ApiCsResponse<String> response = ApiCsResponse.success(synopsis);
         return ResponseEntity.created(URI.create("")).body(response);
     }
@@ -107,9 +108,10 @@ public class NovelController {
     })
     @GetMapping("/main")
     //TODO: 추후에 security+jwt 적용시 URL 변경 예정
-    public ApiCsResponse<MainPageResponse> getHomeNovelListInfo(@AuthenticationPrincipal Member member) {
-
-        MainPageResponse homeNovelList = novelService.getMainPage(member);
+    public ApiCsResponse<MainPageResponse> getHomeNovelListInfo(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        MainPageResponse homeNovelList = novelService.getMainPage(memberId);
         return ApiCsResponse.success(homeNovelList);
     }
 
@@ -121,10 +123,10 @@ public class NovelController {
     })
     @GetMapping("/main/more")
     public ApiCsResponse<MoreNovelResponse> getMoreNovels(
-            @AuthenticationPrincipal Member member,
+            @AuthenticationPrincipal Long memberId,
             @Valid MoreNovelRequest moreNovelRequest
     ) {
-        MoreNovelResponse moreNovels = novelService.getMoreNovels(member, moreNovelRequest);
+        MoreNovelResponse moreNovels = novelService.getMoreNovels(memberId, moreNovelRequest);
         return ApiCsResponse.success(moreNovels);
     }
 
@@ -134,8 +136,10 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/main/more/read")
-    public ApiCsResponse<MoreNovelResponse> readNovel(@AuthenticationPrincipal Member member) {
-        MoreNovelResponse moreNovelResponse = novelService.readMoreNovel(member);
+    public ApiCsResponse<MoreNovelResponse> readNovel(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        MoreNovelResponse moreNovelResponse = novelService.readMoreNovel(memberId);
         return ApiCsResponse.success(moreNovelResponse);
 
     }
@@ -146,8 +150,11 @@ public class NovelController {
             content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
     })
     @GetMapping("/search")
-    public ApiCsResponse<NovelPageInfoResponse> searchNovel(@AuthenticationPrincipal Member member, @Valid SearchNovelReq searchNovelReq) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(member, searchNovelReq);
+    public ApiCsResponse<NovelPageInfoResponse> searchNovel(
+            @AuthenticationPrincipal Long memberId,
+            @Valid SearchNovelReq searchNovelReq
+    ) {
+        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(memberId, searchNovelReq);
         return ApiCsResponse.success(novelPageInfoResponse);
     }
 
@@ -158,11 +165,11 @@ public class NovelController {
     })
     @PatchMapping("/{novelId}/author-description")
     public ApiCsResponse<AuthorDescription> modifyAuthorDescription(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId,
             @Validated @RequestBody AuthorDescription req
     ) {
-        java.lang.Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        AuthorDescription description = novelService.modifyAuthorDescription(novelId, authorId, req);
+        AuthorDescription description = novelService.modifyAuthorDescription(novelId, memberId, req);
         return ApiCsResponse.success(description);
     }
 

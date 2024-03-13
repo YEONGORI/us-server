@@ -42,6 +42,15 @@ public class EntityFacade {
         return authorById.get();
     }
 
+    public Author getAuthorByMemberId(Long memberId) {
+        Optional<Author> authorById = authorRepository.getAuthorById(memberId);
+        if (authorById.isEmpty()) {
+            throw new BaseException(ErrorCode.AUTHOR_NOT_FOUND);
+        }
+        return authorById.get();
+    }
+
+
     public Member getMember(Long memberId) {
         Optional<Member> memberById = memberRepository.getMemberById(memberId);
         if (memberById.isEmpty()) {

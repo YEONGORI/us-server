@@ -24,9 +24,9 @@ public class VoteServiceImpl implements VoteService {
     private final VoteRepository voteRepository;
 
     @Override
-    public void voting(Member member, Long paragraphId) {
+    public void voting(Long memberId, Long paragraphId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = member.getAuthor(); // TODO: 로그인 후 이용 가능합니다.
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         List<Vote> allByAuthor = voteRepository.findAllByAuthor(author);
         if (allByAuthor.stream()
@@ -43,10 +43,9 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void unvoting(Member member, Long voteId) {
+    public void unvoting(Long memberId, Long voteId) {
         Vote vote = entityFacade.getVote(voteId);
-        Author author = member.getAuthor(); // TODO: 로그인 후 이용 가능합니다.
-//        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         if (!vote.getAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);

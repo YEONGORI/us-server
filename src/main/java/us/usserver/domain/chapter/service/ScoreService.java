@@ -6,7 +6,7 @@ import us.usserver.domain.chapter.dto.PostScore;
 
 @Service
 public interface ScoreService {
-    void postScore(Long chatperId, Long authorID, PostScore postScore);
+    void postScore(Long chapterId, Long memberId, PostScore postScore);
 
     Double getChapterScore(Chapter chapter);
 }

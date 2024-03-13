@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,9 +41,11 @@ public class ParagraphLikeController {
             )
     })
     @PostMapping("/{paragraphId}")
-    public ApiCsResponse<Void> setLike(@PathVariable Long paragraphId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        paragraphLikeService.setParagraphLike(paragraphId, authorId);
+    public ApiCsResponse<Void> setLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long paragraphId
+    ) {
+        paragraphLikeService.setParagraphLike(paragraphId, memberId);
         return ApiCsResponse.success();
     }
 
@@ -55,9 +58,11 @@ public class ParagraphLikeController {
             )
     })
     @DeleteMapping("/{paragraphId}")
-    public ApiCsResponse<Void> deleteLike(@PathVariable Long paragraphId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        paragraphLikeService.deleteParagraphLike(paragraphId, authorId);
+    public ApiCsResponse<Void> deleteLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long paragraphId
+    ) {
+        paragraphLikeService.deleteParagraphLike(paragraphId, memberId);
         return ApiCsResponse.success();
     }
 }

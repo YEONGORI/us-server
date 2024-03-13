@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,11 +39,11 @@ public class ChapterController {
     })
     @GetMapping("/{novelId}/{chapterId}")
     public ApiCsResponse<ChapterDetailInfo> getChapterDetailInfo(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId,
             @PathVariable Long chapterId
     ) {
-        Long authorId = 500L; // TODO 토큰으로 교체 예정
-        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, authorId, chapterId);
+        ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novelId, memberId, chapterId);
         return ApiCsResponse.success(chapterDetailInfo);
     }
 
@@ -62,10 +63,10 @@ public class ChapterController {
     })
     @PostMapping("/{novelId}")
     public ApiCsResponse<Void> createChapter(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId
     ) {
-        Long authorId = 500L; // TODO: 토큰에서 가져올 예정
-        chapterService.createChapter(novelId, authorId);
+        chapterService.createChapter(novelId, memberId);
         return ApiCsResponse.success(); // TODO : created 복구
     }
 }

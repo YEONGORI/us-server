@@ -18,8 +18,8 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
 
     @Override
-    public void postLike(Long commentId, Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void postLike(Long commentId, Long memberId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Comment comment = entityFacade.getComment(commentId);
 
         CommentLike commentLike = CommentLike.builder().comment(comment).author(author).build();
@@ -27,8 +27,8 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     }
 
     @Override
-    public void deleteLike(Long commentId, Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void deleteLike(Long commentId, Long memberId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Comment comment = entityFacade.getComment(commentId);
 
         CommentLike commentLike = commentLikeRepository.findByComment(comment)

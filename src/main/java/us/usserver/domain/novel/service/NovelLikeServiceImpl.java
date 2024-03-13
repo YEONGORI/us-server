@@ -21,16 +21,15 @@ public class NovelLikeServiceImpl implements NovelLikeService {
 
     @Override
 //    @CacheEvict(cacheNames = "novelLikeCnt", key = "#novelId")
-    public void setNovelLike(Long novelId, Long authorId) {
+    public void setNovelLike(Long novelId, Long memberId) {
         Novel novel = entityFacade.getNovel(novelId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         if (novelLikeRepository.findFirstByNovelAndAuthor(novel, author).isPresent()) {
             throw new BaseException(ErrorCode.LIKE_DUPLICATED);
         }
 
-        NovelLike novelLike = NovelLike
-                .builder()
+        NovelLike novelLike = NovelLike.builder()
                 .novel(novel)
                 .author(author)
                 .build();
@@ -39,12 +38,8 @@ public class NovelLikeServiceImpl implements NovelLikeService {
 
     @Override
 //    @CacheEvict(cacheNames = "novelLikeCnt", key = "#novelId")
-    public void deleteNovelLike(Long novelId, Long authorId) {
-        Novel novel = entityFacade.getNovel(novelId);
-        Author author = entityFacade.getAuthor(authorId);
-
-        // TODO : 처음부터 찾아오면 아이디 두개로 안됨?
-        Optional<NovelLike> novelLike = novelLikeRepository.findFirstByNovelAndAuthor(novel, author);
+    public void deleteNovelLike(Long novelId, Long memberId) {
+        Optional<NovelLike> novelLike = novelLikeRepository.findByNovelIdAndAuthorId(novelId, memberId);
         novelLike.ifPresent(novelLikeRepository::delete);
     }
 }

@@ -42,10 +42,10 @@ public class VoteController {
     })
     @PostMapping("/{paragraphId}")
     public ApiCsResponse<Void> voting(
-            @AuthenticationPrincipal Member member,
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long paragraphId
     ) {
-        voteService.voting(member, paragraphId);
+        voteService.voting(memberId, paragraphId);
         return ApiCsResponse.success();
     }
 
@@ -61,10 +61,10 @@ public class VoteController {
     })
     @DeleteMapping("/{paragraphId}")
     public ApiCsResponse<Void> cancelVote(
-            @AuthenticationPrincipal Member member,
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long paragraphId
     ) {
-        voteService.unvoting(member, paragraphId);
+        voteService.unvoting(memberId, paragraphId);
         return ApiCsResponse.success();
     }
 }

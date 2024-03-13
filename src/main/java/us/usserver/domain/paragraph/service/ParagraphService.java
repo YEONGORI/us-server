@@ -11,11 +11,11 @@ import us.usserver.domain.paragraph.dto.ParagraphInVoting;
 public interface ParagraphService {
     ParagraphsOfChapter getParagraphs(Long authorId, Long chapterId);
 
-    GetParagraphResponse getInVotingParagraphs(Member member, Long chapterId);
+    GetParagraphResponse getInVotingParagraphs(Long memberId, Long chapterId);
 
-    ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req);
+    ParagraphInVoting postParagraph(Long memberId, Long chapterId, PostParagraphReq req);
 
-    void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId);
+    void selectParagraph(Long memberId, Long novelId, Long chapterId, Long paragraphId);
 
-    void reportParagraph(Long authorId, Long paragraphId);
+    void reportParagraph(Long memberId, Long paragraphId);
 }

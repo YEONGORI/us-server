@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,10 +39,11 @@ public class NovelLikeController {
                     content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class)))
     })
     @PostMapping("/{novelId}")
-    public ApiCsResponse<Void> setLike(@PathVariable Long novelId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-
-        novelLikeService.setNovelLike(novelId, authorId);
+    public ApiCsResponse<Void> setLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId
+    ) {
+        novelLikeService.setNovelLike(novelId, memberId);
         return ApiCsResponse.success();
     }
 
@@ -54,9 +56,11 @@ public class NovelLikeController {
             )
     })
     @DeleteMapping("/{novelId}")
-    public ApiCsResponse<Void> deleteLike(@PathVariable Long novelId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        novelLikeService.deleteNovelLike(novelId, authorId);
+    public ApiCsResponse<Void> deleteLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId
+    ) {
+        novelLikeService.deleteNovelLike(novelId, memberId);
         return ApiCsResponse.success();
     }
 }

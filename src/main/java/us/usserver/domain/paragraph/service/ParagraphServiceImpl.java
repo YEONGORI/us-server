@@ -62,11 +62,11 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public GetParagraphResponse getInVotingParagraphs(Member member, Long chapterId) {
+    public GetParagraphResponse getInVotingParagraphs(Long memberId, Long chapterId) {
         Chapter chapter = entityFacade.getChapter(chapterId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
-        // paragraph랑 member 정보를 넘겨서
+        // TODO: 여기서 내가 투표한 패러그래프 찾아야함
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
                 .map(paragraph -> ParagraphInVoting.fromParagraph(
@@ -79,8 +79,8 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
-        Author author = entityFacade.getAuthor(authorId);
+    public ParagraphInVoting postParagraph(Long memberId, Long chapterId, PostParagraphReq req) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
@@ -112,13 +112,13 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId) {
+    public void selectParagraph(Long memberId, Long novelId, Long chapterId, Long paragraphId) {
         Novel novel = entityFacade.getNovel(novelId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
-        if (!novel.getMainAuthor().getId().equals(authorId)) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
         if (!novel.getChapters().contains(chapter)) {
@@ -143,11 +143,9 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public void reportParagraph(Long authorId, Long paragraphId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void reportParagraph(Long memberId, Long paragraphId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-
-
     }
 
     private ParagraphsOfChapter getInitialChParagraph() {

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ParagraphLikeService {
-    void setParagraphLike(Long paragraphId, Long authorId);
+    void setParagraphLike(Long paragraphId, Long memberId);
 
-    void deleteParagraphLike(Long paragraphId, Long authorId);
+    void deleteParagraphLike(Long paragraphId, Long memberId);
 }
