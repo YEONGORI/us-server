@@ -18,6 +18,7 @@ import us.usserver.domain.member.dto.parameter.AppleParams;
 import us.usserver.domain.member.dto.parameter.KakaoParams;
 import us.usserver.domain.member.dto.parameter.NaverParams;
 import us.usserver.domain.member.dto.req.OauthRequest;
+import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.service.OauthService;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.response.ApiCsResponse;
@@ -61,7 +62,7 @@ public class OauthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(tokenProvider.getAccessHeader(), memberInfoDto.accessToken());
         httpHeaders.add(tokenProvider.getRefreshHeader(), memberInfoDto.refreshToken());
-        return ResponseEntity.ok().headers(httpHeaders).body(new LoginDto(memberInfoDto.userId()));
+        return ResponseEntity.ok().headers(httpHeaders).body(new LoginDto(memberInfoDto.memberId()));
     }
 
     @ApiResponses(value = {
@@ -71,8 +72,8 @@ public class OauthController {
     })
     @GetMapping("/renew-token")
     public ApiCsResponse<Void> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
-        String refreshToken = tokenProvider.extractToken(request, "RefreshToken");
-        String accessToken = tokenProvider.renewToken(refreshToken);
+        String refreshToken = tokenProvider.extractToken(request, TokenType.REFRESH_TOKEN);
+        String accessToken = tokenProvider.reissueAccessToken(refreshToken);
 
         servletResponse.addHeader(tokenProvider.getAccessHeader(), "Bearer " + accessToken);
         return ApiCsResponse.success();

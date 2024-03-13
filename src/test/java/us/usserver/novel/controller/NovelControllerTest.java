@@ -62,7 +62,7 @@ class NovelControllerTest {
         member = MemberMother.generateMember();
         author = AuthorMother.generateAuthor();
         author.setMember(member);
-        author.setIdForTest(defaultId);
+//        author.setIdForTest(defaultId);
 
         novel = NovelMother.generateNovel(author);
         novel.setIdForTest(defaultId);

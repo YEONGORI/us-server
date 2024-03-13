@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,9 +34,8 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/viewed") // TODO: 내가 쓴 글
-    public ApiCsResponse<GetParagraphNote> wroteParagraphs() {
-        Long authorId = 500L;
-        GetParagraphNote paragraphPreviews = noteService.wroteParagraphs(authorId);
+    public ApiCsResponse<GetParagraphNote> wroteParagraphs(@AuthenticationPrincipal Long memberId) {
+        GetParagraphNote paragraphPreviews = noteService.wroteParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
     }
 
@@ -48,9 +48,8 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/voted") // TODO: 내가 투표한 글
-    public ApiCsResponse<GetParagraphNote> votedParagraphs() {
-        Long authorId = 500L;
-        GetParagraphNote paragraphPreviews = noteService.votedParagraphs(authorId);
+    public ApiCsResponse<GetParagraphNote> votedParagraphs(@AuthenticationPrincipal Long memberId) {
+        GetParagraphNote paragraphPreviews = noteService.votedParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
     }
     
@@ -63,9 +62,8 @@ public class NoteController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/liked") // TODO: 내가 좋아요한 글
-    public ApiCsResponse<GetParagraphNote> likedNovels() {
-        Long authorId = 500L;
-        GetParagraphNote paragraphPreviews = noteService.likedParagraphs(authorId);
+    public ApiCsResponse<GetParagraphNote> likedNovels(@AuthenticationPrincipal Long memberId) {
+        GetParagraphNote paragraphPreviews = noteService.likedParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
     }
 }

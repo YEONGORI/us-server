@@ -9,19 +9,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.author.dto.req.FontSizeReq;
 import us.usserver.domain.author.dto.req.ParagraphSpaceReq;
 import us.usserver.domain.author.dto.req.UpdateAuthorReq;
 import us.usserver.domain.author.service.AuthorService;
-import us.usserver.domain.member.entity.Member;
+import us.usserver.global.response.ApiCsResponse;
 import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.exception.FontSizeOutOfRangeException;
-import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "사용자 정보 API")
 @RequiredArgsConstructor
@@ -36,9 +31,10 @@ public class AuthorController {
             @ApiResponse(responseCode = "400", description = "작가가 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @PatchMapping
-    public ApiCsResponse<Void> updateAuthor(@AuthenticationPrincipal Member member,
-                                                         @ModelAttribute UpdateAuthorReq updateAuthorReq) {
-        authorService.updateAuthor(member.getId(), updateAuthorReq);
+    public ApiCsResponse<Void> updateAuthor(
+            @AuthenticationPrincipal Long memberId,
+            @ModelAttribute UpdateAuthorReq updateAuthorReq) {
+        authorService.updateAuthor(memberId, updateAuthorReq);
         return ApiCsResponse.success();
     }
 
@@ -49,9 +45,10 @@ public class AuthorController {
                     content = @Content(schema = @Schema(implementation = FontSizeOutOfRangeException.class)))
     })
     @PatchMapping("/fontsize")
-    public ApiCsResponse<Void> changeFontSize(@Validated @RequestBody FontSizeReq req) {
-        Long authorId = 500L;
-        authorService.changeFontSize(authorId, req.getFontSize());
+    public ApiCsResponse<Void> changeFontSize(
+            @AuthenticationPrincipal Long memberId,
+            @Validated @RequestBody FontSizeReq req) {
+        authorService.changeFontSize(memberId, req.getFontSize());
         return ApiCsResponse.success();
     }
 
@@ -62,9 +59,10 @@ public class AuthorController {
                     content = @Content(schema = @Schema(implementation = FontSizeOutOfRangeException.class)))
     })
     @PatchMapping("/paragraph-space")
-    public ApiCsResponse<Void> changeParagraphSpace(@Validated @RequestBody ParagraphSpaceReq req) {
-        Long authorId = 500L;
-        authorService.changeParagraphSpace(authorId, req.getParagraphSpace());
+    public ApiCsResponse<Void> changeParagraphSpace(
+            @AuthenticationPrincipal Long memberId,
+            @Validated @RequestBody ParagraphSpaceReq req) {
+        authorService.changeParagraphSpace(memberId, req.getParagraphSpace());
         return ApiCsResponse.success();
     }
 }

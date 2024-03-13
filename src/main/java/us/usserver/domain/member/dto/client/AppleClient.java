@@ -10,7 +10,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import us.usserver.domain.member.constant.OauthProvider;
-import us.usserver.domain.member.dto.member.GoogleMember;
+import us.usserver.domain.member.dto.member.AppleMember;
 import us.usserver.domain.member.dto.member.OauthMember;
 import us.usserver.domain.member.dto.parameter.OauthParams;
 import us.usserver.domain.member.dto.token.AppleToken;
@@ -87,6 +87,6 @@ public class AppleClient implements OauthClient{
         // 헤더 + 바디
         HttpEntity<MultiValueMap<String, String>> memberInfoRequest = new HttpEntity<>(body, httpHeaders);
 
-        return rt.postForObject(url, memberInfoRequest, GoogleMember.class);
+        return rt.postForObject(url, memberInfoRequest, AppleMember.class);
     }
 }

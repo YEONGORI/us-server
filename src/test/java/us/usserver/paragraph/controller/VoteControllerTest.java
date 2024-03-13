@@ -98,7 +98,7 @@ class VoteControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
-        author.setIdForTest(defaultId);
+//        author.setIdForTest(defaultId);
         authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);

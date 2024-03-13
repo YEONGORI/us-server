@@ -30,11 +30,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class Author {
     @Id
-    @Column(name = "member_id")
     private Long id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -91,15 +90,19 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    public void setIdForTest(Long id) {
+    private Author(Long id, Member member, String nickname) {
         this.id = id;
+        this.member = member;
+        this.nickname = nickname;
+    }
+
+    public static Author createAuthorInSocialLogin(Long id, Member member, String nickname) {
+        return new Author(id, member, nickname);
     }
 
     public void addAuthority(Authority authority) {
-        authority.setAuthor(this);
         this.authorities.add(authority);
     }
-
     public void addReadNovel(ReadNovel readNovel) {
         this.readNovels.add(readNovel);
     }

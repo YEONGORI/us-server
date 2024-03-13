@@ -87,7 +87,7 @@ public class KakaoClient implements OauthClient{
 
         //바디 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("property_keys",  "[\"kakao_account.email\", \"kakao_account.profile\"]");
+        body.add("property_keys",  "[\"kakao_account.email\"]");
 
         //헤더 + 바디
         HttpEntity<MultiValueMap<String, String>> memberInfoRequest = new HttpEntity<>(body, httpHeaders);

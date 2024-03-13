@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.author.dto.res.GetParagraphNote;
 import us.usserver.domain.author.dto.ParagraphPreview;
@@ -29,8 +30,9 @@ public class NoteServiceImpl implements NoteService {
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override
-    public GetParagraphNote wroteParagraphs(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public GetParagraphNote wroteParagraphs(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
 
         List<Paragraph> paragraphs = paragraphRepository.findAllByAuthor(author);
         List<ParagraphPreview> paragraphPreviews = paragraphs.stream().map(paragraph -> ParagraphPreview.fromParagraph(
@@ -43,8 +45,9 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public GetParagraphNote votedParagraphs(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public GetParagraphNote votedParagraphs(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
 
         List<Vote> votes = voteJpaRepository.findAllByAuthor(author);
         List<ParagraphPreview> paragraphPreviews = votes.stream().map(vote -> ParagraphPreview.fromParagraph(
@@ -57,8 +60,9 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public GetParagraphNote likedParagraphs(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public GetParagraphNote likedParagraphs(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
 
         List<ParagraphLike> paragraphLikes = paragraphLikeRepository.findAllByAuthor(author);
         List<ParagraphPreview> paragraphPreviews = paragraphLikes.stream().map(paragraphLike -> ParagraphPreview.fromParagraph(

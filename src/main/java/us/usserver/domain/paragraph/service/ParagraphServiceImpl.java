@@ -71,7 +71,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
                 .map(paragraph -> ParagraphInVoting.fromParagraph(
                         paragraph,
-                        voteRepository.countAllByParagraph(paragraph)),
+                        voteRepository.countAllByParagraph(paragraph))
                         )
                 .toList();
 
@@ -207,6 +207,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         if (!isAuthorized) {
             Authority authority = new Authority();
             author.addAuthority(authority);
+            authority.setAuthor(author);
             authority.takeNovel(novel);
             authorityRepository.save(authority);
         }

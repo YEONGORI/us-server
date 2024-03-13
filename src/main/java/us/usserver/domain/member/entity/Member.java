@@ -21,8 +21,10 @@ import us.usserver.domain.member.constant.Gender;
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long id;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Author author;
 
     @NotBlank
     private String socialId;
@@ -45,8 +47,18 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
-    private Author author;
+    private Member(String socialId, OauthProvider oauthProvider, String email, Integer age, Gender gender, Role role) {
+        this.socialId = socialId;
+        this.oauthProvider = oauthProvider;
+        this.email = email;
+        this.age = age;
+        this.gender = gender;
+        this.role = role;
+    }
+
+    public static Member createMemberInSocialLogin(String socialId, OauthProvider oauthProvider, String email, Integer age, Gender gender, Role role) {
+        return new Member(socialId, oauthProvider, email, age, gender, role);
+    }
 
     public void setAuthor(Author author) {
         this.author = author;

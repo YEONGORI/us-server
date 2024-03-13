@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.service.MemberService;
 import us.usserver.domain.member.service.TokenProvider;
@@ -29,8 +30,10 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     @PostMapping("/logout")
     public ApiCsResponse<Void> logoutMember(HttpServletRequest request) {
-        String accessToken = tokenProvider.extractToken(request, "AccessToken");
-        memberService.logout(accessToken);
+        String accessToken = tokenProvider.extractToken(request, TokenType.ACCESS_TOKEN);
+        String refreshToken = tokenProvider.extractToken(request, TokenType.REFRESH_TOKEN);
+
+        memberService.logout(accessToken, refreshToken);
         return ApiCsResponse.success();
     }
 

@@ -6,19 +6,21 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
 import us.usserver.global.utils.RedisUtils;
+
+import java.time.Duration;
+import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Getter
@@ -31,111 +33,88 @@ public class TokenProvider {
     private Long accessTokenExpirationPeriod;
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
+    @Value("${jwt.refresh.duration}")
+    private Long refreshTokenDuration;
     @Value("${jwt.access.header}")
     private String accessHeader;
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
-    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
-    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String BEARER = "Bearer ";
 
     private final MemberRepository memberRepository;
     private final EntityFacade entityFacade;
     private final RedisUtils redisUtils;
 
-    /**
-     * AccessToken 생성
-     */
-    public String createAccessToken(Author author) {
+    public String issueAccessToken(Long memberId) {
         return JWT.create()
-                .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withClaim("id", author.getId())
+                .withSubject(TokenType.ACCESS_TOKEN.getName())
+                .withClaim("id", memberId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    /**
-     * RefreshToken 생성
-     */
-    public String createRefreshToken(Author author) {
+    public String issueRefreshToken(Long memberId) {
         return JWT.create()
-                .withSubject(REFRESH_TOKEN_SUBJECT)
-                .withClaim("id", author.getId())
+                .withSubject(TokenType.REFRESH_TOKEN.getName())
+                .withClaim("id", memberId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    /**
-     * Request Header에서 Token 가져오기
-     */
-    public String extractToken(HttpServletRequest request, String tokenType) {
+    public String reissueAccessToken(String refreshToken) {
+        DecodedJWT decodedJWT;
+        try {
+            decodedJWT = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(refreshToken);
+        } catch (JWTVerificationException e) {
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION); // TODO: 재 로그인 유도
+        }
+
+        Long memberId = decodedJWT.getClaim("id").asLong();
+        Long value = redisUtils.getData(refreshToken);
+
+        if (memberId == null || value == null)
+            throw new BaseException(ErrorCode.TOKEN_NOT_FOUND); // TODO: 재 로그인 유도
+        if (!memberId.equals(value))
+            throw new BaseException(ErrorCode.TOKEN_VERIFICATION); // TODO: 재 로그인 유도
+
+        return issueAccessToken(memberId);
+    }
+
+    public void updateRefreshToken(String refreshToken, Long memberId) {
+        redisUtils.setDateWithExpiration(refreshToken, memberId, Duration.ofDays(refreshTokenDuration));
+    }
+
+    public String extractToken(HttpServletRequest request, TokenType tokenType) {
         Optional<String> requestToken = Optional.empty();
 
-        if (tokenType.equals(ACCESS_TOKEN_SUBJECT)) {
+        if (tokenType == TokenType.ACCESS_TOKEN) {
             requestToken = Optional.ofNullable(request.getHeader(accessHeader))
                     .filter(token -> token.startsWith(BEARER))
                     .map(token -> token.substring(7));
-        } else if (tokenType.equals(REFRESH_TOKEN_SUBJECT)) {
+        } else if (tokenType == TokenType.REFRESH_TOKEN) {
             requestToken = Optional.ofNullable(request.getHeader(refreshHeader))
                     .filter(token -> token.startsWith(BEARER))
                     .map(token -> token.substring(7));
         }
-
         return requestToken.orElse(null);
     }
 
-    /**
-     * redis <- refreshToken update
-     */
-    public void updateRefreshToken(String id, String refreshToken) {
-        redisUtils.setDateExpire(id, refreshToken, refreshTokenExpirationPeriod);
-    }
-
-    /**
-     * token verify
-     */
-    public DecodedJWT isTokenValid(String token) {
+    public DecodedJWT decodeJWT(String accessToken, String refreshToken) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
+            return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
         } catch (TokenExpiredException e) {
-            log.error("token expired");
-            throw new BaseException(ErrorCode.TOKEN_EXPIRED);
+            log.error("AccessToken is expired: ${}", accessToken);
+            String newAccesstoken = reissueAccessToken(refreshToken);
+            return decodeJWT(newAccesstoken, refreshToken);
         } catch (JWTVerificationException e) {
             log.error("token verify fail");
             throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
-        } catch (Exception e) {
-            throw new RuntimeException("Token Error!");
         }
     }
 
-    /**
-     * token 유효 기간
-     */
     public Long getExpiration(String token) {
-        Date expiresAt = JWT
-                .decode(token)
-                .getExpiresAt();
+        Date expiresAt = JWT.decode(token).getExpiresAt();
         return expiresAt.getTime() - new Date().getTime();
     }
-
-    /**
-     * token 재발급
-     */
-    public String renewToken(String refreshToken) {
-        //request refreshToken -> User SocialId를 get -> redis refreshToken 유효한지 찾아서 검사
-        DecodedJWT decodedJWT = isTokenValid(refreshToken);
-        Long id = decodedJWT.getClaim("id").asLong();
-        String findToken = redisUtils.getData(String.valueOf(id));
-
-        if (findToken == null) {
-            throw new BaseException(ErrorCode.TOKEN_NOT_FOUND);
-        } else if (!findToken.equals(refreshToken)) {
-            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
-        }
-
-        Author author = entityFacade.getAuthor(id);
-        return createAccessToken(author);
-    }
-
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,11 +36,11 @@ public class ScoreController {
     })
     @PostMapping("/{chapterId}")
     public ApiCsResponse<Void> setScore(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long chapterId,
             @Validated @RequestBody PostScore score
-            ) {
-        Long authorId = 500L;
-        scoreService.postScore(chapterId, authorId, score);
+    ) {
+        scoreService.postScore(chapterId, memberId, score);
         return ApiCsResponse.success();
     }
 }

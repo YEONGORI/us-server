@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,16 +36,17 @@ public class BookshelfController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/viewed") // 내가 최근에 본 소설
-    public ApiCsResponse<BookshelfDefaultResponse> recentViewedNovels() {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(authorId);
+    public ApiCsResponse<BookshelfDefaultResponse> recentViewedNovels(@AuthenticationPrincipal Long memberId) {
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.recentViewedNovels(memberId);
         return ApiCsResponse.success(bookshelfDefaultResponse);
     }
 
-    @DeleteMapping("/viewed/{novelId}") // 내가 최근에 본 소설 삭제
-    public ApiCsResponse<Void> deleteRecentViewedNovels(@PathVariable Long readNovelId) {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteRecentViewedNovels(authorId, readNovelId);
+    @DeleteMapping("/viewed/{readNovelId}") // 내가 최근에 본 소설 삭제
+    public ApiCsResponse<Void> deleteRecentViewedNovels(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long readNovelId
+    ) {
+        bookshelfService.deleteRecentViewedNovels(memberId, readNovelId);
         return ApiCsResponse.success();
     }
 
@@ -59,16 +61,17 @@ public class BookshelfController {
             )
     })
     @GetMapping("/created") // 내가 생성한 소설
-    public ApiCsResponse<BookshelfDefaultResponse> createdNovels() {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(authorId);
+    public ApiCsResponse<BookshelfDefaultResponse> createdNovels(@AuthenticationPrincipal Long memberId) {
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.createdNovels(memberId);
         return ApiCsResponse.success(bookshelfDefaultResponse);
     }
 
     @DeleteMapping("/created/{novelId}") // 내가 생성한 소설 삭제
-    public ApiCsResponse<Void> deleteCreatedNovels(@PathVariable Long novelId) {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteCreatedNovels(authorId, novelId);
+    public ApiCsResponse<Void> deleteCreatedNovels(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId
+    ) {
+        bookshelfService.deleteCreatedNovels(memberId, novelId);
         return ApiCsResponse.success();
     }
 
@@ -84,16 +87,16 @@ public class BookshelfController {
             )
     })
     @GetMapping("/joined") // 내가 참여한 소설
-    public ApiCsResponse<BookshelfDefaultResponse> joinedNovels() {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(authorId);
+    public ApiCsResponse<BookshelfDefaultResponse> joinedNovels(@AuthenticationPrincipal Long memberId) {
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.joinedNovels(memberId);
         return ApiCsResponse.success(bookshelfDefaultResponse);
     }
 
     @DeleteMapping("/joined/{novelId}") // 내가 참여한 소설 삭제
-    public ApiCsResponse<Void> deleteJoinedNovels(@PathVariable Long novelId) {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteJoinedNovels(authorId, novelId);
+    public ApiCsResponse<Void> deleteJoinedNovels(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId) {
+        bookshelfService.deleteJoinedNovels(memberId, novelId);
         return ApiCsResponse.success();
     }
 
@@ -108,16 +111,17 @@ public class BookshelfController {
             )
     })
     @GetMapping("/liked") // 내가 좋아요 한 소설
-    public ApiCsResponse<BookshelfDefaultResponse> likedNovels() {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(authorId);
+    public ApiCsResponse<BookshelfDefaultResponse> likedNovels(@AuthenticationPrincipal Long memberId) {
+        BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(memberId);
         return ApiCsResponse.success(bookshelfDefaultResponse);
     }
 
     @DeleteMapping("/liked/{novelId}") // 내가 좋아요 한 소설 삭제
-    public ApiCsResponse<Void> deleteLikedNovels(@PathVariable Long novelId) {
-        Long authorId = 500L; // TODO: Token 으로 교체 예정
-        bookshelfService.deleteLikedNovels(authorId, novelId);
+    public ApiCsResponse<Void> deleteLikedNovels(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId
+    ) {
+        bookshelfService.deleteLikedNovels(memberId, novelId);
         return ApiCsResponse.success();
     }
 }

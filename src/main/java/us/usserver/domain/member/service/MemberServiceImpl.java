@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.global.response.exception.BaseException;
@@ -24,16 +25,12 @@ public class MemberServiceImpl implements MemberService {
     private final TokenProvider tokenProvider;
 
     @Override
-    public void logout(String accessToken) {
-        DecodedJWT decodedJWT = tokenProvider.isTokenValid(accessToken);
-        String id = decodedJWT.getClaim("id").asString();
+    public void logout(String accessToken, String refreshToken) {
+        DecodedJWT decodedJWT = tokenProvider.decodeJWT(accessToken, refreshToken);
+        String memberId = decodedJWT.getClaim("id").asString();
 
-        Long expiration = tokenProvider.getExpiration(accessToken);
-
-        if (redisUtils.getData(id) != null) {
-            redisUtils.deleteData(id);
-        }
-        redisUtils.setDateExpire(accessToken, "logout", expiration);
+        if (redisUtils.getData(memberId) != null)
+            redisUtils.deleteData(memberId);
     }
 
     @Override
