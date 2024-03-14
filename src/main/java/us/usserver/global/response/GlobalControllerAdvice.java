@@ -27,4 +27,11 @@ public class GlobalControllerAdvice {
         return ResponseEntity.badRequest().body(ApiCsResponse.fail(e.getMessage()));
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ApiCsResponse<Void>> unsupportedOperationHandler(UnsupportedOperationException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ApiCsResponse.fail(e.getMessage()));
+    }
+
 }

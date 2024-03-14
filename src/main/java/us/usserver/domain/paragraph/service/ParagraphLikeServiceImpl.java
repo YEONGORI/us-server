@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.util.Optional;
 
@@ -28,6 +30,9 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
         paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
                     throw new BaseException(ErrorCode.LIKE_DUPLICATED);});
+        if (paragraph.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
+            throw new UnsupportedOperationException(ExceptionMessage.LIKE_ONLY_SELECTED_PARAGRAPH);
+        }
 
         ParagraphLike paragraphLike = ParagraphLike.builder()
                 .paragraph(paragraph).author(author).build();
