@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ParagraphInVoting(
-        @Schema(description = "한줄(paragraph) 식별 id", nullable = false, example = "234")
+        @Schema(description = "한줄(paragraph) 식별 id", example = "234")
         Long id,
 
-        @Schema(description = "한줄 내용", nullable = false, example = "제가 LA에 있을 때... 주저리 주저리 궁시렁 궁시렁...")
+        @Schema(description = "한줄 내용", example = "제가 LA에 있을 때... 주저리 주저리 궁시렁 궁시렁...")
         String content,
 
         @Schema(description = "한 회차에서 몇 번째로 등장하는 한줄인지에 대한 인덱스", nullable = false, example = "2")
@@ -42,16 +42,16 @@ public record ParagraphInVoting(
         @Schema(description = "나의 투표 여부", example = "True or False")
         boolean iVoted
 ) {
-    public static ParagraphInVoting fromParagraph(Paragraph paragraph, int likeCnt) {
+    public static ParagraphInVoting fromParagraph(Paragraph paragraph, int voteCnt, boolean iVoted) {
         return ParagraphInVoting.builder()
                 .id(paragraph.getId())
                 .content(paragraph.getContent())
                 .sequence(paragraph.getSequence())
-                .voteCnt(likeCnt)
+                .voteCnt(voteCnt)
                 .status(paragraph.getParagraphStatus())
                 .authorId(paragraph.getAuthor().getId())
                 .authorName(paragraph.getAuthor().getNickname())
-                .iVoted(false) // TODO: 이부분 수정 필요
+                .iVoted(iVoted)
                 .build();
     }
 }

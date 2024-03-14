@@ -22,6 +22,7 @@ import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,15 +95,20 @@ public class ChapterServiceImpl implements ChapterService {
     public void createChapter(Long novelId, Long memberId) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthorByMemberId(memberId);
-        Integer curChapterPart = chapterRepository.countChapterByNovel(novel) + 1;
+        List<Chapter> chapters = novel.getChapters();
+        Chapter prevChapter = chapters.get(chapters.size() - 1);
 
+        if (prevChapter.getStatus() == ChapterStatus.IN_PROGRESS) {
+            throw new IllegalStateException(ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS);
+        }
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
+        Integer currPart = prevChapter.getPart() + 1;
         Chapter chapter = Chapter.builder()
-                .part(curChapterPart)
-                .title(novel.getTitle() + " " + curChapterPart + "화")
+                .part(currPart)
+                .title(novel.getTitle() + " " + currPart + "화")
                 .status(ChapterStatus.IN_PROGRESS)
                 .novel(novel)
                 .build();

@@ -12,6 +12,7 @@ public enum ErrorCode {
     // 챕터 관련
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.CHAPTER_NOT_FOUND),
     SCORE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.SCORE_OUT_OF_RANGE),
+    PREVIOUS_CHAPTER_IS_IN_PROGRESS(HttpStatus.BAD_REQUEST, ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS),
     // 문단 관련
     PARAGRAPH_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.PARAGRAPH_NOT_FOUND),
     PARAGRAPH_LENGTH_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.PARAGRAPH_LENGTH_OUT_OF_RANGE),

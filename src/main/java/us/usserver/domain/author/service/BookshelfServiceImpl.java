@@ -2,6 +2,7 @@ package us.usserver.domain.author.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.ReadNovel;
@@ -30,6 +31,9 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final AuthorityRepository authorityRepository;
     private final NovelLikeRepository novelLikeRepository;
     private final NovelRepository novelRepository;
+
+    @Value("${aws.public.ip}")
+    private String accessIp;
 
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long memberId) {
@@ -122,7 +126,7 @@ public class BookshelfServiceImpl implements BookshelfService {
         return authorityRepository.countAllByNovel(novel);
     }
 
-    private String getShortcuts(Novel novel) { // TODO: 이후 URL에 따라 수정
-        return "http://localhost:8080/novel/" + novel.getId();
+    private String getShortcuts(Novel novel) {
+        return "http://" + accessIp + ":8080/novel/" + novel.getId();
     }
 }

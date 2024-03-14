@@ -19,4 +19,12 @@ public class GlobalControllerAdvice {
         return ResponseEntity.status(e.getStatus())
                 .body(ApiCsResponse.fail(e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ApiCsResponse<Void>> illegalArgumentHandler(IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ApiCsResponse.fail(e.getMessage()));
+    }
+
 }

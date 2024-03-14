@@ -64,15 +64,14 @@ public class ParagraphServiceImpl implements ParagraphService {
     @Override
     public GetParagraphResponse getInVotingParagraphs(Long memberId, Long chapterId) {
         Chapter chapter = entityFacade.getChapter(chapterId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
-
-        // TODO: 여기서 내가 투표한 패러그래프 찾아야함
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
                 .map(paragraph -> ParagraphInVoting.fromParagraph(
                         paragraph,
-                        voteRepository.countAllByParagraph(paragraph))
-                        )
+                        voteRepository.countAllByParagraph(paragraph),
+                        voteRepository.existsByParagraphAndAuthor(paragraph, author))) // TODO: 이렇게 하는거보다 그냥 내가 투표한 한줄을 찾는 쿼리 딱 한줄만 보내는게 나을듯
                 .toList();
 
         return GetParagraphResponse.builder().paragraphInVotings(paragraphInVotings).build();
@@ -104,7 +103,6 @@ public class ParagraphServiceImpl implements ParagraphService {
                 .sequence(paragraph.getSequence())
                 .voteCnt(0)
                 .status(paragraph.getParagraphStatus())
-                .authorId(0L) // TODO: 이 부분은 보안 상 아예 제거 할지 말지 고민중
                 .authorName(paragraph.getAuthor().getNickname())
                 .createdAt(paragraph.getCreatedAt())
                 .updatedAt(paragraph.getUpdatedAt())
@@ -179,11 +177,11 @@ public class ParagraphServiceImpl implements ParagraphService {
 
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {
-                myParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt);
+                myParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt, voteRepository.existsByParagraphAndAuthor(paragraph, author));
             }
             if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
                             voteCnt > maxVoteCnt) {
-                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt);
+                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt, voteRepository.existsByParagraphAndAuthor(paragraph, author));
                 maxVoteCnt = voteCnt;
             }
             if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
@@ -212,7 +210,6 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     private boolean isLikedParagraph(Paragraph paragraph, Author author) {
-        Optional<ParagraphLike> paragraphLike = paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author);
-        return paragraphLike.isPresent();
+        return paragraphLikeRepository.existsByParagraphAndAuthor(paragraph, author);
     }
 }

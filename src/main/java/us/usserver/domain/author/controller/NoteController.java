@@ -33,7 +33,7 @@ public class NoteController {
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
-    @GetMapping("/viewed") // TODO: 내가 쓴 글
+    @GetMapping("/viewed")
     public ApiCsResponse<GetParagraphNote> wroteParagraphs(@AuthenticationPrincipal Long memberId) {
         GetParagraphNote paragraphPreviews = noteService.wroteParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
@@ -47,7 +47,7 @@ public class NoteController {
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
-    @GetMapping("/voted") // TODO: 내가 투표한 글
+    @GetMapping("/voted")
     public ApiCsResponse<GetParagraphNote> votedParagraphs(@AuthenticationPrincipal Long memberId) {
         GetParagraphNote paragraphPreviews = noteService.votedParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
@@ -61,7 +61,7 @@ public class NoteController {
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
-    @GetMapping("/liked") // TODO: 내가 좋아요한 글
+    @GetMapping("/liked")
     public ApiCsResponse<GetParagraphNote> likedNovels(@AuthenticationPrincipal Long memberId) {
         GetParagraphNote paragraphPreviews = noteService.likedParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
