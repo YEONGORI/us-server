@@ -93,7 +93,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void deleteJoinedNovels(Long memberId, Long novelId) {
-
+        // TODO: 정확한 삭제 지침 나오기 전까지 보류
     }
 
     @Override

@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.author.repository.ReadNovelRepository;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.chapter.entity.Chapter;
@@ -27,17 +29,22 @@ import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.global.EntityFacade;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @Rollback
 @AutoConfigureMockMvc
 @SpringBootTest
 class BookshelfControllerTest {
+    @Autowired
+    private EntityFacade entityFacade;
+
     @Autowired
     private AuthorRepository authorRepository;
     @Autowired
@@ -50,6 +57,8 @@ class BookshelfControllerTest {
     private ParagraphRepository paragraphRepository;
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private ReadNovelRepository readNovelRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,7 +82,6 @@ class BookshelfControllerTest {
     private static final String SHORTCUTS = "shortcus";
 
     @BeforeEach
-    @Transactional
     void setUp() {
         member = MemberMother.generateMember();
         author = AuthorMother.generateAuthorWithMember(member);
@@ -103,12 +111,25 @@ class BookshelfControllerTest {
 
     @Test
     @DisplayName("최근 본 소설 불러오기 API TEST")
+    @Transactional
     void recentViewedNovels2() throws Exception {
         // given
+        Author curAuthor = entityFacade.getAuthorByMemberId(18L);
+        ReadNovel readNovel = ReadNovel.builder().readDate(LocalDateTime.now()).novel(novel).author(curAuthor).build();
+        curAuthor.addReadNovel(readNovel);
 
         // when
+        authorRepository.save(curAuthor);
+        readNovelRepository.save(readNovel);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/bookshelf/viewed")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
+        assertThat(resultString).contains(novel.getTitle());
     }
 
     @Test
@@ -129,17 +150,63 @@ class BookshelfControllerTest {
     }
 
     @Test
-    void deleteRecentViewedNovels() {
+    @DisplayName("최근 본 소설 삭제 API TEST")
+    @Transactional
+    void deleteRecentViewedNovels() throws Exception {
+        // given
+        Author curAuthor = entityFacade.getAuthorByMemberId(18L);
+        ReadNovel readNovel = ReadNovel.builder().readDate(LocalDateTime.now()).novel(novel).author(curAuthor).build();
+        curAuthor.addReadNovel(readNovel);
+
+        // when
+        authorRepository.save(curAuthor);
+        ReadNovel savedReadNovel = readNovelRepository.save(readNovel);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/bookshelf/viewed/" + savedReadNovel.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        assertThat(resultString).contains("success");
     }
 
     @Test
     @DisplayName("내가 만든 소설 API TEST")
-    void createdNovels() {
+    void createdNovels() throws Exception {
+        // given
+        Author curAuthor = entityFacade.getAuthorByMemberId(18L);
+        Novel newNovel = NovelMother.generateNovel(curAuthor);
+
+        // when
+        novelRepository.save(newNovel);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/bookshelf/created")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        assertThat(resultString).contains(newNovel.getTitle());
+    }
+
+    @Test
+    @DisplayName("내가 만든 소설이 없는 API TEST")
+    void createdNovels2() throws Exception {
         // given
 
         // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/bookshelf/created")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
+        assertThat(resultString).contains("[]");
     }
 
     @Test

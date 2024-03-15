@@ -95,7 +95,8 @@ public class BookshelfController {
     @DeleteMapping("/joined/{novelId}") // 내가 참여한 소설 삭제
     public ApiCsResponse<Void> deleteJoinedNovels(
             @AuthenticationPrincipal Long memberId,
-            @PathVariable Long novelId) {
+            @PathVariable Long novelId
+    ) {
         bookshelfService.deleteJoinedNovels(memberId, novelId);
         return ApiCsResponse.success();
     }
