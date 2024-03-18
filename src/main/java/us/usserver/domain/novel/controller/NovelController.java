@@ -107,7 +107,6 @@ public class NovelController {
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/main")
-    //TODO: 추후에 security+jwt 적용시 URL 변경 예정
     public ApiCsResponse<MainPageResponse> getHomeNovelListInfo(
             @AuthenticationPrincipal Long memberId
     ) {
@@ -115,7 +114,6 @@ public class NovelController {
         return ApiCsResponse.success(homeNovelList);
     }
 
-    //TODO: 경로 고민중..
     @Operation(summary = "소설 더보기", description = "실시간 업데이트, 신작 모아보기 더보기 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "소설 더보기 load 성공",

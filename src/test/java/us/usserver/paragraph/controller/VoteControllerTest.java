@@ -62,7 +62,6 @@ class VoteControllerTest {
     private Paragraph paragraph4;
     private Paragraph paragraph5;
 
-    private static final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {

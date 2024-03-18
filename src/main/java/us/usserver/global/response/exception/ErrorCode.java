@@ -9,6 +9,7 @@ public enum ErrorCode {
     AUTHOR_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.AUTHOR_NOT_FOUND),
     AUTHOR_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, ExceptionMessage.AUTHOR_NOT_AUTHORIZED),
     MAIN_AUTHOR_NOT_MATCHED(HttpStatus.BAD_REQUEST, ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED),
+    READ_NOVEL_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.READ_NOVEL_NOT_FOUND),
     // 챕터 관련
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.CHAPTER_NOT_FOUND),
     SCORE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.SCORE_OUT_OF_RANGE),

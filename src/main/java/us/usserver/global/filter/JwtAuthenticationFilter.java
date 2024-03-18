@@ -21,17 +21,14 @@ import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
-    /**
-     * 인증 하지 않는 페이지
-     */
     private static final String[] whitelist = {
-            "/", "/login**", "/oauth**", "/member/join", "/novel/**",
+            "/", "/login**", "/oauth**", "/member/join",
             "/resources/**", "/favicon.ico", // resource
             "/swagger-ui/**", "/api-docs/**", // swagger
     };

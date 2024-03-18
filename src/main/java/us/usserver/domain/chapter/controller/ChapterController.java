@@ -66,6 +66,6 @@ public class ChapterController {
             @PathVariable Long novelId
     ) {
         chapterService.createChapter(novelId, memberId);
-        return ApiCsResponse.success(); // TODO : created 복구
+        return ApiCsResponse.success();
     }
 }

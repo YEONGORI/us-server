@@ -45,9 +45,8 @@ public class Author {
     @Size(max = 100)
     private String introduction;
 
-    // TODO: 프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     @Size(max = 500)
-    private String profileImg;
+    private String profileImg = "https://us-img-bucket.s3.ap-northeast-2.amazonaws.com/default-profile/logo.png";
 
     @Min(1) @Max(30)
     private Integer fontSize = 15;

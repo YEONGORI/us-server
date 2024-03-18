@@ -79,7 +79,7 @@
 //        // given
 //
 //        // when
-//        voteService.voting(new Member(), author.getId()); // TODO 수정
+//        voteService.voting(new Member(), author.getId()); // 이부분 수정하긴 해야함
 //        List<Vote> allByAuthor = voteJpaRepository.findAllByAuthor(author);
 //
 //        // then

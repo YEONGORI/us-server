@@ -9,13 +9,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Component;
 import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.utils.RedisUtils;
 
 import java.time.Duration;
@@ -67,16 +71,17 @@ public class TokenProvider {
         try {
             decodedJWT = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(refreshToken);
         } catch (JWTVerificationException e) {
-            throw new BaseException(ErrorCode.TOKEN_VERIFICATION); // TODO: 재 로그인 유도
+            throw new JWTVerificationException(ExceptionMessage.TOKEN_VERIFICATION);
         }
 
         Long memberId = decodedJWT.getClaim("id").asLong();
         Long value = redisUtils.getData(refreshToken);
 
-        if (memberId == null || value == null)
-            throw new BaseException(ErrorCode.TOKEN_NOT_FOUND); // TODO: 재 로그인 유도
-        if (!memberId.equals(value))
-            throw new BaseException(ErrorCode.TOKEN_VERIFICATION); // TODO: 재 로그인 유도
+        if (memberId == null || value == null) {
+            throw new AuthenticationServiceException(ExceptionMessage.TOKEN_NOT_FOUND);
+        } else if (!memberId.equals(value)) {
+            throw new AuthenticationServiceException(ExceptionMessage.TOKEN_VERIFICATION);
+        }
 
         return issueAccessToken(memberId);
     }
@@ -104,17 +109,11 @@ public class TokenProvider {
         try {
             return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
         } catch (TokenExpiredException e) {
-            log.error("AccessToken is expired: ${}", accessToken);
+            log.info("AccessToken is expired: ${}", accessToken);
             String newAccesstoken = reissueAccessToken(refreshToken);
             return decodeJWT(newAccesstoken, refreshToken);
         } catch (JWTVerificationException e) {
-            log.error("token verify fail");
-            throw new BaseException(ErrorCode.TOKEN_VERIFICATION);
+            throw new JWTVerificationException(ExceptionMessage.TOKEN_VERIFICATION);
         }
-    }
-
-    public Long getExpiration(String token) {
-        Date expiresAt = JWT.decode(token).getExpiresAt();
-        return expiresAt.getTime() - new Date().getTime();
     }
 }

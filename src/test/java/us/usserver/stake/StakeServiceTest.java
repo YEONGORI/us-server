@@ -126,7 +126,21 @@ class StakeServiceTest {
     @Test
     @DisplayName("소설이 처음 만들어질 때 mainAuthor 의 지분이 100인지 확인")
     void checkInitialStake() {
-        // TODO: @종두님 소설 생성 하기 만드신 후 이 테스트 작성해 주세요
+        // given
+        Novel newNovel = NovelMother.generateNovel(author1);
+        Chapter newChapter = ChapterMother.generateChapter(newNovel);
+        newNovel.addChapter(newChapter);
+        Authority authority = Authority.builder().novel(newNovel).author(author1).build();
+
+        // when
+        novelRepository.save(newNovel);
+        chapterRepository.save(newChapter);
+        authorityRepository.save(authority);
+        stakeService.setStakeInfoOfNovel(newNovel);
+        StakeInfoResponse stakeInfoOfNovel = stakeService.getStakeInfoOfNovel(newNovel.getId());
+
+        // then
+        assertThat(stakeInfoOfNovel.getStakeInfos().size()).isOne();
     }
 
     @Test

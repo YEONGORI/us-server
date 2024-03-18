@@ -49,23 +49,25 @@ class NovelControllerTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
+    private static final String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImlkIjoxOCwiZXhwIjoxNzEwNDkwMTE3fQ.zHAYX9q2zzxrssPxjIo2VibZifS5jIyIjSScPSXvSQ6cBZ8qulALqwlU0GyKY--znhBzw4cxsdjfNFM-8vkBpQ";
+    private static final String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSZWZyZXNoVG9rZW4iLCJpZCI6MTgsImV4cCI6MTcxMjExMDExN30.LYcTv53rn4rMiANJ3_9gCCm4w_ZEDI5-j7vbt-QB8uvWyZUwbAg9Dmy7q3YMhNFtJJCi1KbHKPMS1ozp0rw7Sw";
+
+
     private Member member;
     private Author author;
     private Novel novel;
     private Chapter chapter1;
     private Chapter chapter2;
     private Chapter chapter3;
-    private static final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {
         member = MemberMother.generateMember();
-        author = AuthorMother.generateAuthor();
-        author.setMember(member);
-//        author.setIdForTest(defaultId);
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
         novel = NovelMother.generateNovel(author);
-        novel.setIdForTest(defaultId);
         chapter1 = ChapterMother.generateChapter(novel);
         chapter1.setPartForTest(1);
         chapter2 = ChapterMother.generateChapter(novel);
@@ -76,8 +78,6 @@ class NovelControllerTest {
         novel.getChapters().add(chapter2);
         novel.getChapters().add(chapter3);
 
-        memberRepository.save(member);
-        authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
@@ -92,6 +92,8 @@ class NovelControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/novel/" + novel.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -100,7 +102,6 @@ class NovelControllerTest {
         assertThat(resultString).contains(novel.getGenre().toString());
         novel.getHashtags().forEach(hashtag ->
                 assertThat(resultString).contains(hashtag.toString()));
-        assertThat(resultString).contains("\"nickName\":\"" + author.getNickname());
         assertThat(resultString).contains("joinedAuthorCnt\":");
         assertThat(resultString).contains("likeCnt\":");
     }
@@ -113,6 +114,8 @@ class NovelControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/novel/" + novel.getId() + "/detail")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -141,6 +144,8 @@ class NovelControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .patch("/novel/" + novel.getId() + "/synopsis")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(requestBody)));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();

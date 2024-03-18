@@ -32,6 +32,7 @@ public class NovelMother {
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
                 .randomize(NovelStatus.class, new EnumRandomizer<>(NovelStatus.class))
                 .randomize(named("hit").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 0))
+                .randomize(named("participantCnt").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 0))
                 .randomize(NovelSize.class, new EnumRandomizer<>(NovelSize.class))
                 .randomize(Author.class, () -> author)
                 .randomize(named("recentlyUpdated"), LocalDateTime::now);

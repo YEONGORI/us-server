@@ -37,7 +37,7 @@ public record NovelInfo(
                 .genre(novel.getGenre())
                 .hashtag(novel.getHashtags())
                 .createdAuthor(AuthorInfo.fromAuthor(novel.getMainAuthor()))
-                .joinedAuthorCnt(novel.getAuthorities().size()) // TODO: 여기 size만 필요한데 이거 유지 관리 하는 필드가 필요함
+                .joinedAuthorCnt(novel.getParticipantCnt())
                 .commentCnt(novel.getComments().size())
                 .likeCnt(novel.getNovelLikes().size())
                 .novelSharelUrl("")
