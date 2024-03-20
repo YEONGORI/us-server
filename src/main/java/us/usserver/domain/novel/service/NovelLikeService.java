@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface NovelLikeService {
-    void setNovelLike(Long novelId, Long authorId);
+    void setNovelLike(Long novelId, Long memberId);
 
-    void deleteNovelLike(Long novelId, Long authorId);
+    void deleteNovelLike(Long novelId, Long memberId);
 }

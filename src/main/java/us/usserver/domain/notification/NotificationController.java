@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,12 @@ public class NotificationController {
 
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> subscribe(
+            @AuthenticationPrincipal Long memberId,
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") Long lastEventId,
             HttpServletResponse response
     ) {
-        Long receiverId = 500L; // TODO: 변경 예정
-
         response.setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
-        SseEmitter sseEmitter = notificationService.subscribe(receiverId, lastEventId);
+        SseEmitter sseEmitter = notificationService.subscribe(memberId, lastEventId);
         return ResponseEntity.ok(sseEmitter);
     }
 }

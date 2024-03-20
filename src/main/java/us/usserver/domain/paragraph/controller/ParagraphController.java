@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.service.ParagraphService;
@@ -38,8 +40,12 @@ public class ParagraphController {
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/{chapterId}/voting")
-    public ApiCsResponse<GetParagraphResponse> getParagraphsInVoting(@PathVariable Long chapterId) {
-        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(chapterId);
+    public ApiCsResponse<GetParagraphResponse> getParagraphsInVoting(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long chapterId
+    ) {
+        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(memberId, chapterId);
+
         return ApiCsResponse.success(paragraphs);
     }
 
@@ -54,11 +60,12 @@ public class ParagraphController {
     })
     @PostMapping("/{chapterId}")
     public ResponseEntity<ApiCsResponse<ParagraphInVoting>> postParagraph(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long chapterId,
             @Validated @RequestBody PostParagraphReq req
     ) {
-        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        ParagraphInVoting paragraph = paragraphService.postParagraph(authorId, chapterId, req);
+        ParagraphInVoting paragraph = paragraphService.postParagraph(memberId, chapterId, req);
+
         ApiCsResponse<ParagraphInVoting> response = ApiCsResponse.success(paragraph);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -73,10 +80,11 @@ public class ParagraphController {
     })
     @PatchMapping("/{novelId}/{chapterId}/{paragraphId}")
     public ResponseEntity<ApiCsResponse<Void>> selectParagraph(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId, @PathVariable Long chapterId, @PathVariable Long paragraphId
     ) {
-        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        paragraphService.selectParagraph(authorId, novelId, chapterId, paragraphId);
+        paragraphService.selectParagraph(memberId, novelId, chapterId, paragraphId);
+
         ApiCsResponse<Void> response = ApiCsResponse.success();
         URI redirectUri = URI.create("/paragraph/" + chapterId);
         return ResponseEntity.created(redirectUri).body(response);
@@ -87,9 +95,12 @@ public class ParagraphController {
             @ApiResponse(responseCode = "201", description = "작성 성공")
     })
     @PostMapping("/call/{paragraphId}") // 신고 하기
-    public ResponseEntity<ApiCsResponse<Void>> reportParagraph(@PathVariable Long paragraphId) {
-        Long authorId = 500L; // TODO: 토큰에서 author 정보 가져올 예정
-        paragraphService.reportParagraph(authorId, paragraphId);
+    public ResponseEntity<ApiCsResponse<Void>> reportParagraph(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long paragraphId
+    ) {
+        paragraphService.reportParagraph(memberId, paragraphId);
+
         ApiCsResponse<Void> response = ApiCsResponse.success();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

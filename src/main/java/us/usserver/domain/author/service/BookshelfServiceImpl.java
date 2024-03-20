@@ -2,9 +2,11 @@ package us.usserver.domain.author.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.ReadNovel;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
@@ -30,9 +32,13 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final NovelLikeRepository novelLikeRepository;
     private final NovelRepository novelRepository;
 
+    @Value("${aws.public.ip}")
+    private String accessIp;
+
     @Override
-    public BookshelfDefaultResponse recentViewedNovels(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public BookshelfDefaultResponse recentViewedNovels(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
         Set<ReadNovel> readNovels = author.getReadNovels();
 
         List<NovelPreview> novelPreviews = readNovels.stream()
@@ -44,15 +50,15 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public void deleteRecentViewedNovels(Long authorId, Long readNovelId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void deleteRecentViewedNovels(Long memberId, Long readNovelId) {
+        Author author = entityFacade.getAuthor(memberId);
         ReadNovel readNovel = entityFacade.getReadNovel(readNovelId);
         author.deleteReadNovel(readNovel);
     }
 
     @Override
-    public BookshelfDefaultResponse createdNovels(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public BookshelfDefaultResponse createdNovels(Long memberId) {
+        Author author = entityFacade.getAuthor(memberId);
         List<Novel> allByMainAuthor = novelRepository.findAllByMainAuthor(author);
 
         List<NovelPreview> novelPreviews = allByMainAuthor.stream()
@@ -67,12 +73,12 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public void deleteCreatedNovels(Long authorId, Long novelId) {
+    public void deleteCreatedNovels(Long memberId, Long novelId) {
     }
 
     @Override
-    public BookshelfDefaultResponse joinedNovels(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public BookshelfDefaultResponse joinedNovels(Long memberId) {
+        Author author = entityFacade.getAuthor(memberId);
 
         List<Authority> authorities = authorityRepository.findAllByAuthor(author);
         List<NovelPreview> novelPreviews = authorities.stream()
@@ -86,13 +92,14 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public void deleteJoinedNovels(Long authorId, Long novelId) {
-
+    public void deleteJoinedNovels(Long memberId, Long novelId) {
+        // TODO: 정확한 삭제 지침 나오기 전까지 보류
     }
 
     @Override
-    public BookshelfDefaultResponse likedNovels(Long authorId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public BookshelfDefaultResponse likedNovels(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
 
         List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
         List<NovelPreview> novelPreviews = novelLikes.stream()
@@ -106,8 +113,9 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public void deleteLikedNovels(Long authorId, Long novelId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void deleteLikedNovels(Long memberId, Long novelId) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
         Novel novel = entityFacade.getNovel(novelId);
 
         Optional<NovelLike> novelLike = novelLikeRepository.findFirstByNovelAndAuthor(novel, author);
@@ -118,7 +126,7 @@ public class BookshelfServiceImpl implements BookshelfService {
         return authorityRepository.countAllByNovel(novel);
     }
 
-    private String getShortcuts(Novel novel) { // TODO: 이후 URL에 따라 수정
-        return "http://localhost:8080/novel/" + novel.getId();
+    private String getShortcuts(Novel novel) {
+        return "http://" + accessIp + ":8080/novel/" + novel.getId();
     }
 }

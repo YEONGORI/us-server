@@ -70,6 +70,9 @@ public class Novel extends BaseEntity {
     private Integer hit;
 
     @NotNull
+    private Integer participantCnt;
+
+    @NotNull
     private LocalDateTime recentlyUpdated;
 
     @Schema(description = "소설 분류", nullable = true, example = "장편소설")

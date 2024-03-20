@@ -22,11 +22,13 @@ public class RequestOauthInfoService {
     }
 
     public OauthMember request(OauthParams oauthParams) {
-        //oauth provider 요청에 맞는 client get
+        // oauth provider 요청에 맞는 client get
         OauthClient client = clients.get(oauthParams.oauthProvider());
-        //client에서 accessToken을 가져오는 로직 실행
+
+        // client에서 accessToken을 가져오는 로직 실행
         String accessToken = client.getOauthLoginToken(oauthParams);
-        //accessToken으로 유저 정보를 가져오는 로직 실행
+
+        // accessToken으로 유저 정보를 가져오는 로직 실행
         return client.getMemberInfo(accessToken);
     }
 }

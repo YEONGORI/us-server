@@ -74,6 +74,7 @@ public class NovelBlueprint {
                 .ageRating(ageRating)
                 .novelSize(novelSize)
                 .hit(0)
+                .participantCnt(0)
                 .novelStatus(NovelStatus.IN_PROGRESS)
                 .mainAuthor(author)
                 .recentlyUpdated(LocalDateTime.now())

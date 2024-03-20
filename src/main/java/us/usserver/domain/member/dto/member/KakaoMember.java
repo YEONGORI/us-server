@@ -17,15 +17,15 @@ public class KakaoMember implements OauthMember {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public class KakaoAccount {
+    public static class KakaoAccount {
         private Profile profile;
         private String email;
+    }
 
-        @Getter
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public class Profile{
-            private String nickname;
-        }
+    @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Profile{
+        private String nickname;
     }
 
     @Override

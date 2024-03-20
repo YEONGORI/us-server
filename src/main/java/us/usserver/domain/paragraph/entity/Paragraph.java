@@ -8,16 +8,19 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.global.BaseEntity;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.global.BaseEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Builder
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Paragraph extends BaseEntity {
@@ -45,7 +48,23 @@ public class Paragraph extends BaseEntity {
     private Author author;
 
     @OneToMany(mappedBy = "paragraph", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ParagraphLike> paragraphLikes = new ArrayList<>();
+    private Set<ParagraphLike> paragraphLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "paragraph", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Vote> votes = new HashSet<>();
+
+    public void addParagraphLike(ParagraphLike paragraphLike) {
+        this.paragraphLikes.add(paragraphLike);
+    }
+    public void removeParagraphLike(ParagraphLike paragraphLike) {
+        this.paragraphLikes.remove(paragraphLike);
+    }
+    public void addVote(Vote vote) {
+        this.votes.add(vote);
+    }
+    public void removeVote(Vote vote) {
+        this.votes.remove(vote);
+    }
 
     public void setSequenceForTest(int sequence) {
         this.sequence = sequence;

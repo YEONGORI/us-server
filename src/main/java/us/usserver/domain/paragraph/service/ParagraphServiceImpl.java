@@ -15,6 +15,7 @@ import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
@@ -40,7 +41,7 @@ public class ParagraphServiceImpl implements ParagraphService {
     private final StakeService stakeService;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteRepository voteJpaRepository;
+    private final VoteRepository voteRepository;
     private final AuthorityRepository authorityRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
@@ -61,20 +62,24 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public GetParagraphResponse getInVotingParagraphs(Long chapterId) {
+    public GetParagraphResponse getInVotingParagraphs(Long memberId, Long chapterId) {
         Chapter chapter = entityFacade.getChapter(chapterId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         List<ParagraphInVoting> paragraphInVotings = paragraphs.stream().filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.IN_VOTING))
-                .map(paragraph -> ParagraphInVoting.fromParagraph(paragraph, voteJpaRepository.countAllByParagraph(paragraph)))
+                .map(paragraph -> ParagraphInVoting.fromParagraph(
+                        paragraph,
+                        voteRepository.countAllByParagraph(paragraph),
+                        voteRepository.existsByParagraphAndAuthor(paragraph, author))) // TODO: 이렇게 하는거보다 그냥 내가 투표한 한줄을 찾는 쿼리 딱 한줄만 보내는게 나을듯
                 .toList();
 
         return GetParagraphResponse.builder().paragraphInVotings(paragraphInVotings).build();
     }
 
     @Override
-    public ParagraphInVoting postParagraph(Long authorId, Long chapterId, PostParagraphReq req) {
-        Author author = entityFacade.getAuthor(authorId);
+    public ParagraphInVoting postParagraph(Long memberId, Long chapterId, PostParagraphReq req) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
@@ -98,7 +103,6 @@ public class ParagraphServiceImpl implements ParagraphService {
                 .sequence(paragraph.getSequence())
                 .voteCnt(0)
                 .status(paragraph.getParagraphStatus())
-                .authorId(0L) // TODO: 이 부분은 보안 상 아예 제거 할지 말지 고민중
                 .authorName(paragraph.getAuthor().getNickname())
                 .createdAt(paragraph.getCreatedAt())
                 .updatedAt(paragraph.getUpdatedAt())
@@ -106,13 +110,13 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public void selectParagraph(Long authorId, Long novelId, Long chapterId, Long paragraphId) {
+    public void selectParagraph(Long memberId, Long novelId, Long chapterId, Long paragraphId) {
         Novel novel = entityFacade.getNovel(novelId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
-        if (!novel.getMainAuthor().getId().equals(authorId)) {
+        if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
         if (!novel.getChapters().contains(chapter)) {
@@ -137,11 +141,9 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public void reportParagraph(Long authorId, Long paragraphId) {
-        Author author = entityFacade.getAuthor(authorId);
+    public void reportParagraph(Long memberId, Long paragraphId) {
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-
-
     }
 
     private ParagraphsOfChapter getInitialChParagraph() {
@@ -171,15 +173,15 @@ public class ParagraphServiceImpl implements ParagraphService {
         int maxVoteCnt = 0, voteCnt;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
-            voteCnt = voteJpaRepository.countAllByParagraph(paragraph);
+            voteCnt = voteRepository.countAllByParagraph(paragraph);
 
             if (status == ParagraphStatus.IN_VOTING && // 내가 쓴 한줄
                             paragraph.getAuthor().getId().equals(author.getId())) {
-                myParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt);
+                myParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt, voteRepository.existsByParagraphAndAuthor(paragraph, author));
             }
             if (status == ParagraphStatus.IN_VOTING && // 베스트 한줄
                             voteCnt > maxVoteCnt) {
-                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt);
+                bestParagraph = ParagraphInVoting.fromParagraph(paragraph, voteCnt, voteRepository.existsByParagraphAndAuthor(paragraph, author));
                 maxVoteCnt = voteCnt;
             }
             if (status == ParagraphStatus.SELECTED) { // 이미 선정된 한줄
@@ -200,14 +202,14 @@ public class ParagraphServiceImpl implements ParagraphService {
 
         if (!isAuthorized) {
             Authority authority = new Authority();
-            author.addAuthorNovel(authority);
+            author.addAuthority(authority);
+            authority.setAuthor(author);
             authority.takeNovel(novel);
             authorityRepository.save(authority);
         }
     }
 
     private boolean isLikedParagraph(Paragraph paragraph, Author author) {
-        Optional<ParagraphLike> paragraphLike = paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author);
-        return paragraphLike.isPresent();
+        return paragraphLikeRepository.existsByParagraphAndAuthor(paragraph, author);
     }
 }

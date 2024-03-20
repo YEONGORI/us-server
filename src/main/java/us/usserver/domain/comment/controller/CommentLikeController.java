@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,9 +39,11 @@ public class CommentLikeController {
                     content = @Content(schema = @Schema(implementation = DuplicatedLikeException.class)))
     })
     @PostMapping("/{commentId}")
-    public ApiCsResponse<Void> setLike(@PathVariable Long commentId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        commentLikeService.postLike(commentId, authorId);
+    public ApiCsResponse<Void> setLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long commentId
+    ) {
+        commentLikeService.postLike(commentId, memberId);
         return ApiCsResponse.success();
     }
 
@@ -53,9 +56,11 @@ public class CommentLikeController {
             )
     })
     @DeleteMapping("/{commentId}")
-    public ApiCsResponse<Void> deleteLike(@PathVariable Long commentId) {
-        Long authorId = 500L; // TODO: 유저 정보는 토큰 에서 가져올 예정
-        commentLikeService.deleteLike(commentId, authorId);
+    public ApiCsResponse<Void> deleteLike(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long commentId
+    ) {
+        commentLikeService.deleteLike(commentId, memberId);
         return ApiCsResponse.success();
     }
 }

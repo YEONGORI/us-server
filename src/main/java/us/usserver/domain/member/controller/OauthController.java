@@ -11,22 +11,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.member.dto.LoginDto;
 import us.usserver.domain.member.dto.MemberInfoDto;
-import us.usserver.domain.member.dto.parameter.GoogleParams;
+import us.usserver.domain.member.dto.parameter.AppleParams;
 import us.usserver.domain.member.dto.parameter.KakaoParams;
+import us.usserver.domain.member.dto.parameter.NaverParams;
 import us.usserver.domain.member.dto.req.OauthRequest;
+import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.service.OauthService;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.response.ApiCsResponse;
 import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.BaseException;
-import us.usserver.global.response.exception.ErrorCode;
 import us.usserver.global.response.exception.TokenInvalidException;
 
 @Slf4j
@@ -55,27 +51,18 @@ public class OauthController {
     public ResponseEntity<LoginDto> socialLogin(@RequestBody OauthRequest oauthRequest) {
         log.debug("넘겨받은 kakao 인증키 :: " + oauthRequest.getCode());
 
-        MemberInfoDto memberInfoDto;
-        switch (oauthRequest.getOauthProvider()) {
-            case KAKAO -> memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
-            case GOOGLE -> memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthRequest.getCode()));
-            default -> throw new BaseException(ErrorCode.UNSUPPORTED_SOCIAL_PROVIDER);
-        }
-//        if (oauthRequest.getOauthProvider() == OauthProvider.KAKAO) {
-//            memberInfoDto = oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
-//        } else if (oauthRequest.getOauthProvider() == OauthProvider.NAVER) {
-//            memberInfoDto = oauthService.getMemberByOauthLogin(new NaverParams(oauthRequest.getCode(), oauthRequest.getState()));
-//        } else if (oauthRequest.getOauthProvider() == OauthProvider.GOOGLE){
-//            memberInfoDto = oauthService.getMemberByOauthLogin(new GoogleParams(oauthRequest.getCode()));
-//        } else {
-//            memberInfoDto = oauthService.getMemberByOauthLogin(new AppleParams(oauthRequest.getCode()));
-//        }
+        MemberInfoDto memberInfoDto = switch (oauthRequest.getOauthProvider()) {
+            case KAKAO -> oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
+            case NAVER ->
+                    oauthService.getMemberByOauthLogin(new NaverParams(oauthRequest.getCode(), oauthRequest.getState()));
+            case APPLE -> oauthService.getMemberByOauthLogin(new AppleParams(oauthRequest.getCode()));
+        };
 
         //응답 헤더 생성
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(tokenProvider.getAccessHeader(), memberInfoDto.accessToken());
         httpHeaders.add(tokenProvider.getRefreshHeader(), memberInfoDto.refreshToken());
-        return ResponseEntity.ok().headers(httpHeaders).body(new LoginDto(null));
+        return ResponseEntity.ok().headers(httpHeaders).body(new LoginDto(memberInfoDto.memberId()));
     }
 
     @ApiResponses(value = {
@@ -85,8 +72,9 @@ public class OauthController {
     })
     @GetMapping("/renew-token")
     public ApiCsResponse<Void> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
-        String refreshToken = tokenProvider.extractToken(request, "RefreshToken");
-        String accessToken = tokenProvider.renewToken(refreshToken);
+        String refreshToken = tokenProvider.extractToken(request, TokenType.REFRESH_TOKEN);
+        String accessToken = tokenProvider.reissueAccessToken(refreshToken);
+
         servletResponse.addHeader(tokenProvider.getAccessHeader(), "Bearer " + accessToken);
         return ApiCsResponse.success();
     }

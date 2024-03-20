@@ -1,41 +1,38 @@
 package us.usserver.paragraph.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import us.usserver.domain.author.entity.Author;
 import us.usserver.author.AuthorMother;
-import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
-import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.chapter.constant.ChapterStatus;
-import us.usserver.domain.paragraph.service.ParagraphService;
-import us.usserver.global.response.exception.BaseException;
-import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
-import us.usserver.global.response.exception.ParagraphLengthOutOfRangeException;
+import us.usserver.domain.chapter.entity.Chapter;
+import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.member.MemberMother;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
-import us.usserver.novel.NovelMother;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.paragraph.ParagraphMother;
-import us.usserver.domain.paragraph.repository.ParagraphRepository;
-import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
-import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
+import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.Vote;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
+import us.usserver.domain.paragraph.service.ParagraphService;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.member.MemberMother;
+import us.usserver.novel.NovelMother;
+import us.usserver.paragraph.ParagraphMother;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -152,7 +149,7 @@ class ParagraphServiceTest {
         // then
         assertNull(paragraphs.getMyParagraph());
         assertThat(paragraphs.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(paragraphs.getBestParagraph().getContent()).isEqualTo(paragraph1.getContent());
+        assertThat(paragraphs.getBestParagraph().content()).isEqualTo(paragraph1.getContent());
     }
 
     @Test
@@ -161,7 +158,7 @@ class ParagraphServiceTest {
         // given
 
         // when
-        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(chapter.getId());
+        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(null, chapter.getId());
 
         // then
         assertThat(paragraphs.getParagraphInVotings().size()).isEqualTo(2);
@@ -202,11 +199,11 @@ class ParagraphServiceTest {
         List<Paragraph> paragraphs = paragraphRepository.findAllByChapter(chapter);
 
         // then
-        assertThat(paragraphInVoting.getContent()).isEqualTo(content);
-        assertThat(paragraphInVoting.getCreatedAt()).isNotNull();
-        assertThat(paragraphInVoting.getUpdatedAt()).isNotNull();
-        assertThat(paragraphInVoting.getVoteCnt()).isZero();
-        assertThat(paragraphInVoting.getAuthorName()).isEqualTo(author.getNickname());
+        assertThat(paragraphInVoting.content()).isEqualTo(content);
+        assertThat(paragraphInVoting.createdAt()).isNotNull();
+        assertThat(paragraphInVoting.updatedAt()).isNotNull();
+        assertThat(paragraphInVoting.voteCnt()).isZero();
+        assertThat(paragraphInVoting.authorName()).isEqualTo(author.getNickname());
         assertThat(paragraphs.stream().anyMatch(p ->
                 p.getContent().equals(req.getContent()))).isTrue();
     }

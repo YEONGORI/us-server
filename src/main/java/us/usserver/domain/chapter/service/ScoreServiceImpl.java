@@ -10,6 +10,7 @@ import us.usserver.domain.chapter.dto.PostScore;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.entity.Score;
 import us.usserver.domain.chapter.repository.ScoreRepository;
+import us.usserver.domain.member.entity.Member;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
@@ -23,8 +24,9 @@ public class ScoreServiceImpl implements ScoreService {
     private final ScoreRepository scoreRepository;
 
     @Override
-    public void postScore(Long chapterId, Long authorID, PostScore postScore) {
-        Author author = entityFacade.getAuthor(authorID);
+    public void postScore(Long chapterId, Long memberId, PostScore postScore) {
+        Member member = entityFacade.getMember(memberId);
+        Author author = member.getAuthor();
         Chapter chapter = entityFacade.getChapter(chapterId);
 
         if (postScore.getScore() > 10 || postScore.getScore() < 1) {

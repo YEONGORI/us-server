@@ -62,7 +62,6 @@ class VoteControllerTest {
     private Paragraph paragraph4;
     private Paragraph paragraph5;
 
-    private static final Long defaultId = 500L;
 
     @BeforeEach
     void setUp() {
@@ -98,7 +97,7 @@ class VoteControllerTest {
 
         memberRepository.save(member);
         authorRepository.save(author);
-        author.setIdForTest(defaultId);
+//        author.setIdForTest(defaultId);
         authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);

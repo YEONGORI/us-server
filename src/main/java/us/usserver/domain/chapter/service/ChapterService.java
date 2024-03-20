@@ -12,7 +12,7 @@ public interface ChapterService {
 
     List<ChapterInfo> getChaptersOfNovel(Novel novel);
 
-    ChapterDetailInfo getChapterDetailInfo(Long novelId, Long authorId, Long chapterId);
+    ChapterDetailInfo getChapterDetailInfo(Long novelId, Long memberId, Long chapterId);
 
-    void createChapter(Long novelId, Long authorId);
+    void createChapter(Long novelId, Long memberId);
 }

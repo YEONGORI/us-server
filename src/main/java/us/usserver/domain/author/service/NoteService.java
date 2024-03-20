@@ -5,9 +5,9 @@ import us.usserver.domain.author.dto.res.GetParagraphNote;
 
 @Service
 public interface NoteService {
-    GetParagraphNote wroteParagraphs(Long authorId);
+    GetParagraphNote wroteParagraphs(Long memberId);
 
-    GetParagraphNote votedParagraphs(Long authorId);
+    GetParagraphNote votedParagraphs(Long memberId);
 
-    GetParagraphNote likedParagraphs(Long authorId);
+    GetParagraphNote likedParagraphs(Long memberId);
 }

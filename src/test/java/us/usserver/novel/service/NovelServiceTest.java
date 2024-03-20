@@ -213,7 +213,7 @@ class NovelServiceTest {
                 .build();
 
         //when
-        NovelInfo novelInfo = novelService.createNovel(member, novelBlueprint);
+        NovelInfo novelInfo = novelService.createNovel(member.getId(), novelBlueprint);
 
         //then
         assertThat(novelInfo).isNotNull();
@@ -243,7 +243,7 @@ class NovelServiceTest {
 
         //when then
         Assertions.assertThrows(BaseException.class,
-                () -> novelService.createNovel(newMember, novelBlueprint));
+                () -> novelService.createNovel(newMember.getId(), novelBlueprint));
         Assertions.assertThrows(BaseException.class,
                 () -> novelService.createNovel(null, novelBlueprint));
     }
@@ -354,7 +354,7 @@ class NovelServiceTest {
         novelRepository.save(newNovel);
         novelRepository.save(novel);
         chapterRepository.save(newChapter);
-        MainPageResponse mainPageResponse = novelService.getMainPage(member);
+        MainPageResponse mainPageResponse = novelService.getMainPage(member.getId());
 
         //then
         assertThat(mainPageResponse.getReadNovels().get(0).id()).isEqualTo(novel.getId());
@@ -389,8 +389,8 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member, moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member, moreNovelRequest2);
+        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
+        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
 
         //then
         assertThat(moreNovelResponse1.novelList().get(0).id()).isEqualTo(novel8.getId());
@@ -437,8 +437,8 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member, moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member, moreNovelRequest2);
+        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
+        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
 
         //then
         assertThat(moreNovelResponse1.novelList().get(0).id()).isEqualTo(novel1.getId());
@@ -491,8 +491,8 @@ class NovelServiceTest {
         novelRepository.save(novel7);
         novelRepository.save(novel8);
         chapterRepository.save(chapter1);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member, moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member, moreNovelRequest2);
+        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
+        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
 
         //then
         moreNovelResponse1.novelList()

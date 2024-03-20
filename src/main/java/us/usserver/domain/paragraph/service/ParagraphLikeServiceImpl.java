@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -19,28 +23,33 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override
-    public void setParagraphLike(Long paragraphId, Long authorId) {
+    public void setParagraphLike(Long paragraphId, Long memberId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
-        paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
+        paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
-                    throw new BaseException(ErrorCode.LIKE_DUPLICATED);
-                });
+                    throw new BaseException(ErrorCode.LIKE_DUPLICATED);});
+        if (paragraph.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
+            throw new UnsupportedOperationException(ExceptionMessage.LIKE_ONLY_SELECTED_PARAGRAPH);
+        }
 
         ParagraphLike paragraphLike = ParagraphLike.builder()
-                .paragraph(paragraph)
-                .author(author)
-                .build();
+                .paragraph(paragraph).author(author).build();
+        paragraph.addParagraphLike(paragraphLike);
         paragraphLikeRepository.save(paragraphLike);
     }
 
     @Override
-    public void deleteParagraphLike(Long paragraphId, Long authorId) {
+    public void deleteParagraphLike(Long paragraphId, Long memberId) {
         Paragraph paragraph = entityFacade.getParagraph(paragraphId);
-        Author author = entityFacade.getAuthor(authorId);
+        Optional<ParagraphLike> byParagraphIdAndAuthorId = paragraphLikeRepository.findByParagraphIdAndAuthorId(paragraphId, memberId);
 
-        paragraphLikeRepository.findFirstByParagraphAndAuthor(paragraph, author)
-                .ifPresent(paragraphLikeRepository::delete); // TODO: 처음부터 id 두개로 찾으면 되지 않을까?
+        if (byParagraphIdAndAuthorId.isPresent()) {
+            ParagraphLike paragraphLike = byParagraphIdAndAuthorId.get();
+
+            paragraph.removeParagraphLike(paragraphLike);
+            paragraphLikeRepository.delete(paragraphLike);
+        }
     }
 }

@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote, Long>, VoteDSLRepository {
     Optional<Vote> getVoteById(Long voteId);
 
+    Boolean existsByParagraphAndAuthor(Paragraph paragraph, Author author);
+
     List<Vote> findAllByAuthor(Author author);
 
     Integer countAllByParagraph(Paragraph paragraph);

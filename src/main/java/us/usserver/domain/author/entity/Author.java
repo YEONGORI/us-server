@@ -6,16 +6,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import us.usserver.domain.author.dto.NovelPreview;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.authority.entity.Authority;
+import us.usserver.domain.authority.entity.Stake;
+import us.usserver.domain.chapter.entity.Score;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.entity.CommentLike;
 import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.novel.entity.Novel;
+import us.usserver.domain.novel.entity.NovelLike;
 import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.domain.chapter.entity.Score;
-import us.usserver.domain.authority.entity.Stake;
 import us.usserver.domain.paragraph.entity.Vote;
 
 import java.util.ArrayList;
@@ -31,9 +31,12 @@ import java.util.Set;
 @AllArgsConstructor
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "author_id")
     private Long id;
+
+    @MapsId
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @NotBlank
     @Size(max = 11)
@@ -42,16 +45,13 @@ public class Author {
     @Size(max = 100)
     private String introduction;
 
-    // TODO: 프로필 사진을 설정 하지 않았을 때 default 이미지 값을 Input 예정
     @Size(max = 500)
-    private String profileImg;
+    private String profileImg = "https://us-img-bucket.s3.ap-northeast-2.amazonaws.com/default-profile/logo.png";
 
-    @Min(1)
-    @Max(30)
+    @Min(1) @Max(30)
     private Integer fontSize = 15;
 
-    @Min(1)
-    @Max(30)
+    @Min(1) @Max(30)
     private Integer paragraphSpace = 16;
 
     @Setter
@@ -59,11 +59,6 @@ public class Author {
 
     @Setter
     private Boolean collectionNovelsPublic;
-
-    @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<ReadNovel> readNovels = new HashSet<>();
@@ -95,15 +90,19 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    public void setIdForTest(Long id) {
+    private Author(Long id, Member member, String nickname) {
         this.id = id;
+        this.member = member;
+        this.nickname = nickname;
     }
 
-    public void addAuthorNovel(Authority authority) {
-        authority.setAuthor(this);
+    public static Author createAuthorInSocialLogin(Long id, Member member, String nickname) {
+        return new Author(id, member, nickname);
+    }
+
+    public void addAuthority(Authority authority) {
         this.authorities.add(authority);
     }
-
     public void addReadNovel(ReadNovel readNovel) {
         this.readNovels.add(readNovel);
     }
@@ -125,5 +124,7 @@ public class Author {
     public void changeParagraphSpace(Integer paragraphSpace) {
         this.paragraphSpace = paragraphSpace;
     }
-
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }
