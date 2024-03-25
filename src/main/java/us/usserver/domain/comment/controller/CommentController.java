@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.domain.comment.dto.GetCommentResponse;
+import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.service.CommentService;
 import us.usserver.global.response.exception.AuthorNotAuthorizedException;
 import us.usserver.global.response.exception.AuthorNotFoundException;
@@ -41,28 +41,28 @@ public class CommentController {
     @Operation(summary = "소설의 댓글 불러오기", description = "한 소설에서 작성된 댓글 전부 불러오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
             @ApiResponse(
                     responseCode = "400", description = "소설 정보가 유효하지 않습니다..",
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
     })
     @GetMapping("/novel/{novelId}")
-    public ApiCsResponse<GetCommentResponse> getCommentsOfNovel(@PathVariable Long novelId) {
-        GetCommentResponse comments = commentService.getCommentsOfNovel(novelId);
+    public ApiCsResponse<GetCommentRes> getCommentsOfNovel(@PathVariable Long novelId) {
+        GetCommentRes comments = commentService.getCommentsOfNovel(novelId);
         return ApiCsResponse.success(comments);
     }
 
     @Operation(summary = "회차의 댓글 불러오기", description = "한 회차에서 작성된 댓글 전부 불러오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
             @ApiResponse(
                     responseCode = "400", description = "회차 정보가 유효하지 않습니다..",
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/chapter/{chapterId}")
-    public ApiCsResponse<GetCommentResponse> getCommentsOfChapter(@PathVariable Long chapterId) {
-        GetCommentResponse comments = commentService.getCommentsOfChapter(chapterId);
+    public ApiCsResponse<GetCommentRes> getCommentsOfChapter(@PathVariable Long chapterId) {
+        GetCommentRes comments = commentService.getCommentsOfChapter(chapterId);
         return ApiCsResponse.success(comments);
     }
 
@@ -118,14 +118,14 @@ public class CommentController {
     @Operation(summary = "내가 작성한 댓글 불러오기", description = "내가 작성한 모든 댓글 불러오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
             @ApiResponse(
                     responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
     })
     @GetMapping("/author")
-    public ApiCsResponse<GetCommentResponse> getCommentsOfAuthor(@AuthenticationPrincipal Long memberId) {
-        GetCommentResponse comments = commentService.getCommentsByAuthor(memberId);
+    public ApiCsResponse<GetCommentRes> getCommentsOfAuthor(@AuthenticationPrincipal Long memberId) {
+        GetCommentRes comments = commentService.getCommentsByAuthor(memberId);
         return ApiCsResponse.success(comments);
     }
 

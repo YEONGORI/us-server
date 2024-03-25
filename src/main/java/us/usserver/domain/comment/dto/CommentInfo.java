@@ -42,4 +42,15 @@ public class CommentInfo {
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
+
+    public static CommentInfo mapCommentToCommentInfo(Comment comment) {
+        return CommentInfo.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .authorName(comment.getAuthor().getNickname())
+                .location(comment.getChapter().getTitle())
+                .likeCnt(comment.getCommentLikes().size())
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
 }

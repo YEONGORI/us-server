@@ -24,7 +24,7 @@ import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.domain.comment.dto.GetCommentResponse;
+import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.comment.service.CommentService;
@@ -76,10 +76,10 @@ class CommentServiceTest {
         // given
 
         // when
-        GetCommentResponse commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
+        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
 
         // then
-        assertThat(commentsOfNovel.getCommentInfos()).isEqualTo(Collections.emptyList());
+        assertThat(commentsOfNovel.commentInfos()).isEqualTo(Collections.emptyList());
     }
 
     @Test
@@ -97,13 +97,13 @@ class CommentServiceTest {
         commentJpaRepository.save(comment1);
         commentJpaRepository.save(comment2);
         commentJpaRepository.save(comment3);
-        GetCommentResponse commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
+        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
 
         // then
-        assertThat(commentsOfNovel.getCommentInfos().size()).isEqualTo(3);
-        assertThat(commentsOfNovel.getCommentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentsOfNovel.getCommentInfos().get(1).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentsOfNovel.getCommentInfos().get(2).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(commentsOfNovel.commentInfos().size()).isEqualTo(3);
+        assertThat(commentsOfNovel.commentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(commentsOfNovel.commentInfos().get(1).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(commentsOfNovel.commentInfos().get(2).getLocation()).isEqualTo(novel.getTitle());
     }
 
     @Test
@@ -117,7 +117,7 @@ class CommentServiceTest {
         // when
         novelRepository.save(newNovel);
         commentJpaRepository.save(newComment);
-        GetCommentResponse before = commentService.getCommentsOfNovel(newNovel.getId());
+        GetCommentRes before = commentService.getCommentsOfNovel(newNovel.getId());
         novelRepository.delete(newNovel);
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
         BaseException baseException = assertThrows(BaseException.class,
@@ -125,7 +125,7 @@ class CommentServiceTest {
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.NOVEL_NOT_FOUND);
-        assertThat(before.getCommentInfos().get(0).getLocation()).isEqualTo(newNovel.getTitle());
+        assertThat(before.commentInfos().get(0).getLocation()).isEqualTo(newNovel.getTitle());
         for (Comment comment : afterComments) {
             assertThat(comment.getNovel().getTitle()).isNotEqualTo(newNovel.getTitle());
         }
@@ -137,10 +137,10 @@ class CommentServiceTest {
         // given
 
         // when
-        GetCommentResponse commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
+        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
 
         // then
-        assertThat(commentsOfChapter.getCommentInfos().size()).isZero();
+        assertThat(commentsOfChapter.commentInfos().size()).isZero();
     }
 
     @Test
@@ -158,13 +158,13 @@ class CommentServiceTest {
         commentJpaRepository.save(comment1);
         commentJpaRepository.save(comment2);
         commentJpaRepository.save(comment3);
-        GetCommentResponse commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
+        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
 
         // then
-        assertThat(commentsOfChapter.getCommentInfos().size()).isEqualTo(3);
-        assertThat(commentsOfChapter.getCommentInfos().get(0).getLocation()).isEqualTo(chapter.getTitle());
-        assertThat(commentsOfChapter.getCommentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
-        assertThat(commentsOfChapter.getCommentInfos().get(2).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(commentsOfChapter.commentInfos().size()).isEqualTo(3);
+        assertThat(commentsOfChapter.commentInfos().get(0).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(commentsOfChapter.commentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(commentsOfChapter.commentInfos().get(2).getLocation()).isEqualTo(chapter.getTitle());
     }
 
     @Test
@@ -178,7 +178,7 @@ class CommentServiceTest {
         novel.getChapters().add(newChapter);
         newChapter.getComments().add(newComment);
         chapterRepository.save(newChapter);
-        GetCommentResponse before = commentService.getCommentsOfChapter(newChapter.getId());
+        GetCommentRes before = commentService.getCommentsOfChapter(newChapter.getId());
         chapterRepository.delete(newChapter);
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.getCommentsOfChapter(newChapter.getId()));
@@ -186,8 +186,8 @@ class CommentServiceTest {
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.CHAPTER_NOT_FOUND);
-        assertThat(before.getCommentInfos().size()).isEqualTo(1);
-        assertThat(before.getCommentInfos().get(0).getLocation()).isEqualTo(newChapter.getTitle());
+        assertThat(before.commentInfos().size()).isEqualTo(1);
+        assertThat(before.commentInfos().get(0).getLocation()).isEqualTo(newChapter.getTitle());
         for (Comment comment : afterComments) {
             assertThat(comment.getChapter().getTitle()).isNotEqualTo(newChapter.getTitle());
         }
@@ -305,10 +305,10 @@ class CommentServiceTest {
         // given
 
         // when
-        GetCommentResponse commentsByAuthor = commentService.getCommentsByAuthor(author.getId());
+        GetCommentRes commentsByAuthor = commentService.getCommentsByAuthor(author.getId());
 
         // then
-        assertThat(commentsByAuthor.getCommentInfos().size()).isZero();
+        assertThat(commentsByAuthor.commentInfos().size()).isZero();
     }
 
     @Test
@@ -324,12 +324,12 @@ class CommentServiceTest {
         commentJpaRepository.save(novelComment);
         commentJpaRepository.save(chapterComment);
 
-        GetCommentResponse commentsByAuthor = commentService.getCommentsByAuthor(author.getId());
+        GetCommentRes commentsByAuthor = commentService.getCommentsByAuthor(author.getId());
 
         // then
-        assertThat(commentsByAuthor.getCommentInfos().size()).isEqualTo(2);
-        assertThat(commentsByAuthor.getCommentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentsByAuthor.getCommentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(commentsByAuthor.commentInfos().size()).isEqualTo(2);
+        assertThat(commentsByAuthor.commentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(commentsByAuthor.commentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
     }
 
     @Test
@@ -344,16 +344,16 @@ class CommentServiceTest {
         chapter.getComments().add(chapterComment);
         commentJpaRepository.save(novelComment);
         commentJpaRepository.save(chapterComment);
-        GetCommentResponse before = commentService.getCommentsByAuthor(author.getId());
+        GetCommentRes before = commentService.getCommentsByAuthor(author.getId());
         commentJpaRepository.delete(novelComment);
         commentJpaRepository.delete(chapterComment);
-        GetCommentResponse after = commentService.getCommentsByAuthor(author.getId());
+        GetCommentRes after = commentService.getCommentsByAuthor(author.getId());
 
         // then
-        assertThat(before.getCommentInfos().size()).isEqualTo(2);
-        assertThat(before.getCommentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(before.getCommentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
-        assertThat(after.getCommentInfos().size()).isZero();
+        assertThat(before.commentInfos().size()).isEqualTo(2);
+        assertThat(before.commentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(before.commentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(after.commentInfos().size()).isZero();
     }
 
     @Test

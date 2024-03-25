@@ -51,7 +51,7 @@ public class OauthController {
     public ResponseEntity<LoginDto> socialLogin(@RequestBody OauthRequest oauthRequest) {
         log.debug("넘겨받은 kakao 인증키 :: " + oauthRequest.getCode());
 
-        MemberInfoDto memberInfoDto = switch (oauthRequest.getOauthProvider()) {
+        MemberInfoDto memberInfoDto = switch (oauthRequest.getOauthProvider()){
             case KAKAO -> oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
             case NAVER ->
                     oauthService.getMemberByOauthLogin(new NaverParams(oauthRequest.getCode(), oauthRequest.getState()));

@@ -5,8 +5,8 @@ on:
   pull_request:
     branches: [main]
     types: [closed]
-  push: #test용
-    branches: [main]
+#  push: #test용
+#    branches: [main]
 
 jobs:
   build:

@@ -1,16 +1,18 @@
 package us.usserver.domain.comment.service;
 
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.domain.comment.dto.GetCommentResponse;
+import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.novel.entity.Novel;
@@ -24,32 +26,55 @@ import us.usserver.global.response.exception.ErrorCode;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final EntityFacade entityFacade;
-    private final CommentRepository commentJpaRepository;
+    private final CommentRepository commentRepository;
+
+    private static final int CommentPageSize = 15;
+
+    public GetCommentRes getCommentsOfNovelSub(Long novelId, Integer nextPage) {
+        Novel novel = entityFacade.getNovel(novelId);
+        if (nextPage == null) { nextPage = 0; }
+
+        PageRequest pageRequest = PageRequest.of(nextPage, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByNovel(novel, pageRequest)
+                .map(CommentInfo::mapCommentToCommentInfo).toList();
+        return new GetCommentRes(commentInfos);
+    }
 
     @Override
-    public GetCommentResponse getCommentsOfNovel(Long novelId) {
+    public GetCommentRes getCommentsOfNovel(Long novelId) {
         Novel novel = entityFacade.getNovel(novelId);
-        List<Comment> commentsOfNovel = commentJpaRepository.findAllByNovel(novel);
+        List<Comment> commentsOfNovel = commentRepository.findAllByNovel(novel);
 
         String novelTitle = novel.getTitle();
         List<CommentInfo> commentInfos = commentsOfNovel.stream()
                 .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getCommentLikes().size()))
                 .toList();
 
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        return GetCommentRes.builder().commentInfos(commentInfos).build();
+    }
+
+    public GetCommentRes getCommentsOfChapterSub(Long chapterId, Integer nextPage) {
+        Chapter chapter = entityFacade.getChapter(chapterId);
+        if (nextPage == null) { nextPage = 0; }
+
+        PageRequest pageRequest = PageRequest.of(nextPage, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByChapter(chapter, pageRequest)
+                .map(CommentInfo::mapCommentToCommentInfo).toList();
+
+        return new GetCommentRes(commentInfos);
     }
 
     @Override
-    public GetCommentResponse getCommentsOfChapter(Long chapterId) {
+    public GetCommentRes getCommentsOfChapter(Long chapterId) {
         Chapter chapter = entityFacade.getChapter(chapterId);
-        List<Comment> commentsOfChapter = commentJpaRepository.findAllByChapter(chapter);
+        List<Comment> commentsOfChapter = commentRepository.findAllByChapter(chapter);
 
         String chapterTitle = chapter.getTitle();
         List<CommentInfo> commentInfos = commentsOfChapter.stream()
                 .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getCommentLikes().size()))
                 .toList();
 
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        return GetCommentRes.builder().commentInfos(commentInfos).build();
     }
 
     @Override
@@ -62,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
-        Comment comment = commentJpaRepository.save(Comment.builder()
+        Comment comment = commentRepository.save(Comment.builder()
                 .content(commentContent.getContent())
                 .author(author)
                 .novel(novel)
@@ -84,7 +109,7 @@ public class CommentServiceImpl implements CommentService {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
-        Comment comment = commentJpaRepository.save(Comment.builder()
+        Comment comment = commentRepository.save(Comment.builder()
                 .content(commentContent.getContent())
                 .author(author)
                 .novel(novel)
@@ -101,9 +126,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public GetCommentResponse getCommentsByAuthor(Long memberId) {
+    public GetCommentRes getCommentsByAuthor(Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
-        List<Comment> commentsByAuthor = commentJpaRepository.findAllByAuthor(author);
+        List<Comment> commentsByAuthor = commentRepository.findAllByAuthor(author);
 
         List<CommentInfo> commentInfos = commentsByAuthor.stream()
                 .map(comment -> CommentInfo
@@ -114,7 +139,7 @@ public class CommentServiceImpl implements CommentService {
                         ))
                 .toList();
 
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        return GetCommentRes.builder().commentInfos(commentInfos).build();
     }
 
     @Override
@@ -126,6 +151,6 @@ public class CommentServiceImpl implements CommentService {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
 
-        commentJpaRepository.delete(comment);
+        commentRepository.delete(comment);
     }
 }
