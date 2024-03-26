@@ -44,11 +44,17 @@ public class CommentInfo {
     }
 
     public static CommentInfo mapCommentToCommentInfo(Comment comment) {
+        String location;
+        if (comment.getChapter() == null) {
+            location = comment.getNovel().getTitle();
+        } else {
+            location = comment.getChapter().getTitle();
+        }
         return CommentInfo.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .authorName(comment.getAuthor().getNickname())
-                .location(comment.getChapter().getTitle())
+                .location(location)
                 .likeCnt(comment.getCommentLikes().size())
                 .createdAt(comment.getCreatedAt())
                 .build();

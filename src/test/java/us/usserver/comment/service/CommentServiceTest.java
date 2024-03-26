@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.comment.CommentMother;
@@ -37,13 +38,14 @@ import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
 @Rollback
+@Transactional
 @SpringBootTest
 class CommentServiceTest {
     @Autowired
     private CommentService commentService;
 
     @Autowired
-    private CommentRepository commentJpaRepository;
+    private CommentRepository commentRepository;
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
@@ -91,22 +93,22 @@ class CommentServiceTest {
         // given
         Comment comment1 = CommentMother.generateComment(author, novel, chapter);
         Comment comment2 = CommentMother.generateComment(author, novel, chapter);
-        Comment comment3 = CommentMother.generateComment(author, novel, chapter);
+        Comment comment3 = CommentMother.generateComment(author, novel, null);
 
         // when
         novel.getComments().add(comment1);
         novel.getComments().add(comment2);
         novel.getComments().add(comment3);
-        commentJpaRepository.save(comment1);
-        commentJpaRepository.save(comment2);
-        commentJpaRepository.save(comment3);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
         GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId(), 0);
 
         // then
         assertThat(commentsOfNovel.commentInfos().size()).isEqualTo(3);
         assertThat(commentsOfNovel.commentInfos().get(0).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentsOfNovel.commentInfos().get(1).getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentsOfNovel.commentInfos().get(2).getLocation()).isEqualTo(novel.getTitle());
+        assertThat(commentsOfNovel.commentInfos().get(1).getLocation()).isEqualTo(chapter.getTitle());
+        assertThat(commentsOfNovel.commentInfos().get(2).getLocation()).isEqualTo(chapter.getTitle());
     }
 
     @Test
@@ -119,10 +121,10 @@ class CommentServiceTest {
 
         // when
         novelRepository.save(newNovel);
-        commentJpaRepository.save(newComment);
+        commentRepository.save(newComment);
         GetCommentRes before = commentService.getCommentsOfNovel(newNovel.getId(), 0);
         novelRepository.delete(newNovel);
-        List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
+        List<Comment> afterComments = commentRepository.findAllByAuthor(author);
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.getCommentsOfNovel(newNovel.getId(), 0));
 
@@ -158,9 +160,9 @@ class CommentServiceTest {
         chapter.getComments().add(comment1);
         chapter.getComments().add(comment2);
         chapter.getComments().add(comment3);
-        commentJpaRepository.save(comment1);
-        commentJpaRepository.save(comment2);
-        commentJpaRepository.save(comment3);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
         GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId(), 0);
 
         // then
@@ -185,7 +187,7 @@ class CommentServiceTest {
         chapterRepository.delete(newChapter);
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.getCommentsOfChapter(newChapter.getId(), 0));
-        List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
+        List<Comment> afterComments = commentRepository.findAllByAuthor(author);
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.CHAPTER_NOT_FOUND);
@@ -222,7 +224,7 @@ class CommentServiceTest {
         // when
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnNovel(novel.getId(), newAuthor.getId(), commentContent));
-        List<Comment> comments = commentJpaRepository.findAllByNovel(novel);
+        List<Comment> comments = commentRepository.findAllByNovel(novel);
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
@@ -275,7 +277,7 @@ class CommentServiceTest {
         // when
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.writeCommentOnChapter(chapter.getId(), newAuthor.getId(), commentContent));
-        List<Comment> comments = commentJpaRepository.findAllByChapter(chapter);
+        List<Comment> comments = commentRepository.findAllByChapter(chapter);
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
@@ -324,8 +326,8 @@ class CommentServiceTest {
         // when
         novel.getComments().add(novelComment);
         chapter.getComments().add(chapterComment);
-        commentJpaRepository.save(novelComment);
-        commentJpaRepository.save(chapterComment);
+        commentRepository.save(novelComment);
+        commentRepository.save(chapterComment);
 
         GetCommentRes commentsByAuthor = commentService.getCommentsByAuthor(author.getId());
 
@@ -345,11 +347,11 @@ class CommentServiceTest {
         // when
         novel.getComments().add(novelComment);
         chapter.getComments().add(chapterComment);
-        commentJpaRepository.save(novelComment);
-        commentJpaRepository.save(chapterComment);
+        commentRepository.save(novelComment);
+        commentRepository.save(chapterComment);
         GetCommentRes before = commentService.getCommentsByAuthor(author.getId());
-        commentJpaRepository.delete(novelComment);
-        commentJpaRepository.delete(chapterComment);
+        commentRepository.delete(novelComment);
+        commentRepository.delete(chapterComment);
         GetCommentRes after = commentService.getCommentsByAuthor(author.getId());
 
         // then
@@ -367,9 +369,9 @@ class CommentServiceTest {
 
         // when
         novel.getComments().add(comment);
-        commentJpaRepository.save(comment);
+        commentRepository.save(comment);
         commentService.deleteComment(comment.getId(), author.getId());
-        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
 
         // then
         assertTrue(commentById.isEmpty());
@@ -383,9 +385,9 @@ class CommentServiceTest {
 
         // when
         chapter.getComments().add(comment);
-        commentJpaRepository.save(comment);
+        commentRepository.save(comment);
         commentService.deleteComment(comment.getId(), author.getId());
-        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
 
         // then
         assertTrue(commentById.isEmpty());
@@ -417,14 +419,54 @@ class CommentServiceTest {
 
         // when
         chapter.getComments().add(comment);
-        commentJpaRepository.save(comment);
+        commentRepository.save(comment);
         authorRepository.save(newAuthor);
         BaseException baseException = assertThrows(BaseException.class,
                 () -> commentService.deleteComment(comment.getId(), newAuthor.getId()));
-        Optional<Comment> commentById = commentJpaRepository.getCommentById(comment.getId());
+        Optional<Comment> commentById = commentRepository.getCommentById(comment.getId());
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
         assertFalse(commentById.isEmpty());
+    }
+
+    @Test
+    @DisplayName("소설 댓글 불러오기 페이징 TEST")
+    void getNovelCommentsPaging() {
+        // given
+        for (int i = 0; i < 15; i++) {
+            Comment newComment = CommentMother.generateComment(author, novel, null);
+            commentRepository.save(newComment);
+        }
+
+        // when
+        GetCommentRes commentsOfNovel0 = commentService.getCommentsOfNovel(novel.getId(), 0);
+        GetCommentRes commentsOfNovel1 = commentService.getCommentsOfNovel(novel.getId(), 1);
+
+        // then
+        assertThat(commentsOfNovel0.commentInfos().size()).isEqualTo(10);
+        assertThat(commentsOfNovel1.commentInfos().size()).isEqualTo(5);
+        commentsOfNovel0.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(novel.getTitle()));
+        commentsOfNovel1.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(novel.getTitle()));
+    }
+
+    @Test
+    @DisplayName("회차 댓글 불러오기 페이징 TEST")
+    void getChapterCommentsPaging() {
+        // given
+        for (int i = 0; i < 15; i++) {
+            Comment newComment = CommentMother.generateComment(author, novel, chapter);
+            commentRepository.save(newComment);
+        }
+
+        // when
+        GetCommentRes commentsOfNovel0 = commentService.getCommentsOfNovel(novel.getId(), 0);
+        GetCommentRes commentsOfNovel1 = commentService.getCommentsOfNovel(novel.getId(), 1);
+
+        // then
+        assertThat(commentsOfNovel0.commentInfos().size()).isEqualTo(10);
+        assertThat(commentsOfNovel1.commentInfos().size()).isEqualTo(5);
+        commentsOfNovel0.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(chapter.getTitle()));
+        commentsOfNovel1.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(chapter.getTitle()));
     }
 }

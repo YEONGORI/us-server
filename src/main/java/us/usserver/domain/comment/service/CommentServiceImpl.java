@@ -27,19 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private final EntityFacade entityFacade;
     private final CommentRepository commentRepository;
 
-    private static final int CommentPageSize = 15;
-
-    public GetCommentRes getCommentsOfNovelSub(Long novelId, Integer nextPage) {
-        Novel novel = entityFacade.getNovel(novelId);
-        List<Comment> commentsOfNovel = commentRepository.findAllByNovel(novel);
-
-        String novelTitle = novel.getTitle();
-        List<CommentInfo> commentInfos = commentsOfNovel.stream()
-                .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getCommentLikes().size()))
-                .toList();
-
-        return GetCommentRes.builder().commentInfos(commentInfos).build();
-    }
+    private static final int CommentPageSize = 10;
 
     @Override
     public GetCommentRes getCommentsOfNovel(Long novelId, int page) {
@@ -51,18 +39,6 @@ public class CommentServiceImpl implements CommentService {
                 .map(CommentInfo::mapCommentToCommentInfo).toList();
         return new GetCommentRes(commentInfos);
 
-    }
-
-    public GetCommentRes getCommentsOfChapterSub(Long chapterId, Integer nextPage) {
-        Chapter chapter = entityFacade.getChapter(chapterId);
-        List<Comment> commentsOfChapter = commentRepository.findAllByChapter(chapter);
-
-        String chapterTitle = chapter.getTitle();
-        List<CommentInfo> commentInfos = commentsOfChapter.stream()
-                .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getCommentLikes().size()))
-                .toList();
-
-        return GetCommentRes.builder().commentInfos(commentInfos).build();
     }
 
     @Override
