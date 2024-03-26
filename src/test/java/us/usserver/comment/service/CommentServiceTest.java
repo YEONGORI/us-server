@@ -54,18 +54,21 @@ class CommentServiceTest {
     private ChapterRepository chapterRepository;
 
     private Novel novel;
+    private Member member;
     private Author author;
     private Chapter chapter;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
+
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
         novel.getChapters().add(chapter);
 
-        authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);
     }
@@ -76,7 +79,7 @@ class CommentServiceTest {
         // given
 
         // when
-        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
+        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId(), 0);
 
         // then
         assertThat(commentsOfNovel.commentInfos()).isEqualTo(Collections.emptyList());
@@ -97,7 +100,7 @@ class CommentServiceTest {
         commentJpaRepository.save(comment1);
         commentJpaRepository.save(comment2);
         commentJpaRepository.save(comment3);
-        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId());
+        GetCommentRes commentsOfNovel = commentService.getCommentsOfNovel(novel.getId(), 0);
 
         // then
         assertThat(commentsOfNovel.commentInfos().size()).isEqualTo(3);
@@ -117,11 +120,11 @@ class CommentServiceTest {
         // when
         novelRepository.save(newNovel);
         commentJpaRepository.save(newComment);
-        GetCommentRes before = commentService.getCommentsOfNovel(newNovel.getId());
+        GetCommentRes before = commentService.getCommentsOfNovel(newNovel.getId(), 0);
         novelRepository.delete(newNovel);
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
         BaseException baseException = assertThrows(BaseException.class,
-                () -> commentService.getCommentsOfNovel(newNovel.getId()));
+                () -> commentService.getCommentsOfNovel(newNovel.getId(), 0));
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.NOVEL_NOT_FOUND);
@@ -137,7 +140,7 @@ class CommentServiceTest {
         // given
 
         // when
-        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
+        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId(), 0);
 
         // then
         assertThat(commentsOfChapter.commentInfos().size()).isZero();
@@ -158,7 +161,7 @@ class CommentServiceTest {
         commentJpaRepository.save(comment1);
         commentJpaRepository.save(comment2);
         commentJpaRepository.save(comment3);
-        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId());
+        GetCommentRes commentsOfChapter = commentService.getCommentsOfChapter(chapter.getId(), 0);
 
         // then
         assertThat(commentsOfChapter.commentInfos().size()).isEqualTo(3);
@@ -178,10 +181,10 @@ class CommentServiceTest {
         novel.getChapters().add(newChapter);
         newChapter.getComments().add(newComment);
         chapterRepository.save(newChapter);
-        GetCommentRes before = commentService.getCommentsOfChapter(newChapter.getId());
+        GetCommentRes before = commentService.getCommentsOfChapter(newChapter.getId(), 0);
         chapterRepository.delete(newChapter);
         BaseException baseException = assertThrows(BaseException.class,
-                () -> commentService.getCommentsOfChapter(newChapter.getId()));
+                () -> commentService.getCommentsOfChapter(newChapter.getId(), 0));
         List<Comment> afterComments = commentJpaRepository.findAllByAuthor(author);
 
         // then
@@ -406,8 +409,10 @@ class CommentServiceTest {
     @DisplayName("댓글 삭제 - 작성자가 본인이 아닌 댓글")
     void deleteComment3() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
         Comment comment = CommentMother.generateComment(author, novel, chapter);
 
         // when
@@ -421,11 +426,5 @@ class CommentServiceTest {
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_AUTHORIZED);
         assertFalse(commentById.isEmpty());
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

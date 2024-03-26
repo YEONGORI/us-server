@@ -89,13 +89,13 @@ public class Novel extends BaseEntity {
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Stake> stakes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<Authority> authorities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<NovelLike> novelLikes = new ArrayList<>();
 
     public void setIdForTest(Long id) {

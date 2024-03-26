@@ -1,44 +1,63 @@
 package us.usserver.chapter.controller;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.comment.CommentMother;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
+import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
+import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.global.response.exception.ExceptionMessage;
+import us.usserver.global.utils.RedisUtils;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 import us.usserver.paragraph.ParagraphMother;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @Rollback
 @AutoConfigureMockMvc
+@Transactional
 class ChapterControllerTest {
     @Autowired
-    private MockMvc mockMvc;
+    private TokenProvider tokenProvider;
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Autowired
     private MemberRepository memberRepository;
-    @Autowired
-    private AuthorRepository authorRepository;
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
@@ -48,46 +67,39 @@ class ChapterControllerTest {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-    private Author author1;
-    private Author author2;
-    private Author author3;
-    private Author author4;
-    private Author author5;
+    @Autowired
+    private MockMvc mockMvc;
+
+    private String accessToken;
+    private String refreshToken;
+    private Member member;
+    private Member newMember;
+    private Author author;
+    private Author newAuthor;
     private Novel novel;
     private Chapter chapter1;
     private Chapter chapter2;
     private Paragraph paragraph1;
     private Paragraph paragraph2;
     private Paragraph paragraph3;
-    private Paragraph paragraph4;
-    private Paragraph paragraph5;
-    private Paragraph paragraph6;
-    private Paragraph paragraph7;
-    private Paragraph paragraph8;
-    private Comment comment1;
-    private Comment comment2;
-    private Comment comment3;
-    private Comment comment4;
 
     @BeforeEach
     void setUp() {
-        Member member1 = MemberMother.generateMember();
-        Member member2 = MemberMother.generateMember();
-        Member member3 = MemberMother.generateMember();
-        Member member4 = MemberMother.generateMember();
-        Member member5 = MemberMother.generateMember();
-        author1 = AuthorMother.generateAuthor();
-        author2 = AuthorMother.generateAuthor();
-        author3 = AuthorMother.generateAuthor();
-        author4 = AuthorMother.generateAuthor();
-        author5 = AuthorMother.generateAuthor();
-        author1.setMember(member1);
-        author2.setMember(member2);
-        author3.setMember(member3);
-        author4.setMember(member4);
-        author5.setMember(member5);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
-        novel = NovelMother.generateNovel(author1);
+        accessToken = tokenProvider.issueAccessToken(member.getId());
+        refreshToken = tokenProvider.issueRefreshToken(member.getId());
+        redisUtils.setDateWithExpiration(refreshToken, member.getId(), Duration.ofDays(1));
+
+        newMember = MemberMother.generateMember();
+        newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
+
+        novel = NovelMother.generateNovel(author);
         chapter1 = ChapterMother.generateChapter(novel);
         chapter1.setPartForTest(1);
         chapter2 = ChapterMother.generateChapter(novel);
@@ -95,89 +107,117 @@ class ChapterControllerTest {
         novel.getChapters().add(chapter1);
         novel.getChapters().add(chapter2);
 
-        CommentMother.generateComment(author1, novel, chapter1);
+        CommentMother.generateComment(newAuthor, novel, chapter1);
 
-        paragraph1 = ParagraphMother.generateParagraph(author1, chapter1);
-        paragraph2 = ParagraphMother.generateParagraph(author2, chapter1);
-        paragraph3 = ParagraphMother.generateParagraph(author3, chapter1);
+        paragraph1 = ParagraphMother.generateParagraph(author, chapter1);
+        paragraph2 = ParagraphMother.generateParagraph(newAuthor, chapter1);
         paragraph1.setSequenceForTest(1);
         paragraph1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         paragraph2.setSequenceForTest(2);
         paragraph2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph3.setSequenceForTest(3);
-        paragraph3.setParagraphStatusForTest(ParagraphStatus.SELECTED);
         chapter1.getParagraphs().add(paragraph1);
         chapter1.getParagraphs().add(paragraph2);
-        chapter1.getParagraphs().add(paragraph3);
 
-        paragraph4 = ParagraphMother.generateParagraph(author4, chapter2);
-        paragraph5 = ParagraphMother.generateParagraph(author4, chapter2);
-        paragraph6 = ParagraphMother.generateParagraph(author4, chapter2);
-        paragraph7 = ParagraphMother.generateParagraph(author5, chapter2);
-        paragraph8 = ParagraphMother.generateParagraph(author5, chapter2);
-        paragraph4.setSequenceForTest(1);
-        paragraph4.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph5.setSequenceForTest(2);
-        paragraph5.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph6.setSequenceForTest(3);
-        paragraph6.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph7.setSequenceForTest(4);
-        paragraph7.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph8.setSequenceForTest(4);
-        paragraph8.setParagraphStatusForTest(ParagraphStatus.UNSELECTED);
-        chapter2.getParagraphs().add(paragraph4);
-        chapter2.getParagraphs().add(paragraph5);
-        chapter2.getParagraphs().add(paragraph6);
-        chapter2.getParagraphs().add(paragraph7);
-        chapter2.getParagraphs().add(paragraph8);
 
-        Authority authority1 = Authority.builder().author(author1).novel(novel).build();
-        Authority authority2 = Authority.builder().author(author2).novel(novel).build();
-        Authority authority3 = Authority.builder().author(author3).novel(novel).build();
-        Authority authority4 = Authority.builder().author(author4).novel(novel).build();
-        Authority authority5 = Authority.builder().author(author5).novel(novel).build();
+        paragraph3 = ParagraphMother.generateParagraph(author, chapter2);
+        paragraph3.setSequenceForTest(1);
+        paragraph3.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        chapter2.getParagraphs().add(paragraph3);
 
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
-        memberRepository.save(member4);
-        memberRepository.save(member5);
-        authorRepository.save(author1);
-        authorRepository.save(author2);
-        authorRepository.save(author3);
-        authorRepository.save(author4);
-        authorRepository.save(author5);
+        Authority authority1 = Authority.builder().author(newAuthor).novel(novel).build();
+
+
         novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
         paragraphRepository.save(paragraph1);
         paragraphRepository.save(paragraph2);
         paragraphRepository.save(paragraph3);
-        paragraphRepository.save(paragraph4);
-        paragraphRepository.save(paragraph5);
-        paragraphRepository.save(paragraph6);
-        paragraphRepository.save(paragraph7);
-        paragraphRepository.save(paragraph8);
         authorityRepository.save(authority1);
-        authorityRepository.save(authority2);
-        authorityRepository.save(authority3);
-        authorityRepository.save(authority4);
-        authorityRepository.save(authority5);
     }
 
     @Test
-    void getChapterDetailInfo() {
+    @DisplayName("특정 소설의 n화를 조회하는 API TEST")
+    void getChapterDetailInfo() throws Exception {
         // given
-        Paragraph newParagraph = ParagraphMother.generateParagraph(author1, chapter2);
-        newParagraph.setSequenceForTest(5);
 
         // when
-
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/chapter/" + novel.getId() + "/" + chapter1.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
+        assertThat(resultString).contains(chapter1.getTitle());
+        chapter1.getParagraphs()
+                .forEach(paragraph -> assertThat(resultString).contains(paragraph.getContent()));
     }
 
     @Test
-    void createChapter() {
+    @DisplayName("특정 소설의 챕터를 생성 API TEST")
+    void createChapter1() throws Exception {
+        // given
+        chapter1.setStatusForTest(ChapterStatus.COMPLETED);
+        chapter2.setStatusForTest(ChapterStatus.COMPLETED);
+
+        // when
+        chapterRepository.save(chapter1);
+        chapterRepository.save(chapter2);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/chapter/" + novel.getId())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Authorization-Refresh", "Bearer " + refreshToken)
+                        .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        resultActions.andExpect(status().isOk());
+        assertThat(resultString).contains("success");
+    }
+
+    @Test
+    @DisplayName("챕터 생성 실패(메인 작가가 아님) API TEST")
+    void createChapter2() throws Exception {
+        // given
+        String newAccessToken = tokenProvider.issueAccessToken(newMember.getId());
+        String newRefreshToken = tokenProvider.issueRefreshToken(newMember.getId());
+        redisUtils.setDateWithExpiration(newRefreshToken, newMember.getId(), Duration.ofDays(1));
+
+        chapter1.setStatusForTest(ChapterStatus.COMPLETED);
+        chapter2.setStatusForTest(ChapterStatus.COMPLETED);
+
+        // when
+        chapterRepository.save(chapter1);
+        chapterRepository.save(chapter2);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/chapter/" + novel.getId())
+                .header("Authorization", "Bearer " + newAccessToken)
+                .header("Authorization-Refresh", "Bearer " + newRefreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultString).contains(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
+    }
+
+    @Test
+    @DisplayName("챕터 생성 실패(이전 회차 작성중) API TEST")
+    void createChapter3() throws Exception {
+        // given
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/chapter/" + novel.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultString).contains(ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS);
     }
 }

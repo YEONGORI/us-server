@@ -29,4 +29,5 @@ public final class ExceptionMessage {
     public static final String PREVIOUS_CHAPTER_IS_IN_PROGRESS = "이전 화가 아직 작성중입니다.";
     public static final String LIKE_ONLY_SELECTED_PARAGRAPH = "좋아요는 선택된 한줄에만 가능합니다.";
     public static final String READ_NOVEL_NOT_FOUND = "해당 읽은 소설이 존재하지 않습니다.";
+    public static final String SCORE_ALREADY_ENTERED = "평점이 이미 입력되었습니다.";
 }

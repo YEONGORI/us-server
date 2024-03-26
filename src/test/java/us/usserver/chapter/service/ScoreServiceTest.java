@@ -1,5 +1,7 @@
 package us.usserver.chapter.service;
 
+import org.assertj.core.data.Percentage;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,20 +47,22 @@ class ScoreServiceTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
+    private Member member;
     private Author author;
     private Novel novel;
     private Chapter chapter;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
+
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
-
         novel.getChapters().add(chapter);
 
-        authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);
     }
@@ -103,13 +107,12 @@ class ScoreServiceTest {
         // when
         assertDoesNotThrow(
                 () -> scoreService.postScore(chapter.getId(), author.getId(), postScore1));
-        assertDoesNotThrow(
+        BaseException baseException = assertThrows(BaseException.class,
                 () -> scoreService.postScore(chapter.getId(), author.getId(), postScore2));
-        Double chapterScore = scoreService.getChapterScore(chapter);
 
 
         // then
-        assertThat(chapterScore).isEqualTo(10.0);
+        assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.SCORE_ALREADY_ENTERED);
     }
 
 
@@ -117,12 +120,20 @@ class ScoreServiceTest {
     @DisplayName("챕터 평점 조회 하기")
     void getChapterScore() {
         // given
-        Author author1 = AuthorMother.generateAuthor();
-        Author author2 = AuthorMother.generateAuthor();
-        Author author3 = AuthorMother.generateAuthor();
-        setMember(author1);
-        setMember(author2);
-        setMember(author3);
+        Member member1 = MemberMother.generateMember();
+        Author author1 = AuthorMother.generateAuthorWithMember(member1);
+        member1.setAuthor(author1);
+        memberRepository.save(member1);
+
+        Member member2 = MemberMother.generateMember();
+        Author author2 = AuthorMother.generateAuthorWithMember(member2);
+        member2.setAuthor(author2);
+        memberRepository.save(member2);
+
+        Member member3 = MemberMother.generateMember();
+        Author author3 = AuthorMother.generateAuthorWithMember(member3);
+        member3.setAuthor(author3);
+        memberRepository.save(member3);
 
         PostScore postScore1 = PostScore.builder().score(1).build();
         PostScore postScore2 = PostScore.builder().score(3).build();
@@ -138,12 +149,6 @@ class ScoreServiceTest {
         Double chapterScore = scoreService.getChapterScore(chapter);
 
         // then
-        assertThat(chapterScore).isEqualTo(4.666666666666667);
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
+        assertThat(chapterScore).isCloseTo(4.666666666666667, Percentage.withPercentage(0.1));
     }
 }

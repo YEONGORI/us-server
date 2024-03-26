@@ -95,25 +95,29 @@ public class ChapterServiceImpl implements ChapterService {
     public void createChapter(Long novelId, Long memberId) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthorByMemberId(memberId);
-        List<Chapter> chapters = novel.getChapters();
-        Chapter prevChapter = chapters.get(chapters.size() - 1);
-
-        if (prevChapter.getStatus() == ChapterStatus.IN_PROGRESS) {
-            throw new IllegalStateException(ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS);
-        }
         if (!novel.getMainAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
-        Integer currPart = prevChapter.getPart() + 1;
-        Chapter chapter = Chapter.builder()
-                .part(currPart)
-                .title(novel.getTitle() + " " + currPart + "화")
-                .status(ChapterStatus.IN_PROGRESS)
-                .novel(novel)
-                .build();
-
+        List<Chapter> chapters = novel.getChapters();
+        Chapter chapter;
+        if (chapters.isEmpty()) {
+            chapter = Chapter.createChapter(
+                    makeTitle(novel.getTitle(), 1), 1, ChapterStatus.IN_PROGRESS, novel);
+        } else {
+            Chapter prevChapter = chapters.get(chapters.size() - 1);
+            if (prevChapter.getStatus() == ChapterStatus.IN_PROGRESS) {
+                throw new IllegalArgumentException(ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS);
+            }
+            Integer currPart = prevChapter.getPart() + 1;
+            chapter = Chapter.createChapter(
+                            makeTitle(novel.getTitle(), currPart), currPart, ChapterStatus.IN_PROGRESS, novel);
+        }
         novel.addChapter(chapter);
         chapterRepository.save(chapter);
+    }
+
+    private String makeTitle(String novelName, Integer part) {
+        return novelName + " " + part + "화";
     }
 }

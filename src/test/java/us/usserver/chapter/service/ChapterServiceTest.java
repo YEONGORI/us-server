@@ -27,7 +27,6 @@ import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.MainAuthorIsNotMatchedException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
@@ -59,12 +58,14 @@ class ChapterServiceTest {
 
     private Novel novel;
     private Author author;
+    private Member member;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
-        authorRepository.save(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
         novel = NovelMother.generateNovel(author);
         novelRepository.save(novel);
@@ -73,6 +74,8 @@ class ChapterServiceTest {
     @Test
     @DisplayName("회차 생성")
     void createChapter1() {
+        // given
+
         // when
         assertDoesNotThrow(
                 () -> chapterService.createChapter(novel.getId(), author.getId()));
@@ -86,8 +89,10 @@ class ChapterServiceTest {
     @DisplayName("권한 없는 유저의 회차 생성")
     void createChapter2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
 
         // when
         authorRepository.save(newAuthor);
@@ -133,10 +138,9 @@ class ChapterServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 소설의 회차 조회 테스트")
+    @DisplayName("빈 소설의 회차 조회 테스트")
     void getChaptersOfNotExistNovel() {
         // given
-        Novel newNovel = NovelMother.generateNovel(author);
 
         // when
         List<ChapterInfo> chapterInfos = chapterService.getChaptersOfNovel(novel);
@@ -224,23 +228,28 @@ class ChapterServiceTest {
     @DisplayName("댓글 갯수, 베스트 댓글 정보 확인 테스트")
     void getChapterDetailInfo3() {
         // given
-        Member newMember1 = MemberMother.generateMember();
-        Author newAuthor1 = AuthorMother.generateAuthor();
-        newAuthor1.setMember(newMember1);
-        Member newMember2 = MemberMother.generateMember();
-        Author newAuthor2 = AuthorMother.generateAuthor();
-        newAuthor2.setMember(newMember2);
+        Member member1 = MemberMother.generateMember();
+        Author author1 = AuthorMother.generateAuthorWithMember(member1);
+        member1.setAuthor(author1);
+        memberRepository.save(member1);
+
+        Member member2 = MemberMother.generateMember();
+        Author author2 = AuthorMother.generateAuthorWithMember(member2);
+        member2.setAuthor(author2);
+        memberRepository.save(member2);
+
         Chapter chapter1 = ChapterMother.generateChapter(novel);
         novel.getChapters().add(chapter1);
         chapterRepository.save(chapter1);
+
         Comment comment1 = CommentMother.generateComment(author, novel, chapter1);
         Comment comment2 = CommentMother.generateComment(author, novel, chapter1);
         Comment comment3 = CommentMother.generateComment(author, novel, chapter1);
         Comment comment4 = CommentMother.generateComment(author, novel, null);
-        CommentLike commentLike1 = CommentLike.builder().author(newAuthor1).comment(comment1).build();
-        CommentLike commentLike2 = CommentLike.builder().author(newAuthor2).comment(comment1).build();
-        CommentLike commentLike3 = CommentLike.builder().author(newAuthor1).comment(comment2).build();
-        CommentLike commentLike4 = CommentLike.builder().author(newAuthor2).comment(comment2).build();
+        CommentLike commentLike1 = CommentLike.builder().author(author1).comment(comment1).build();
+        CommentLike commentLike2 = CommentLike.builder().author(author2).comment(comment1).build();
+        CommentLike commentLike3 = CommentLike.builder().author(author1).comment(comment2).build();
+        CommentLike commentLike4 = CommentLike.builder().author(author2).comment(comment2).build();
         comment1.getCommentLikes().add(commentLike1);
         comment1.getCommentLikes().add(commentLike2);
         comment2.getCommentLikes().add(commentLike3);
@@ -249,10 +258,6 @@ class ChapterServiceTest {
         chapter1.getComments().add(comment2);
         chapter1.getComments().add(comment3);
         novel.getComments().add(comment4);
-        memberRepository.save(newMember1);
-        memberRepository.save(newMember2);
-        authorRepository.save(newAuthor1);
-        authorRepository.save(newAuthor2);
         commentRepository.save(comment1);
         commentRepository.save(comment2);
         commentRepository.save(comment3);
@@ -297,15 +302,5 @@ class ChapterServiceTest {
         // then
         assertThat(chapterDetailInfo.getFontSize()).isEqualTo(15);
         assertThat(chapterDetailInfo.getParagraphSpace()).isEqualTo(16);
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
-    }
-
-    private static String createChapterUrl(Long novelId, Long chapterId) {
-        return "http://localhost:8000/chapter/" + novelId + "/" + chapterId;
     }
 }

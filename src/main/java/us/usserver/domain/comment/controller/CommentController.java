@@ -11,14 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentRes;
@@ -47,8 +40,10 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
     })
     @GetMapping("/novel/{novelId}")
-    public ApiCsResponse<GetCommentRes> getCommentsOfNovel(@PathVariable Long novelId) {
-        GetCommentRes comments = commentService.getCommentsOfNovel(novelId);
+    public ApiCsResponse<GetCommentRes> getCommentsOfNovel(
+            @PathVariable Long novelId,
+            @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        GetCommentRes comments = commentService.getCommentsOfNovel(novelId, page);
         return ApiCsResponse.success(comments);
     }
 
@@ -61,8 +56,10 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
     })
     @GetMapping("/chapter/{chapterId}")
-    public ApiCsResponse<GetCommentRes> getCommentsOfChapter(@PathVariable Long chapterId) {
-        GetCommentRes comments = commentService.getCommentsOfChapter(chapterId);
+    public ApiCsResponse<GetCommentRes> getCommentsOfChapter(
+            @PathVariable Long chapterId,
+            @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        GetCommentRes comments = commentService.getCommentsOfChapter(chapterId, page);
         return ApiCsResponse.success(comments);
     }
 

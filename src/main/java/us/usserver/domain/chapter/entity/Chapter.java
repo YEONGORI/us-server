@@ -33,7 +33,6 @@ public class Chapter extends BaseEntity {
     @NotNull
     private Integer part;
 
-    @Setter
     private ChapterStatus status;
 
     @ManyToOne
@@ -45,6 +44,10 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
+    public static Chapter createChapter(String title, Integer part, ChapterStatus status, Novel novel) {
+        return Chapter.builder().title(title).part(part).status(status).novel(novel).build();
+    }
 
     public void setStatusForTest(ChapterStatus status) {
         this.status = status;
@@ -58,5 +61,8 @@ public class Chapter extends BaseEntity {
     }
     public void addComment(Comment comment) {
         this.comments.add(comment);
+    }
+    public void changeStatus(ChapterStatus status) {
+        this.status = status;
     }
 }

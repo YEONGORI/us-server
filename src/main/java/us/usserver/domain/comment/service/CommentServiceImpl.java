@@ -4,7 +4,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,17 +31,6 @@ public class CommentServiceImpl implements CommentService {
 
     public GetCommentRes getCommentsOfNovelSub(Long novelId, Integer nextPage) {
         Novel novel = entityFacade.getNovel(novelId);
-        if (nextPage == null) { nextPage = 0; }
-
-        PageRequest pageRequest = PageRequest.of(nextPage, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<CommentInfo> commentInfos = commentRepository.findSliceByNovel(novel, pageRequest)
-                .map(CommentInfo::mapCommentToCommentInfo).toList();
-        return new GetCommentRes(commentInfos);
-    }
-
-    @Override
-    public GetCommentRes getCommentsOfNovel(Long novelId) {
-        Novel novel = entityFacade.getNovel(novelId);
         List<Comment> commentsOfNovel = commentRepository.findAllByNovel(novel);
 
         String novelTitle = novel.getTitle();
@@ -53,19 +41,19 @@ public class CommentServiceImpl implements CommentService {
         return GetCommentRes.builder().commentInfos(commentInfos).build();
     }
 
-    public GetCommentRes getCommentsOfChapterSub(Long chapterId, Integer nextPage) {
-        Chapter chapter = entityFacade.getChapter(chapterId);
-        if (nextPage == null) { nextPage = 0; }
+    @Override
+    public GetCommentRes getCommentsOfNovel(Long novelId, int page) {
 
-        PageRequest pageRequest = PageRequest.of(nextPage, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<CommentInfo> commentInfos = commentRepository.findSliceByChapter(chapter, pageRequest)
+        Novel novel = entityFacade.getNovel(novelId);
+
+        PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByNovel(novel, pageRequest)
                 .map(CommentInfo::mapCommentToCommentInfo).toList();
-
         return new GetCommentRes(commentInfos);
+
     }
 
-    @Override
-    public GetCommentRes getCommentsOfChapter(Long chapterId) {
+    public GetCommentRes getCommentsOfChapterSub(Long chapterId, Integer nextPage) {
         Chapter chapter = entityFacade.getChapter(chapterId);
         List<Comment> commentsOfChapter = commentRepository.findAllByChapter(chapter);
 
@@ -75,6 +63,17 @@ public class CommentServiceImpl implements CommentService {
                 .toList();
 
         return GetCommentRes.builder().commentInfos(commentInfos).build();
+    }
+
+    @Override
+    public GetCommentRes getCommentsOfChapter(Long chapterId, int page) {
+        Chapter chapter = entityFacade.getChapter(chapterId);
+
+        PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByChapter(chapter, pageRequest)
+                .map(CommentInfo::mapCommentToCommentInfo).toList();
+
+        return new GetCommentRes(commentInfos);
     }
 
     @Override

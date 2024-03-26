@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.dto.res.BookshelfDefaultResponse;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Rollback
+@Transactional
 @SpringBootTest
 class BookshelfServiceTest {
     @Autowired
@@ -52,17 +54,19 @@ class BookshelfServiceTest {
     @Autowired
     private AuthorityRepository authorityRepository;
     @Autowired
-    private NovelLikeRepository novelLikeCustomRepository;
+    private NovelLikeRepository novelLikeRepository;
 
+    private Member member;
     private Author author;
     private Novel novel;
     private Chapter chapter;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
-        authorRepository.save(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
@@ -103,8 +107,10 @@ class BookshelfServiceTest {
     @DisplayName("최근 본 소설 조회 - 최근 본 소설 없음")
     void recentViewedNovels2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
 
         // when
         authorRepository.save(newAuthor);
@@ -134,8 +140,10 @@ class BookshelfServiceTest {
     @DisplayName("내가 생성한 소설 조회 - 0개")
     void createdNovels1() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
 
         // when
         authorRepository.save(newAuthor);
@@ -173,21 +181,26 @@ class BookshelfServiceTest {
         Novel newNovel1 = NovelMother.generateNovel(author);
         Novel newNovel2 = NovelMother.generateNovel(author);
         Novel newNovel3 = NovelMother.generateNovel(author);
+        Authority authority1 = Authority.builder().novel(newNovel1).author(author).build();
+        Authority authority2 = Authority.builder().novel(newNovel2).author(author).build();
+        Authority authority3 = Authority.builder().novel(newNovel3).author(author).build();
 
         // when
         novelRepository.save(newNovel1);
         novelRepository.save(newNovel2);
         novelRepository.save(newNovel3);
-        authorityRepository.save(Authority.builder().novel(newNovel1).author(author).build());
-        authorityRepository.save(Authority.builder().novel(newNovel2).author(author).build());
-        authorityRepository.save(Authority.builder().novel(newNovel3).author(author).build());
+        authorityRepository.save(authority1);
+        authorityRepository.save(authority2);
+        authorityRepository.save(authority3);
         BookshelfDefaultResponse before = bookshelfService.createdNovels(author.getId());
 
+        authorityRepository.delete(authority1);
+        authorityRepository.delete(authority2);
+        authorityRepository.delete(authority3);
         novelRepository.delete(newNovel1);
         novelRepository.delete(newNovel2);
         novelRepository.delete(newNovel3);
         BookshelfDefaultResponse after = bookshelfService.createdNovels(author.getId());
-
 
         // then
         assertThat(before.novelPreviews().size()).isEqualTo(4);
@@ -212,8 +225,10 @@ class BookshelfServiceTest {
     @DisplayName("내가 참여 중인 소설 조회 - 0개")
     void joinedNovels1() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
 
         // when
         authorRepository.save(newAuthor);
@@ -227,8 +242,10 @@ class BookshelfServiceTest {
     @DisplayName("내가 참여 중인 소설 조회 - 2개 이상")
     void joinedNovels2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
         Novel newNovel1 = NovelMother.generateNovel(newAuthor);
         Novel newNovel2 = NovelMother.generateNovel(newAuthor);
 
@@ -249,19 +266,25 @@ class BookshelfServiceTest {
     @DisplayName("내가 참여 중인 소설 조회 - 삭제된 소설")
     void joinedNovels3() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
         Novel newNovel1 = NovelMother.generateNovel(newAuthor);
         Novel newNovel2 = NovelMother.generateNovel(newAuthor);
+        Authority authority1 = Authority.builder().novel(newNovel1).author(newAuthor).build();
+        Authority authority2 = Authority.builder().novel(newNovel1).author(newAuthor).build();
 
         // when
         authorRepository.save(newAuthor);
         novelRepository.save(newNovel1);
         novelRepository.save(newNovel2);
-        authorityRepository.save(Authority.builder().novel(newNovel1).author(newAuthor).build());
-        authorityRepository.save(Authority.builder().novel(newNovel2).author(newAuthor).build());
+        authorityRepository.save(authority1);
+        authorityRepository.save(authority2);
         BookshelfDefaultResponse before = bookshelfService.joinedNovels(newAuthor.getId());
 
+        authorityRepository.delete(authority1);
+        authorityRepository.delete(authority2);
         novelRepository.delete(newNovel1);
         novelRepository.delete(newNovel2);
         BookshelfDefaultResponse after = bookshelfService.joinedNovels(newAuthor.getId());
@@ -279,7 +302,7 @@ class BookshelfServiceTest {
         NovelLike like = NovelLike.builder().novel(novel).author(author).build();
 
         // when
-        novelLikeCustomRepository.save(like);
+        novelLikeRepository.save(like);
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(author.getId());
 
         // then
@@ -313,8 +336,8 @@ class BookshelfServiceTest {
         // when
         novelRepository.save(newNovel1);
         novelRepository.save(newNovel2);
-        novelLikeCustomRepository.save(like1);
-        novelLikeCustomRepository.save(like2);
+        novelLikeRepository.save(like1);
+        novelLikeRepository.save(like2);
         BookshelfDefaultResponse bookshelfDefaultResponse = bookshelfService.likedNovels(author.getId());
 
         // then
@@ -330,8 +353,10 @@ class BookshelfServiceTest {
 
         // when
         novelRepository.save(newNovel);
-        novelLikeCustomRepository.save(like);
+        novelLikeRepository.save(like);
         BookshelfDefaultResponse before = bookshelfService.likedNovels(author.getId());
+
+        novelLikeRepository.delete(like);
         novelRepository.delete(newNovel);
         BookshelfDefaultResponse after = bookshelfService.likedNovels(author.getId());
 
@@ -340,14 +365,12 @@ class BookshelfServiceTest {
         assertThat(after.novelPreviews().size()).isZero();
     }
 
-
-
     @Test
     @DisplayName("모든 책장 조회 기능 중 - 존재하지 않는 사용자")
     void recentViewedNovels1() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
 
         // when
         BaseException baseException1 = assertThrows(BaseException.class,
@@ -365,11 +388,5 @@ class BookshelfServiceTest {
         assertThat(baseException3.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
         assertThat(baseException4.getMessage()).isEqualTo(ExceptionMessage.AUTHOR_NOT_FOUND);
 
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

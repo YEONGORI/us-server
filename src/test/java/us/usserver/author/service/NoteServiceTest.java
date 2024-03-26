@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.dto.ParagraphPreview;
@@ -32,6 +33,7 @@ import us.usserver.paragraph.ParagraphMother;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Rollback
+@Transactional
 @SpringBootTest
 class NoteServiceTest {
     @Autowired
@@ -52,6 +54,7 @@ class NoteServiceTest {
     @Autowired
     private ParagraphLikeRepository paragraphLikeRepository;
 
+    Member member;
     Author author;
     Novel novel;
     Chapter chapter;
@@ -59,8 +62,11 @@ class NoteServiceTest {
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
+
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
         paragraph = ParagraphMother.generateParagraph(author, chapter);
@@ -98,8 +104,10 @@ class NoteServiceTest {
     @DisplayName("남이 쓴 한줄은 가져오지 않는 테스트")
     void wroteParagraphs2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
         Paragraph newParagraph = ParagraphMother.generateParagraph(newAuthor, chapter);
 
         // when
@@ -134,8 +142,10 @@ class NoteServiceTest {
     @DisplayName("남이 투표한 한줄은 가져오지 않는 테스트")
     void votedParagraphs2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
         Vote vote = Vote.builder().author(newAuthor).paragraph(paragraph).build();
 
         // when
@@ -176,11 +186,5 @@ class NoteServiceTest {
         assertThat(getParagraphNote.getParagraphPreviews().size()).isOne();
         assertThat(getParagraphNote.getParagraphPreviews().get(0).paragraphContent()).isEqualTo(paragraph.getContent());
 
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

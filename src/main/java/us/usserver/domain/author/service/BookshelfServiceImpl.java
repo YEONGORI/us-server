@@ -37,8 +37,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public BookshelfDefaultResponse recentViewedNovels(Long memberId) {
-        Member member = entityFacade.getMember(memberId);
-        Author author = member.getAuthor();
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Set<ReadNovel> readNovels = author.getReadNovels();
 
         List<NovelPreview> novelPreviews = readNovels.stream()
@@ -51,14 +50,14 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void deleteRecentViewedNovels(Long memberId, Long readNovelId) {
-        Author author = entityFacade.getAuthor(memberId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         ReadNovel readNovel = entityFacade.getReadNovel(readNovelId);
         author.deleteReadNovel(readNovel);
     }
 
     @Override
     public BookshelfDefaultResponse createdNovels(Long memberId) {
-        Author author = entityFacade.getAuthor(memberId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         List<Novel> allByMainAuthor = novelRepository.findAllByMainAuthor(author);
 
         List<NovelPreview> novelPreviews = allByMainAuthor.stream()
@@ -78,7 +77,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public BookshelfDefaultResponse joinedNovels(Long memberId) {
-        Author author = entityFacade.getAuthor(memberId);
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         List<Authority> authorities = authorityRepository.findAllByAuthor(author);
         List<NovelPreview> novelPreviews = authorities.stream()
@@ -98,8 +97,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public BookshelfDefaultResponse likedNovels(Long memberId) {
-        Member member = entityFacade.getMember(memberId);
-        Author author = member.getAuthor();
+        Author author = entityFacade.getAuthorByMemberId(memberId);
 
         List<NovelLike> novelLikes = novelLikeRepository.findAllByAuthor(author);
         List<NovelPreview> novelPreviews = novelLikes.stream()
@@ -114,8 +112,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void deleteLikedNovels(Long memberId, Long novelId) {
-        Member member = entityFacade.getMember(memberId);
-        Author author = member.getAuthor();
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Novel novel = entityFacade.getNovel(novelId);
 
         Optional<NovelLike> novelLike = novelLikeRepository.findFirstByNovelAndAuthor(novel, author);
