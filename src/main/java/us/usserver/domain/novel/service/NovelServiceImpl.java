@@ -25,12 +25,12 @@ import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
-import us.usserver.global.response.exception.AuthorNotFoundException;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
-import us.usserver.global.response.exception.ExceptionMessage;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -222,7 +222,7 @@ public class NovelServiceImpl implements NovelService {
     @Transactional
     public void deleteSearchKeyword(Member member) {
         Author author = authorRepository.getAuthorByMember(member)
-                .orElseThrow(() -> new AuthorNotFoundException(ExceptionMessage.AUTHOR_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
 
         String key = String.valueOf(author.getId());
         Long size = redisTemplate.opsForList().size(key);

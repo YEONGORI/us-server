@@ -4,9 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,8 +14,9 @@ import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.service.CommentService;
-import us.usserver.global.response.exception.*;
 import us.usserver.global.response.ApiCsResponse;
+
+import java.net.URI;
 
 @Tag(name = "댓글 API")
 @ResponseBody
@@ -28,13 +27,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "소설의 댓글 불러오기", description = "한 소설에서 작성된 댓글 전부 불러오기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "소설 정보가 유효하지 않습니다..",
-                    content = @Content(schema = @Schema(implementation = NovelNotFoundException.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
+            content = @Content(schema = @Schema(implementation = GetCommentRes.class)))
     @GetMapping("/novel/{novelId}")
     public ApiCsResponse<GetCommentRes> getCommentsOfNovel(
             @PathVariable Long novelId,
@@ -44,13 +38,8 @@ public class CommentController {
     }
 
     @Operation(summary = "회차의 댓글 불러오기", description = "한 회차에서 작성된 댓글 전부 불러오기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "회차 정보가 유효하지 않습니다..",
-                    content = @Content(schema = @Schema(implementation = ChapterNotFoundException.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
+            content = @Content(schema = @Schema(implementation = GetCommentRes.class)))
     @GetMapping("/chapter/{chapterId}")
     public ApiCsResponse<GetCommentRes> getCommentsOfChapter(
             @PathVariable Long chapterId,
@@ -60,16 +49,8 @@ public class CommentController {
     }
 
     @Operation(summary = "소설에 댓글 작성하기", description = "한 소설에 대한 댓글 작성하기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공",
-                    content = @Content(schema = @Schema(implementation = CommentInfo.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "댓글이 너무 깁니다.",
-                    content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class)))
-    })
+    @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공",
+            content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PostMapping("/novel/{novelId}")
     public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnNovel(
             @AuthenticationPrincipal Long memberId,
@@ -85,16 +66,8 @@ public class CommentController {
     }
 
     @Operation(summary = "회차에 댓글 작성하기", description = "한 회차에 대한 댓글 작성하기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공",
-                    content = @Content(schema = @Schema(implementation = CommentInfo.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "댓글이 너무 깁니다.",
-                    content = @Content(schema = @Schema(implementation = CommentLengthOutOfRangeException.class)))
-    })
+    @ApiResponse(responseCode = "201", description = "댓글 작성하기 성공",
+            content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PostMapping("/chapter/{chapterId}")
     public ResponseEntity<ApiCsResponse<CommentInfo>> postCommentOnChapter(
             @AuthenticationPrincipal Long memberId,
@@ -109,13 +82,8 @@ public class CommentController {
     }
 
     @Operation(summary = "내가 작성한 댓글 불러오기", description = "내가 작성한 모든 댓글 불러오기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = GetCommentRes.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "댓글 불러오기 성공",
+            content = @Content(schema = @Schema(implementation = GetCommentRes.class)))
     @GetMapping("/author")
     public ApiCsResponse<GetCommentRes> getCommentsOfAuthor(@AuthenticationPrincipal Long memberId) {
         GetCommentRes comments = commentService.getCommentsByAuthor(memberId);
@@ -123,16 +91,8 @@ public class CommentController {
     }
 
     @Operation(summary = "작성한 댓글 삭제하기", description = "내가 작성한 댓글 삭제하기")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "댓글 삭제하기 성공",
-                    content = @Content(schema = @Schema(implementation = String.class))),
-            @ApiResponse(
-                    responseCode = "400", description = "작가 정보가 유효하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
-            @ApiResponse(
-                    responseCode = "401", description = "작성자 본인이 아닙니다.",
-                    content = @Content(schema = @Schema(implementation = AuthorNotAuthorizedException.class)))
-    })
+    @ApiResponse(responseCode = "204", description = "댓글 삭제하기 성공",
+            content = @Content(schema = @Schema(implementation = String.class)))
     @DeleteMapping("/{commentId}")
     public ApiCsResponse<Void> deleteComment(
             @AuthenticationPrincipal Long memberId,

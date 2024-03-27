@@ -16,7 +16,6 @@ import us.usserver.global.response.exception.ErrorCode;
 @Service
 public class AuthorServiceImpl implements AuthorService {
     private final EntityFacade entityFacade;
-    private final AuthorRepository authorRepository;
 
     @Override
     public void updateAuthor(Long memberId, UpdateAuthorReq updateAuthorReq) {

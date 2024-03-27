@@ -14,10 +14,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import us.usserver.author.AuthorMother;
-import us.usserver.chapter.ChapterMother;
+import org.springframework.transaction.annotation.Transactional;
+import us.usserver.domain.author.AuthorMother;
+import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
@@ -26,14 +26,15 @@ import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.utils.RedisUtils;
-import us.usserver.member.MemberMother;
-import us.usserver.novel.NovelMother;
+import us.usserver.domain.member.MemberMother;
+import us.usserver.domain.novel.NovelMother;
 
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 class NotificationControllerTest {
