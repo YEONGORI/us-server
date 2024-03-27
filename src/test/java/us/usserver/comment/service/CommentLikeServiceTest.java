@@ -123,11 +123,11 @@ class CommentLikeServiceTest {
     @Test
     @DisplayName("좋아요 취소 실패(본인 좋아요가 아님)")
     void deleteLike2() {
+        // given
         Member newMember = MemberMother.generateMember();
         Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
         newMember.setAuthor(newAuthor);
         memberRepository.save(newMember);
-        // given
         CommentLike commentLike = CommentLike.builder().comment(comment).author(newAuthor).build();
         comment.addCommentLike(commentLike);
 

@@ -81,7 +81,9 @@ public class ParagraphController {
     @PatchMapping("/{novelId}/{chapterId}/{paragraphId}")
     public ResponseEntity<ApiCsResponse<Void>> selectParagraph(
             @AuthenticationPrincipal Long memberId,
-            @PathVariable Long novelId, @PathVariable Long chapterId, @PathVariable Long paragraphId
+            @PathVariable Long novelId,
+            @PathVariable Long chapterId,
+            @PathVariable Long paragraphId
     ) {
         paragraphService.selectParagraph(memberId, novelId, chapterId, paragraphId);
 

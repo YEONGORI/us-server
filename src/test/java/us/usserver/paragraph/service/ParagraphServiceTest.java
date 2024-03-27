@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Rollback
+@Transactional
 @SpringBootTest
 class ParagraphServiceTest {
     @Autowired
@@ -61,6 +63,7 @@ class ParagraphServiceTest {
     private ChapterRepository chapterRepository;
 
     private Author author;
+    private Member member;
     private Novel novel;
     private Chapter chapter;
     private Paragraph paragraph1;
@@ -68,8 +71,11 @@ class ParagraphServiceTest {
 
     @BeforeEach
     public void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
+
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
         paragraph1 = ParagraphMother.generateParagraph(author, chapter);
@@ -123,12 +129,20 @@ class ParagraphServiceTest {
     @DisplayName("내가 쓴 한줄은 없고, 베스트 한줄은 있는 회차 보기")
     void getParagraph0() {
         // given
-        Author author1 = AuthorMother.generateAuthor();
-        Author author2 = AuthorMother.generateAuthor();
-        Author author3 = AuthorMother.generateAuthor();
-        setMember(author1);
-        setMember(author2);
-        setMember(author3);
+        Member member1 = MemberMother.generateMember();
+        Author author1 = AuthorMother.generateAuthorWithMember(member1);
+        member1.setAuthor(author1);
+        memberRepository.save(member1);
+
+        Member member2 = MemberMother.generateMember();
+        Author author2 = AuthorMother.generateAuthorWithMember(member2);
+        member2.setAuthor(author2);
+        memberRepository.save(member2);
+
+        Member member3 = MemberMother.generateMember();
+        Author author3 = AuthorMother.generateAuthorWithMember(member3);
+        member3.setAuthor(author3);
+        memberRepository.save(member3);
 
         Vote like1 = Vote.builder().paragraph(paragraph1).author(author1).build();
         Vote like2 = Vote.builder().paragraph(paragraph1).author(author2).build();
@@ -158,7 +172,7 @@ class ParagraphServiceTest {
         // given
 
         // when
-        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(null, chapter.getId());
+        GetParagraphResponse paragraphs = paragraphService.getInVotingParagraphs(member.getId(), chapter.getId());
 
         // then
         assertThat(paragraphs.getParagraphInVotings().size()).isEqualTo(2);
@@ -259,8 +273,10 @@ class ParagraphServiceTest {
     @DisplayName("메인 작가가 아닌 사람이 마음에 드는 한줄 선택하기")
     void selectParagraph2() {
         // given
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
 
         // when
         authorRepository.save(newAuthor);
@@ -273,11 +289,5 @@ class ParagraphServiceTest {
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
         assertThat(paragraph1.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
         assertThat(paragraph2.getParagraphStatus()).isEqualTo(ParagraphStatus.IN_VOTING);
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

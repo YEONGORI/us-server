@@ -30,8 +30,8 @@ public class EntityFacade {
     private final NovelRepository novelRepository;
     private final ChapterRepository chapterRepository;
     private final ParagraphRepository paragraphRepository;
-    private final CommentRepository commentJpaRepository;
-    private final VoteRepository voteJpaRepository;
+    private final CommentRepository commentRepository;
+    private final VoteRepository voteRepository;
     private final ReadNovelRepository readNovelRepository;
 
     public Author getAuthor(Long authorId) {
@@ -84,7 +84,7 @@ public class EntityFacade {
     }
 
     public Comment getComment(Long commentId) {
-        Optional<Comment> commentById = commentJpaRepository.getCommentById(commentId);
+        Optional<Comment> commentById = commentRepository.getCommentById(commentId);
         if (commentById.isEmpty()) {
             throw new BaseException(ErrorCode.COMMENT_NOT_FOUND);
         }
@@ -92,7 +92,7 @@ public class EntityFacade {
     }
 
     public Vote getVote(Long voteId) {
-        Optional<Vote> voteById = voteJpaRepository.getVoteById(voteId);
+        Optional<Vote> voteById = voteRepository.getVoteById(voteId);
         if (voteById.isEmpty()) {
             throw new BaseException(ErrorCode.VOTE_NOT_FOUND);
         }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
@@ -18,9 +19,7 @@ import us.usserver.domain.novel.repository.NovelLikeRepository;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.domain.novel.service.NovelLikeService;
 import us.usserver.global.response.exception.BaseException;
-import us.usserver.global.response.exception.DuplicatedLikeException;
 import us.usserver.global.response.exception.ExceptionMessage;
-import us.usserver.global.response.exception.NovelNotFoundException;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
 
@@ -30,6 +29,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Rollback
+@Transactional
 @SpringBootTest
 class NovelLikeServiceTest {
     @Autowired
@@ -38,20 +38,20 @@ class NovelLikeServiceTest {
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private NovelLikeRepository novelLikeCustomRepository;
 
     private Novel novel;
     private Author author;
+    private Member member;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
-        authorRepository.save(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
         novel = NovelMother.generateNovel(author);
         novelRepository.save(novel);
@@ -92,7 +92,7 @@ class NovelLikeServiceTest {
     @DisplayName("존재하지 않는 유저에 대한 좋아요 테스트")
     void setNoveLikeToNotExistAuthor() {
         // given
-        Long notExistAuthorId = 123L;
+        Long notExistAuthorId = 99999L;
 
 
         // when then
@@ -132,11 +132,5 @@ class NovelLikeServiceTest {
 
         // then
         assertThat(novelLikes.size()).isZero();
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

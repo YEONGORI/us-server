@@ -40,9 +40,4 @@ public class MemberServiceImpl implements MemberService {
         authorRepository.deleteById(author.getId());
         memberRepository.deleteById(member.getId());
     }
-
-    @Override
-    public Member getMyInfo(String socialId) {
-        return memberRepository.findBySocialId(socialId).orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
-    }
 }

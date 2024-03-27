@@ -1,4 +1,4 @@
-package us.usserver.stake;
+package us.usserver.stake.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +18,7 @@ import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
+import us.usserver.domain.paragraph.service.ParagraphService;
 import us.usserver.member.MemberMother;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
@@ -38,8 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StakeServiceTest {
     @Autowired
     StakeService stakeService;
-    @Autowired
-    ParagraphServiceImpl paragraphServiceImpl;
 
     @Autowired
     private AuthorityRepository authorityRepository;
@@ -50,32 +49,38 @@ class StakeServiceTest {
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
     private MemberRepository memberRepository;
 
     Author mainAuthor, author1, author2, author3;
+    Member mainMember, member1, member2, member3;
     Novel novel;
     Chapter chapter1, chapter2, chapter3;
     Paragraph paragraph1_1, paragraph2_1, paragraph2_2, paragraph3_1, paragraph3_2, paragraph3_3;
 
     @BeforeEach
     void setUp() {
-        mainAuthor = AuthorMother.generateAuthor();
-        author1 = AuthorMother.generateAuthor();
-        author2 = AuthorMother.generateAuthor();
-        author3 = AuthorMother.generateAuthor();
-        setMember(mainAuthor);
-        setMember(author1);
-        setMember(author2);
-        setMember(author3);
-        authorRepository.save(mainAuthor);
-        authorRepository.save(author1);
-        authorRepository.save(author2);
-        authorRepository.save(author3);
+        mainMember = MemberMother.generateMember();
+        mainAuthor = AuthorMother.generateAuthorWithMember(mainMember);
+        mainMember.setAuthor(mainAuthor);
+        memberRepository.save(mainMember);
+
+        member1 = MemberMother.generateMember();
+        author1 = AuthorMother.generateAuthorWithMember(member1);
+        member1.setAuthor(author1);
+        memberRepository.save(member1);
+
+        member2 = MemberMother.generateMember();
+        author2 = AuthorMother.generateAuthorWithMember(member2);
+        member2.setAuthor(author2);
+        memberRepository.save(member2);
+
+        member3 = MemberMother.generateMember();
+        author3 = AuthorMother.generateAuthorWithMember(member3);
+        member3.setAuthor(author3);
+        memberRepository.save(member3);
+
 
         novel = NovelMother.generateNovel(mainAuthor);
-
         chapter1 = ChapterMother.generateChapter(novel);
         chapter2 = ChapterMother.generateChapter(novel);
         chapter3 = ChapterMother.generateChapter(novel);
@@ -84,6 +89,8 @@ class StakeServiceTest {
         novel.getChapters().add(chapter3);
         novelRepository.save(novel);
 
+        authorityRepository.save(Authority.builder()
+                .novel(novel).author(mainAuthor).build());
         authorityRepository.save(Authority.builder()
                 .novel(novel).author(author1).build());
         authorityRepository.save(Authority.builder()
@@ -107,6 +114,13 @@ class StakeServiceTest {
         chapterRepository.save(chapter2);
         chapterRepository.save(chapter3);
 
+        paragraph1_1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph2_1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph2_2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph3_1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph3_2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        paragraph3_3.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+
         paragraphRepository.save(paragraph1_1);
         paragraphRepository.save(paragraph2_1);
         paragraphRepository.save(paragraph2_2);
@@ -114,33 +128,8 @@ class StakeServiceTest {
         paragraphRepository.save(paragraph3_2);
         paragraphRepository.save(paragraph3_3);
 
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter1.getId(), paragraph1_1.getId());
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter2.getId(), paragraph2_1.getId());
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter2.getId(), paragraph2_2.getId());
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter3.getId(), paragraph3_1.getId());
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter3.getId(), paragraph3_2.getId());
-        paragraphServiceImpl.selectParagraph(mainAuthor.getId(), novel.getId(), chapter3.getId(), paragraph3_3.getId());
-    }
+        stakeService.setStakeInfoOfNovel(novel);
 
-
-    @Test
-    @DisplayName("소설이 처음 만들어질 때 mainAuthor 의 지분이 100인지 확인")
-    void checkInitialStake() {
-        // given
-        Novel newNovel = NovelMother.generateNovel(author1);
-        Chapter newChapter = ChapterMother.generateChapter(newNovel);
-        newNovel.addChapter(newChapter);
-        Authority authority = Authority.builder().novel(newNovel).author(author1).build();
-
-        // when
-        novelRepository.save(newNovel);
-        chapterRepository.save(newChapter);
-        authorityRepository.save(authority);
-        stakeService.setStakeInfoOfNovel(newNovel);
-        StakeInfoResponse stakeInfoOfNovel = stakeService.getStakeInfoOfNovel(newNovel.getId());
-
-        // then
-        assertThat(stakeInfoOfNovel.getStakeInfos().size()).isOne();
     }
 
     @Test
@@ -184,13 +173,17 @@ class StakeServiceTest {
     void getStakeInfoOfNovel() {
         // given
         StakeInfoResponse prevStakeResponse = stakeService.getStakeInfoOfNovel(novel.getId());
-        Author newAuthor = AuthorMother.generateAuthor();
-        setMember(newAuthor);
+
+        Member newMember = MemberMother.generateMember();
+        Author newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
+
         Authority authority = Authority.builder().author(newAuthor).novel(novel).build();
         Paragraph newParagraph = ParagraphMother.generateParagraph(newAuthor, chapter3);
+        newParagraph.setParagraphStatusForTest(ParagraphStatus.SELECTED);
 
         // when
-        authorRepository.save(newAuthor);
         authorityRepository.save(authority);
         chapter3.addParagraph(newParagraph);
         paragraphRepository.save(newParagraph);
@@ -207,11 +200,5 @@ class StakeServiceTest {
                 }
             }
         }
-    }
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

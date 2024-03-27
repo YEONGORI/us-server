@@ -1,5 +1,6 @@
 package us.usserver.paragraph.controller;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
-class VoteControllerTest {
+class ParagraphControllerTest {
     @Autowired
     private TokenProvider tokenProvider;
     @Autowired
@@ -59,8 +60,6 @@ class VoteControllerTest {
     private ChapterRepository chapterRepository;
     @Autowired
     private ParagraphRepository paragraphRepository;
-    @Autowired
-    private VoteRepository voteRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -72,11 +71,7 @@ class VoteControllerTest {
     private Author author;
     private Novel novel;
     private Chapter chapter;
-    private Paragraph paragraph1;
-    private Paragraph paragraph2;
-    private Paragraph paragraph3;
-    private Paragraph paragraph4;
-    private Paragraph paragraph5;
+    private Paragraph paragraph;
 
     @BeforeEach
     void setUp() {
@@ -94,97 +89,120 @@ class VoteControllerTest {
         chapter.setPartForTest(1);
         novel.getChapters().add(chapter);
 
-        paragraph1 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph2 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph3 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph4 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph5 = ParagraphMother.generateParagraph(author, chapter);
-        paragraph1.setSequenceForTest(1);
-        paragraph2.setSequenceForTest(2);
-        paragraph3.setSequenceForTest(3);
-        paragraph4.setSequenceForTest(4);
-        paragraph5.setSequenceForTest(4);
-        paragraph1.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph2.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph3.setParagraphStatusForTest(ParagraphStatus.SELECTED);
-        paragraph4.setParagraphStatusForTest(ParagraphStatus.IN_VOTING);
-        paragraph5.setParagraphStatusForTest(ParagraphStatus.IN_VOTING);
-        chapter.getParagraphs().add(paragraph1);
-        chapter.getParagraphs().add(paragraph2);
-        chapter.getParagraphs().add(paragraph3);
-        chapter.getParagraphs().add(paragraph4);
-        chapter.getParagraphs().add(paragraph5);
+        paragraph = ParagraphMother.generateParagraph(author, chapter);
+        paragraph.setSequenceForTest(1);
+        chapter.getParagraphs().add(paragraph);
 
         authorRepository.save(author);
         novelRepository.save(novel);
         chapterRepository.save(chapter);
-        paragraphRepository.save(paragraph1);
-        paragraphRepository.save(paragraph2);
-        paragraphRepository.save(paragraph3);
-        paragraphRepository.save(paragraph4);
-        paragraphRepository.save(paragraph5);
+        paragraphRepository.save(paragraph);
+
     }
 
     @Test
-    @DisplayName("투표 하기 api test")
-    void voting() throws Exception {
+    @DisplayName("투표중인 한줄 조회 API TEST")
+    void getParagraphsInVoting_1() throws Exception {
         // given
 
         // when
-        List<Vote> prevVotes = voteRepository.findAllByAuthor(author);
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/vote/" + paragraph4.getId())
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> nextVotes = voteRepository.findAllByAuthor(author);
-
-        // then
-        boolean anyMatch = nextVotes.stream().anyMatch(vote -> vote.getParagraph().getId().equals(paragraph4.getId()));
-        assertThat(anyMatch).isTrue();
-        assertThat(prevVotes.size()).isLessThan(nextVotes.size());
-    }
-
-    @Test
-    @DisplayName("중복 투표 api test")
-    void voting2() throws Exception {
-        // given
-
-        // when
-        ResultActions resultActions1 = mockMvc.perform(MockMvcRequestBuilders
-                .post("/vote/" + paragraph4.getId())
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .contentType(MediaType.APPLICATION_JSON));
-        ResultActions resultActions2 = mockMvc.perform(MockMvcRequestBuilders
-                .post("/vote/" + paragraph5.getId())
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        resultActions1.andExpect(status().isOk());
-        resultActions2.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("투표 취소 하기 api test")
-    void cancelVote() throws Exception {
-        // given
-        Vote vote = Vote.builder().paragraph(paragraph5).author(author).build();
-        paragraph5.addVote(vote);
-
-        // when
-        voteRepository.save(vote);
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .delete("/vote/" + paragraph5.getId())
+                .get("/paragraph/" + chapter.getId() + "/voting")
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON));
-        List<Vote> votes = voteRepository.findAllByAuthor(author);
 
         // then
         resultActions.andExpect(status().isOk());
-        votes.forEach(v -> assertThat(v.getParagraph()).isNotEqualTo(paragraph5));
+    }
+
+    @Test
+    @DisplayName("빈 챕터의 투표중인 한줄 조회 API TEST")
+    void getParagraphsInVoting_2() throws Exception {
+        // given
+        Chapter newChapter = ChapterMother.generateChapter(novel);
+        novel.addChapter(newChapter);
+
+        // when
+        chapterRepository.save(newChapter);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/paragraph/" + newChapter.getId() + "/voting")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        resultActions.andExpect(status().isOk());
+        assertThat(resultString).contains("[]");
+    }
+
+    @Test
+    @DisplayName("한줄 작성 API TEST")
+    void postParagraph_1() throws Exception {
+        // given
+        String requestJson = "{\"content\":\"SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT SOME CONTENT\"}";
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/paragraph/" + chapter.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .content(requestJson)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+
+        // then
+        resultActions.andExpect(status().isCreated());
+        assertThat(resultString).contains("SOME CONTENT");
+        assertThat(resultString).contains(author.getNickname());
+    }
+
+    @Test
+    @DisplayName("한줄 작성 실패(req Body 없음) API TEST")
+    void postParagraph_2() throws Exception {
+        // given
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/paragraph/" + chapter.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("한줄 선택 API TEST")
+    void selectParagraph_1() throws Exception {
+        // given
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .patch("/paragraph/" + novel.getId() + "/" + chapter.getId() + "/" + paragraph.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("한줄 신고 API TEST(기능 미완성)")
+    void selectParagraph_2() throws Exception {
+        // given
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/paragraph/call/" + paragraph.getId())
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isCreated());
     }
 }

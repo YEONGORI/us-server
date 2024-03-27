@@ -35,7 +35,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         Comment comment = entityFacade.getComment(commentId);
 
         CommentLike commentLike = commentLikeRepository.findByComment(comment)
-                .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_LIKE_NOT_FOUND));
 
         if (!Objects.equals(commentLike.getAuthor().getId(), author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);

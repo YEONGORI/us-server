@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Rollback
 @Transactional
 @SpringBootTest
 class NovelServiceTest {
@@ -51,32 +53,38 @@ class NovelServiceTest {
     private ChapterRepository chapterRepository;
 
     private Novel novel;
-    private Novel dummyNovel;
+    private Novel newNovel;
     private Member member;
-    private Member dummymember;
+    private Member newMember;
     private Author author;
-    private Author dummyAuthor;
+    private Author newAuthor;
 
     @BeforeEach
     void setup() {
         member = MemberMother.generateMember();
-        dummymember = MemberMother.generateMember();
-        author = AuthorMother.generateAuthor();
-        dummyAuthor = AuthorMother.generateAuthor();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
+
+        newMember = MemberMother.generateMember();
+        newAuthor = AuthorMother.generateAuthorWithMember(newMember);
+        newMember.setAuthor(newAuthor);
+        memberRepository.save(newMember);
+
 
         author.setMember(member);
-        dummyAuthor.setMember(dummymember);
+        newAuthor.setMember(newMember);
 
         memberRepository.save(member);
-        memberRepository.save(dummymember);
+        memberRepository.save(newMember);
         authorRepository.save(author);
-        authorRepository.save(dummyAuthor);
+        authorRepository.save(newAuthor);
 
         novel = NovelMother.generateNovel(author);
-        dummyNovel = NovelMother.generateNovel(dummyAuthor);
+        newNovel = NovelMother.generateNovel(newAuthor);
 
         novelRepository.save(novel);
-        novelRepository.save(dummyNovel);
+        novelRepository.save(newNovel);
     }
 
     @Test
@@ -165,7 +173,7 @@ class NovelServiceTest {
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
-                () -> novelService.modifyNovelSynopsis(novel.getId(), dummyAuthor.getId(), synopsisRequest.getSynopsis()));
+                () -> novelService.modifyNovelSynopsis(novel.getId(), newAuthor.getId(), synopsisRequest.getSynopsis()));
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
@@ -190,7 +198,7 @@ class NovelServiceTest {
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
-                () -> novelService.modifyAuthorDescription(novel.getId(), dummyAuthor.getId(), authorDescription));
+                () -> novelService.modifyAuthorDescription(novel.getId(), newAuthor.getId(), authorDescription));
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);

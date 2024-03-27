@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     private static final String[] whitelist = {
-            "/", "/login**", "/oauth**", "/member/join",
+            "/", "/login**", "/oauth**", "/member/join", "/stake/**",
             "/resources/**", "/favicon.ico", // resource
             "/swagger-ui/**", "/api-docs/**", // swagger
     };

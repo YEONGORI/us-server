@@ -1,6 +1,6 @@
-package us.usserver.novel.controller;
+package us.usserver.paragraph.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,38 +24,45 @@ import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
+import us.usserver.domain.paragraph.entity.Paragraph;
+import us.usserver.domain.paragraph.entity.ParagraphLike;
+import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
+import us.usserver.domain.paragraph.repository.ParagraphRepository;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.global.utils.RedisUtils;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
+import us.usserver.paragraph.ParagraphMother;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
 @Transactional
-@SpringBootTest
 @AutoConfigureMockMvc
-class NovelControllerTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
+@SpringBootTest
+class ParagraphLikeControllerTest {
     @Autowired
     private TokenProvider tokenProvider;
     @Autowired
     private RedisUtils redisUtils;
 
-
+    @Autowired
+    private AuthorRepository authorRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
+    @Autowired
+    private ParagraphRepository paragraphRepository;
+    @Autowired
+    private ParagraphLikeRepository paragraphLikeRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,9 +73,8 @@ class NovelControllerTest {
     private Member member;
     private Author author;
     private Novel novel;
-    private Chapter chapter1;
-    private Chapter chapter2;
-    private Chapter chapter3;
+    private Chapter chapter;
+    private Paragraph paragraph;
 
     @BeforeEach
     void setUp() {
@@ -82,89 +88,72 @@ class NovelControllerTest {
         redisUtils.setDateWithExpiration(refreshToken, member.getId(), Duration.ofDays(1));
 
         novel = NovelMother.generateNovel(author);
-        chapter1 = ChapterMother.generateChapter(novel);
-        chapter1.setPartForTest(1);
-        chapter2 = ChapterMother.generateChapter(novel);
-        chapter2.setPartForTest(2);
-        chapter3 = ChapterMother.generateChapter(novel);
-        chapter3.setPartForTest(3);
-        novel.getChapters().add(chapter1);
-        novel.getChapters().add(chapter2);
-        novel.getChapters().add(chapter3);
+        chapter = ChapterMother.generateChapter(novel);
+        chapter.setPartForTest(1);
+        novel.getChapters().add(chapter);
 
+        paragraph = ParagraphMother.generateParagraph(author, chapter);
+        paragraph.setSequenceForTest(1);
+        paragraph.setParagraphStatusForTest(ParagraphStatus.SELECTED);
+        chapter.getParagraphs().add(paragraph);
+
+        authorRepository.save(author);
         novelRepository.save(novel);
-        chapterRepository.save(chapter1);
-        chapterRepository.save(chapter2);
-        chapterRepository.save(chapter3);
+        chapterRepository.save(chapter);
+        paragraphRepository.save(paragraph);
     }
 
     @Test
-    @DisplayName("소설 정보 조회")
-    void getNovelInfo() throws Exception {
+    @DisplayName("한줄 좋아요 API TEST")
+    void setLike_1() throws Exception {
         // given
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/novel/" + novel.getId())
+                .post("/like/paragraph/" + paragraph.getId())
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON));
-        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
-        assertThat(resultString).contains(novel.getTitle());
-        assertThat(resultString).contains(novel.getGenre().toString());
-        novel.getHashtags().forEach(hashtag ->
-                assertThat(resultString).contains(hashtag.toString()));
-        assertThat(resultString).contains("joinedAuthorCnt\":");
-        assertThat(resultString).contains("likeCnt\":");
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("소설 상세 정보 조회")
-    void getNovelDetailInfo() throws Exception {
+    @DisplayName("한줄 좋아요 취소 API TEST")
+    void deleteLike_1() throws Exception {
         // given
+        ParagraphLike paragraphLike = ParagraphLike.builder()
+                .paragraph(paragraph).author(author).build();
+        paragraph.addParagraphLike(paragraphLike);
 
         // when
+        paragraphLikeRepository.save(paragraphLike);
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/novel/" + novel.getId() + "/detail")
+                .delete("/like/paragraph/" + paragraph.getId())
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
                 .contentType(MediaType.APPLICATION_JSON));
-        String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
-        assertThat(resultString).contains(novel.getTitle());
-        assertThat(resultString).contains(novel.getThumbnail());
-        assertThat(resultString).contains(novel.getSynopsis());
-        assertThat(resultString).contains(author.getNickname());
-        assertThat(resultString).contains(novel.getAgeRating().toString());
-        assertThat(resultString).contains(novel.getGenre().toString());
-        novel.getHashtags().forEach(hashtag ->
-                assertThat(resultString).contains(hashtag.toString()));
-        assertThat(resultString).contains(chapter1.getTitle());
-        assertThat(resultString).contains(chapter2.getTitle());
-        assertThat(resultString).contains(chapter3.getTitle());
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("소설 소개 수정")
-    void modifyNovelSynopsis() throws Exception {
+    @DisplayName("한줄 좋아요 취소 실패(좋아요 안한 한줄) API TEST")
+    void deleteLike_2() throws Exception {
         // given
-        Map<String, String> requestBody = new HashMap<>();
-        String key = "synopsis", value = "흐으으으으음... 이것이 창작의 고통인가..";
-        requestBody.put(key, value);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .patch("/novel/" + novel.getId() + "/synopsis")
+                .delete("/like/paragraph/" + paragraph.getId())
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(requestBody)));
-        String resultString = resultActions.andReturn().getResponse().getContentAsString();
+                .contentType(MediaType.APPLICATION_JSON));
 
-        resultActions.andExpect(status().isCreated());
-        assertThat(resultString).contains(value);
+        // then
+        Assertions.assertThat(Objects.requireNonNull(resultActions.andReturn().getResolvedException()).getMessage())
+                .isEqualTo(ExceptionMessage.PARAGRAPH_LIKE_NOT_FOUND);
+        resultActions.andExpect(status().isNotFound());
     }
 }

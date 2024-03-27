@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
@@ -16,6 +17,7 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
+import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.entity.Paragraph;
 import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
@@ -37,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @Rollback
+@Transactional
 @SpringBootTest
 class ParagraphLikeServiceTest {
     @Autowired
@@ -51,20 +54,20 @@ class ParagraphLikeServiceTest {
     @Autowired
     private ParagraphRepository paragraphRepository;
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
     private MemberRepository memberRepository;
 
     private Novel novel;
     private Author author;
+    private Member member;
     private Chapter chapter;
     private Paragraph paragraph;
 
     @BeforeEach
     void setUp() {
-        author = AuthorMother.generateAuthor();
-        setMember(author);
-        authorRepository.save(author);
+        member = MemberMother.generateMember();
+        author = AuthorMother.generateAuthorWithMember(member);
+        member.setAuthor(author);
+        memberRepository.save(member);
 
         novel = NovelMother.generateNovel(author);
         chapter = ChapterMother.generateChapter(novel);
@@ -80,25 +83,59 @@ class ParagraphLikeServiceTest {
 
     @Test
     @DisplayName("한줄 좋아요")
-    void setParagraphLike1() {
+    void setParagraphLike_0() {
         // given
-        List<ParagraphLike> beforeParagraphLikes = paragraphLikeRepository.findAllByParagraph(paragraph);
+        paragraph.setParagraphStatusForTest(ParagraphStatus.SELECTED);
 
         // when
+        paragraphRepository.save(paragraph);
         paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId());
-        List<ParagraphLike> afterparagraphLikes = paragraphLikeRepository.findAllByParagraph(paragraph);
+        List<ParagraphLike> paragraphLikes = paragraphLikeRepository.findAllByParagraph(paragraph);
 
         // then
-        assertThat(beforeParagraphLikes).isEqualTo(Collections.emptyList());
-        assertThat(afterparagraphLikes).isNotEqualTo(Collections.emptyList());
+        assertThat(paragraphLikes).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("한줄 좋아요 실패(투표중인 한줄)")
+    void setParagraphLike_1() {
+        // given
+        paragraph.setParagraphStatusForTest(ParagraphStatus.IN_VOTING);
+
+        // when
+        paragraphRepository.save(paragraph);
+        assertThrows(UnsupportedOperationException.class,
+                () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
+        List<ParagraphLike> paragraphLikes = paragraphLikeRepository.findAllByParagraph(paragraph);
+
+        // then
+        assertThat(paragraphLikes).isEmpty();
+    }
+
+    @Test
+    @DisplayName("한줄 좋아요 실패(선택 안된 한줄)")
+    void setParagraphLike_2() {
+        // given
+        paragraph.setParagraphStatusForTest(ParagraphStatus.UNSELECTED);
+
+        // when
+        paragraphRepository.save(paragraph);
+        assertThrows(UnsupportedOperationException.class,
+                () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
+        List<ParagraphLike> paragraphLikes = paragraphLikeRepository.findAllByParagraph(paragraph);
+
+        // then
+        assertThat(paragraphLikes).isEmpty();
     }
 
     @Test
     @DisplayName("한줄 좋아요 중복 불가")
-    void setParagraphLike2() {
+    void setParagraphLike_3() {
         // given
+        paragraph.setParagraphStatusForTest(ParagraphStatus.SELECTED);
 
         // when
+        paragraphRepository.save(paragraph);
         assertDoesNotThrow(
                 () -> paragraphLikeService.setParagraphLike(paragraph.getId(), author.getId()));
         BaseException baseException = assertThrows(BaseException.class,
@@ -123,12 +160,5 @@ class ParagraphLikeServiceTest {
 
         // then
         assertThat(paragraphLikes.size()).isZero();
-    }
-
-
-    private void setMember(Author author) {
-        Member member = MemberMother.generateMember();
-        memberRepository.save(member);
-        author.setMember(member);
     }
 }

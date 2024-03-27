@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class RequestOauthInfoService {
-    // Provider : Client
     private final Map<OauthProvider, OauthClient> clients;
 
     public RequestOauthInfoService(List<OauthClient> clients) {

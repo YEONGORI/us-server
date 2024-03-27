@@ -16,11 +16,7 @@ import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.service.CommentService;
-import us.usserver.global.response.exception.AuthorNotAuthorizedException;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.ChapterNotFoundException;
-import us.usserver.global.response.exception.CommentLengthOutOfRangeException;
-import us.usserver.global.response.exception.NovelNotFoundException;
+import us.usserver.global.response.exception.*;
 import us.usserver.global.response.ApiCsResponse;
 
 @Tag(name = "댓글 API")

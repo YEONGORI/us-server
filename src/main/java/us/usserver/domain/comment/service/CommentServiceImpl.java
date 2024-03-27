@@ -18,6 +18,7 @@ import us.usserver.domain.novel.entity.Novel;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 @Slf4j
 @Service
@@ -31,18 +32,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public GetCommentRes getCommentsOfNovel(Long novelId, int page) {
-
+        if (page < 0) {
+            throw new IllegalArgumentException(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
+        }
         Novel novel = entityFacade.getNovel(novelId);
 
         PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<CommentInfo> commentInfos = commentRepository.findSliceByNovel(novel, pageRequest)
                 .map(CommentInfo::mapCommentToCommentInfo).toList();
         return new GetCommentRes(commentInfos);
-
     }
 
     @Override
     public GetCommentRes getCommentsOfChapter(Long chapterId, int page) {
+        if (page < 0) {
+            throw new IllegalArgumentException(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
+        }
         Chapter chapter = entityFacade.getChapter(chapterId);
 
         PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -58,12 +63,12 @@ public class CommentServiceImpl implements CommentService {
         Novel novel = entityFacade.getNovel(novelId);
         Integer ZeroLikeCnt = 0;
 
-        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+        if (commentContent.content().isEmpty() || commentContent.content().length() > 300) {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
         Comment comment = commentRepository.save(Comment.builder()
-                .content(commentContent.getContent())
+                .content(commentContent.content())
                 .author(author)
                 .novel(novel)
                 .chapter(null)
@@ -80,12 +85,12 @@ public class CommentServiceImpl implements CommentService {
         Novel novel = chapter.getNovel();
         Integer ZeroLikeCnt = 0;
 
-        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+        if (commentContent.content().isEmpty() || commentContent.content().length() > 300) {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
         Comment comment = commentRepository.save(Comment.builder()
-                .content(commentContent.getContent())
+                .content(commentContent.content())
                 .author(author)
                 .novel(novel)
                 .chapter(chapter)
@@ -125,7 +130,6 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
-
         commentRepository.delete(comment);
     }
 }

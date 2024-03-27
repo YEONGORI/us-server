@@ -1,13 +1,5 @@
 package us.usserver.comment.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +25,17 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.response.exception.*;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 import us.usserver.member.MemberMother;
 import us.usserver.novel.NovelMother;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Rollback
 @Transactional
@@ -202,7 +202,7 @@ class CommentServiceTest {
     @DisplayName("소설 댓글 작성하기")
     void writeCommentOnNovel() {
         // given
-        CommentContent commentContent = CommentMother.generateContent();
+        CommentContent commentContent = CommentContent.builder().content("SOME COMMENT CONTENT").build();
 
         // when
         CommentInfo commentInfo = commentService.writeCommentOnNovel(novel.getId(), author.getId(), commentContent);
@@ -210,7 +210,7 @@ class CommentServiceTest {
         // then
         assertThat(commentInfo.getAuthorName()).isEqualTo(author.getNickname());
         assertThat(commentInfo.getLocation()).isEqualTo(novel.getTitle());
-        assertThat(commentInfo.getContent()).isEqualTo(commentContent.getContent());
+        assertThat(commentInfo.getContent()).isEqualTo(commentContent.content());
         assertThat(commentInfo.getLikeCnt()).isZero();
     }
 
@@ -218,7 +218,7 @@ class CommentServiceTest {
     @DisplayName("소설 댓글 작성하기 - 존재하지 않는 작가")
     void writeCommentOnNovel1() {
         // given
-        CommentContent commentContent = CommentMother.generateContent();
+        CommentContent commentContent = CommentContent.builder().content("SOME COMMENT CONTENT").build();
         Author newAuthor = AuthorMother.generateAuthor();
 
         // when
@@ -255,7 +255,7 @@ class CommentServiceTest {
     @DisplayName("회차 댓글 작성하기")
     void writeCommentOnChapter() {
         // given
-        CommentContent commentContent = CommentMother.generateContent();
+        CommentContent commentContent = CommentContent.builder().content("SOME COMMENT CONTENT").build();
 
         // when
         CommentInfo commentInfo = commentService.writeCommentOnChapter(chapter.getId(), author.getId(), commentContent);
@@ -263,7 +263,7 @@ class CommentServiceTest {
         // then
         assertThat(commentInfo.getAuthorName()).isEqualTo(author.getNickname());
         assertThat(commentInfo.getLocation()).isEqualTo(chapter.getTitle());
-        assertThat(commentInfo.getContent()).isEqualTo(commentContent.getContent());
+        assertThat(commentInfo.getContent()).isEqualTo(commentContent.content());
         assertThat(commentInfo.getLikeCnt()).isZero();
     }
 
@@ -271,7 +271,7 @@ class CommentServiceTest {
     @DisplayName("회차 댓글 작성하기 - 존재하지 않는 작가")
     void writeCommentOnChapter1() {
         // given
-        CommentContent commentContent = CommentMother.generateContent();
+        CommentContent commentContent = CommentContent.builder().content("SOME COMMENT CONTENT").build();
         Author newAuthor = AuthorMother.generateAuthor();
 
         // when
@@ -432,7 +432,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("소설 댓글 불러오기 페이징 TEST")
-    void getNovelCommentsPaging() {
+    void getNovelCommentsPaging1() {
         // given
         for (int i = 0; i < 15; i++) {
             Comment newComment = CommentMother.generateComment(author, novel, null);
@@ -450,9 +450,23 @@ class CommentServiceTest {
         commentsOfNovel1.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(novel.getTitle()));
     }
 
+
+    @Test
+    @DisplayName("소설 댓글 불러오기 페이징 실패(page 음수 값)")
+    void getNovelCommentsPaging2() {
+        // given
+
+        // when
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> commentService.getCommentsOfNovel(novel.getId(), -1));
+
+        // then
+        assertThat(illegalArgumentException.getMessage()).isEqualTo(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
+    }
+
     @Test
     @DisplayName("회차 댓글 불러오기 페이징 TEST")
-    void getChapterCommentsPaging() {
+    void getChapterCommentsPaging1() {
         // given
         for (int i = 0; i < 15; i++) {
             Comment newComment = CommentMother.generateComment(author, novel, chapter);
@@ -460,13 +474,26 @@ class CommentServiceTest {
         }
 
         // when
-        GetCommentRes commentsOfNovel0 = commentService.getCommentsOfNovel(novel.getId(), 0);
-        GetCommentRes commentsOfNovel1 = commentService.getCommentsOfNovel(novel.getId(), 1);
+        GetCommentRes commentsOfNovel0 = commentService.getCommentsOfChapter(chapter.getId(), 0);
+        GetCommentRes commentsOfNovel1 = commentService.getCommentsOfChapter(chapter.getId(), 1);
 
         // then
         assertThat(commentsOfNovel0.commentInfos().size()).isEqualTo(10);
         assertThat(commentsOfNovel1.commentInfos().size()).isEqualTo(5);
         commentsOfNovel0.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(chapter.getTitle()));
         commentsOfNovel1.commentInfos().forEach(commentInfo -> assertThat(commentInfo.getLocation()).isEqualTo(chapter.getTitle()));
+    }
+
+    @Test
+    @DisplayName("회차 댓글 불러오기 페이징 실패(page 음수 값)")
+    void getChapterCommentsPaging2() {
+        // given
+
+        // when
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> commentService.getCommentsOfChapter(novel.getId(), -1));
+
+        // then
+        assertThat(illegalArgumentException.getMessage()).isEqualTo(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
     }
 }

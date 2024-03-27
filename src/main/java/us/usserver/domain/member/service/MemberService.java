@@ -7,6 +7,4 @@ import us.usserver.domain.member.entity.Member;
 public interface MemberService {
     void logout(String accessToken, String refreshToken);
     void withdraw(Member member);
-    Member getMyInfo(String socialId);
-
 }

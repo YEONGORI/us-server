@@ -1,4 +1,4 @@
-package us.usserver.stake;
+package us.usserver.stake.controller;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.author.AuthorMother;
 import us.usserver.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
@@ -35,6 +36,7 @@ import us.usserver.paragraph.ParagraphMother;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
+@Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
 class StakeControllerTest {
@@ -47,8 +49,6 @@ class StakeControllerTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
     private NovelRepository novelRepository;
     @Autowired
     private ChapterRepository chapterRepository;
@@ -57,40 +57,38 @@ class StakeControllerTest {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-    private Author author1;
-    private Author author2;
-    private Author author3;
-    private Author author4;
-    private Author author5;
+    private Author author1, author2, author3, author4, author5;
+    private Member member1, member2, member3, member4, member5;
     private Novel novel;
-    private Chapter chapter1;
-    private Chapter chapter2;
-    private Paragraph paragraph1;
-    private Paragraph paragraph2;
-    private Paragraph paragraph3;
-    private Paragraph paragraph4;
-    private Paragraph paragraph5;
-    private Paragraph paragraph6;
-    private Paragraph paragraph7;
-    private Paragraph paragraph8;
+    private Chapter chapter1, chapter2;
+    private Paragraph paragraph1, paragraph2, paragraph3, paragraph4, paragraph5, paragraph6, paragraph7, paragraph8;
 
     @BeforeEach
     void setUp() {
-        Member member1 = MemberMother.generateMember();
-        Member member2 = MemberMother.generateMember();
-        Member member3 = MemberMother.generateMember();
-        Member member4 = MemberMother.generateMember();
-        Member member5 = MemberMother.generateMember();
-        author1 = AuthorMother.generateAuthor();
-        author2 = AuthorMother.generateAuthor();
-        author3 = AuthorMother.generateAuthor();
-        author4 = AuthorMother.generateAuthor();
-        author5 = AuthorMother.generateAuthor();
-        author1.setMember(member1);
-        author2.setMember(member2);
-        author3.setMember(member3);
-        author4.setMember(member4);
-        author5.setMember(member5);
+        member1 = MemberMother.generateMember();
+        author1 = AuthorMother.generateAuthorWithMember(member1);
+        member1.setAuthor(author1);
+        memberRepository.save(member1);
+
+        member2 = MemberMother.generateMember();
+        author2 = AuthorMother.generateAuthorWithMember(member2);
+        member2.setAuthor(author2);
+        memberRepository.save(member2);
+
+        member3 = MemberMother.generateMember();
+        author3 = AuthorMother.generateAuthorWithMember(member3);
+        member3.setAuthor(author3);
+        memberRepository.save(member3);
+
+        member4 = MemberMother.generateMember();
+        author4 = AuthorMother.generateAuthorWithMember(member4);
+        member4.setAuthor(author4);
+        memberRepository.save(member4);
+
+        member5 = MemberMother.generateMember();
+        author5 = AuthorMother.generateAuthorWithMember(member5);
+        member5.setAuthor(author5);
+        memberRepository.save(member5);
 
         novel = NovelMother.generateNovel(author1);
         chapter1 = ChapterMother.generateChapter(novel);
@@ -140,16 +138,6 @@ class StakeControllerTest {
         Authority authority4 = Authority.builder().author(author4).novel(novel).build();
         Authority authority5 = Authority.builder().author(author5).novel(novel).build();
 
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
-        memberRepository.save(member4);
-        memberRepository.save(member5);
-        authorRepository.save(author1);
-        authorRepository.save(author2);
-        authorRepository.save(author3);
-        authorRepository.save(author4);
-        authorRepository.save(author5);
         novelRepository.save(novel);
         chapterRepository.save(chapter1);
         chapterRepository.save(chapter2);
@@ -169,7 +157,7 @@ class StakeControllerTest {
     }
 
     @Test
-    @DisplayName("지분 조회 api test")
+    @DisplayName("지분 조회 API TEST")
     void getStakes() throws Exception {
         // given
 
