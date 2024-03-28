@@ -17,5 +17,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long>, VoteDSLReposi
 
     List<Vote> findAllByAuthor(Author author);
 
+    Optional<Vote> findByParagraphIdAndAuthorId(Long paragraphId, Long authorId);
+
     Integer countAllByParagraph(Paragraph paragraph);
 }

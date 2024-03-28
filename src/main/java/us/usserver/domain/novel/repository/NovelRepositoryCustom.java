@@ -10,5 +10,5 @@ import us.usserver.domain.novel.dto.SearchNovelReq;
 @NoRepositoryBean
 public interface NovelRepositoryCustom {
     Slice<Novel> searchNovelList(SearchNovelReq searchNovelReq, Pageable pageable);
-    Slice<Novel> moreNovelList(Long lastNovelId, Pageable pageable);
+//    Slice<Novel> moreNovelList(Long lastNovelId, Pageable pageable);
 }

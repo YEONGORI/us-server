@@ -43,4 +43,8 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentLike> commentLikes = new ArrayList<>();
+
+    public void addCommentLike(CommentLike commentLike) {
+        this.commentLikes.add(commentLike);
+    }
 }

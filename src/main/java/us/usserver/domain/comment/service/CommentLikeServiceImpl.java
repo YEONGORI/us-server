@@ -3,6 +3,7 @@ package us.usserver.domain.comment.service;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.entity.CommentLike;
@@ -18,6 +19,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
 
     @Override
+    @Transactional
     public void postLike(Long commentId, Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
         Comment comment = entityFacade.getComment(commentId);
@@ -27,16 +29,18 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     }
 
     @Override
+    @Transactional
     public void deleteLike(Long commentId, Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
         Comment comment = entityFacade.getComment(commentId);
 
         CommentLike commentLike = commentLikeRepository.findByComment(comment)
-                .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_LIKE_NOT_FOUND));
 
         if (!Objects.equals(commentLike.getAuthor().getId(), author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
+        commentLikeRepository.delete(commentLike);
         comment.getCommentLikes().remove(commentLike); // EqualsAndHashCode 재정의 완료
     }
 }

@@ -1,22 +1,24 @@
 package us.usserver.domain.comment.service;
 
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.comment.dto.CommentContent;
 import us.usserver.domain.comment.dto.CommentInfo;
-import us.usserver.domain.comment.dto.GetCommentResponse;
+import us.usserver.domain.comment.dto.GetCommentRes;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 @Slf4j
 @Service
@@ -24,32 +26,35 @@ import us.usserver.global.response.exception.ErrorCode;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final EntityFacade entityFacade;
-    private final CommentRepository commentJpaRepository;
+    private final CommentRepository commentRepository;
+
+    private static final int CommentPageSize = 10;
 
     @Override
-    public GetCommentResponse getCommentsOfNovel(Long novelId) {
+    public GetCommentRes getCommentsOfNovel(Long novelId, int page) {
+        if (page < 0) {
+            throw new IllegalArgumentException(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
+        }
         Novel novel = entityFacade.getNovel(novelId);
-        List<Comment> commentsOfNovel = commentJpaRepository.findAllByNovel(novel);
 
-        String novelTitle = novel.getTitle();
-        List<CommentInfo> commentInfos = commentsOfNovel.stream()
-                .map(comment -> CommentInfo.fromComment(comment, novelTitle, comment.getCommentLikes().size()))
-                .toList();
-
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByNovel(novel, pageRequest)
+                .map(CommentInfo::mapCommentToCommentInfo).toList();
+        return new GetCommentRes(commentInfos);
     }
 
     @Override
-    public GetCommentResponse getCommentsOfChapter(Long chapterId) {
+    public GetCommentRes getCommentsOfChapter(Long chapterId, int page) {
+        if (page < 0) {
+            throw new IllegalArgumentException(ExceptionMessage.PAGE_INDEX_OUT_OF_RANGE);
+        }
         Chapter chapter = entityFacade.getChapter(chapterId);
-        List<Comment> commentsOfChapter = commentJpaRepository.findAllByChapter(chapter);
 
-        String chapterTitle = chapter.getTitle();
-        List<CommentInfo> commentInfos = commentsOfChapter.stream()
-                .map(comment -> CommentInfo.fromComment(comment, chapterTitle, comment.getCommentLikes().size()))
-                .toList();
+        PageRequest pageRequest = PageRequest.of(page, CommentPageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<CommentInfo> commentInfos = commentRepository.findSliceByChapter(chapter, pageRequest)
+                .map(CommentInfo::mapCommentToCommentInfo).toList();
 
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        return new GetCommentRes(commentInfos);
     }
 
     @Override
@@ -58,12 +63,12 @@ public class CommentServiceImpl implements CommentService {
         Novel novel = entityFacade.getNovel(novelId);
         Integer ZeroLikeCnt = 0;
 
-        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+        if (commentContent.content().isEmpty() || commentContent.content().length() > 300) {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
-        Comment comment = commentJpaRepository.save(Comment.builder()
-                .content(commentContent.getContent())
+        Comment comment = commentRepository.save(Comment.builder()
+                .content(commentContent.content())
                 .author(author)
                 .novel(novel)
                 .chapter(null)
@@ -80,12 +85,12 @@ public class CommentServiceImpl implements CommentService {
         Novel novel = chapter.getNovel();
         Integer ZeroLikeCnt = 0;
 
-        if (commentContent.getContent().isEmpty() || commentContent.getContent().length() > 300) {
+        if (commentContent.content().isEmpty() || commentContent.content().length() > 300) {
             throw new BaseException(ErrorCode.COMMENT_LENGTH_OUT_OF_RANGE);
         }
 
-        Comment comment = commentJpaRepository.save(Comment.builder()
-                .content(commentContent.getContent())
+        Comment comment = commentRepository.save(Comment.builder()
+                .content(commentContent.content())
                 .author(author)
                 .novel(novel)
                 .chapter(chapter)
@@ -101,9 +106,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public GetCommentResponse getCommentsByAuthor(Long memberId) {
+    public GetCommentRes getCommentsByAuthor(Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
-        List<Comment> commentsByAuthor = commentJpaRepository.findAllByAuthor(author);
+        List<Comment> commentsByAuthor = commentRepository.findAllByAuthor(author);
 
         List<CommentInfo> commentInfos = commentsByAuthor.stream()
                 .map(comment -> CommentInfo
@@ -114,7 +119,7 @@ public class CommentServiceImpl implements CommentService {
                         ))
                 .toList();
 
-        return GetCommentResponse.builder().commentInfos(commentInfos).build();
+        return GetCommentRes.builder().commentInfos(commentInfos).build();
     }
 
     @Override
@@ -125,7 +130,6 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getAuthor().getId().equals(author.getId())) {
             throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
         }
-
-        commentJpaRepository.delete(comment);
+        commentRepository.delete(comment);
     }
 }

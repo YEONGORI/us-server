@@ -30,7 +30,7 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
         paragraphLikeRepository.findByParagraphAndAuthor(paragraph, author)
                 .ifPresent(paragraphLike -> {
                     throw new BaseException(ErrorCode.LIKE_DUPLICATED);});
-        if (paragraph.getParagraphStatus() == ParagraphStatus.IN_VOTING) {
+        if (paragraph.getParagraphStatus() != ParagraphStatus.SELECTED) {
             throw new UnsupportedOperationException(ExceptionMessage.LIKE_ONLY_SELECTED_PARAGRAPH);
         }
 
@@ -50,6 +50,8 @@ public class ParagraphLikeServiceImpl implements ParagraphLikeService {
 
             paragraph.removeParagraphLike(paragraphLike);
             paragraphLikeRepository.delete(paragraphLike);
+        } else {
+            throw new BaseException(ErrorCode.PARAGRAPH_LIKE_NOT_FOUND);
         }
     }
 }

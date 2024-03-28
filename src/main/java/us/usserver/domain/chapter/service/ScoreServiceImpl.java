@@ -25,22 +25,20 @@ public class ScoreServiceImpl implements ScoreService {
 
     @Override
     public void postScore(Long chapterId, Long memberId, PostScore postScore) {
-        Member member = entityFacade.getMember(memberId);
-        Author author = member.getAuthor();
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
 
         if (postScore.getScore() > 10 || postScore.getScore() < 1) {
             throw new BaseException(ErrorCode.SCORE_OUT_OF_RANGE);
         }
         Optional<Score> scoreByAuthorAndChapter = scoreRepository.findScoreByAuthorAndChapter(author, chapter);
-        if (scoreByAuthorAndChapter.isEmpty()) {
-            Score score = Score.builder()
-                    .score(postScore.getScore())
-                    .author(author)
-                    .chapter(chapter)
-                    .build();
-            scoreRepository.save(score);
+        if (scoreByAuthorAndChapter.isPresent()) {
+            throw new BaseException(ErrorCode.SCORE_ALREADY_ENTERED);
         }
+
+        Score score = Score.builder()
+                .score(postScore.getScore()).author(author).chapter(chapter).build();
+        scoreRepository.save(score);
     }
 
     @Override

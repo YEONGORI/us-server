@@ -39,7 +39,7 @@ public class StakeServiceImpl implements StakeService {
         Set<Author> authors = authorities.stream().map(Authority::getAuthor).collect(Collectors.toSet());
 
         for (Author author : authors) {
-            float authorParagraphs = (float) getAuthorParagraphs(chapters, author);
+            float authorParagraphs = getAuthorParagraphs(chapters, author);
             updateStake(novel, author, authorParagraphs / totalParagraphs);
         }
     }
@@ -60,8 +60,8 @@ public class StakeServiceImpl implements StakeService {
                 .sum();
     }
 
-    private int getAuthorParagraphs(List<Chapter> chapters, Author author) {
-        return (int) chapters.stream()
+    private float getAuthorParagraphs(List<Chapter> chapters, Author author) {
+        return (float) chapters.stream()
                 .flatMap(chapter -> chapter.getParagraphs().stream())
                 .filter(paragraph -> paragraph.getAuthor().getId().equals(author.getId()))
                 .filter(paragraph -> paragraph.getParagraphStatus().equals(ParagraphStatus.SELECTED))
@@ -71,11 +71,8 @@ public class StakeServiceImpl implements StakeService {
     private void updateStake(Novel novel, Author author, Float percentage) {
         Optional<Stake> stakeByNovelAndAuthor = stakeRepository.findByNovelAndAuthor(novel, author);
         if (stakeByNovelAndAuthor.isEmpty()) {
-            stakeRepository.save(Stake.builder()
-                    .novel(novel)
-                    .author(author)
-                    .percentage(percentage)
-                    .build());
+            Stake stake = Stake.builder().novel(novel).author(author).percentage(percentage).build();
+            stakeRepository.save(stake);
         } else {
             Stake stake = stakeByNovelAndAuthor.get();
             stake.setPercentage(percentage);

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,6 @@ import us.usserver.domain.member.dto.token.TokenType;
 import us.usserver.domain.member.service.OauthService;
 import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.response.ApiCsResponse;
-import us.usserver.global.response.exception.AuthorNotFoundException;
-import us.usserver.global.response.exception.TokenInvalidException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,16 +39,12 @@ public class OauthController {
             "4. 사용자 정보를 DB에서 찾아 신규, 기존 유저인지 판별 후 해당하는 값들을 response \n\n" +
             "※ 신규 유저는 userId와 role(GUEST)를 기존 유저는 userId와 role(USER), accessToken, refreshToken을 발급하여 Response ※"
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = LoginDto.class))),
-            @ApiResponse(responseCode = "404", description = "작가 NOT FOUND", content = @Content(schema = @Schema(implementation = AuthorNotFoundException.class))),
-            @ApiResponse(responseCode = "401", description = "invalid social token", content = @Content(schema = @Schema(implementation = TokenInvalidException.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = LoginDto.class)))
     @PostMapping("/login")
     public ResponseEntity<LoginDto> socialLogin(@RequestBody OauthRequest oauthRequest) {
         log.debug("넘겨받은 kakao 인증키 :: " + oauthRequest.getCode());
 
-        MemberInfoDto memberInfoDto = switch (oauthRequest.getOauthProvider()) {
+        MemberInfoDto memberInfoDto = switch (oauthRequest.getOauthProvider()){
             case KAKAO -> oauthService.getMemberByOauthLogin(new KakaoParams(oauthRequest.getCode()));
             case NAVER ->
                     oauthService.getMemberByOauthLogin(new NaverParams(oauthRequest.getCode(), oauthRequest.getState()));
@@ -65,11 +58,7 @@ public class OauthController {
         return ResponseEntity.ok().headers(httpHeaders).body(new LoginDto(memberInfoDto.memberId()));
     }
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "토큰 재발급 API"),
-            @ApiResponse(responseCode = "400", description = "토큰을 찾을 수 없습니다",
-                    content = @Content(schema = @Schema(implementation = TokenInvalidException.class)))
-    })
+    @ApiResponse(responseCode = "201", description = "토큰 재발급 API")
     @GetMapping("/renew-token")
     public ApiCsResponse<Void> renewToken(HttpServletRequest request, HttpServletResponse servletResponse) {
         String refreshToken = tokenProvider.extractToken(request, TokenType.REFRESH_TOKEN);

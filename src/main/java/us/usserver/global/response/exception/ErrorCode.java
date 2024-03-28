@@ -13,11 +13,14 @@ public enum ErrorCode {
     // 챕터 관련
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.CHAPTER_NOT_FOUND),
     SCORE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.SCORE_OUT_OF_RANGE),
+    SCORE_ALREADY_ENTERED(HttpStatus.BAD_REQUEST, ExceptionMessage.SCORE_ALREADY_ENTERED),
     PREVIOUS_CHAPTER_IS_IN_PROGRESS(HttpStatus.BAD_REQUEST, ExceptionMessage.PREVIOUS_CHAPTER_IS_IN_PROGRESS),
     // 문단 관련
     PARAGRAPH_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.PARAGRAPH_NOT_FOUND),
     PARAGRAPH_LENGTH_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.PARAGRAPH_LENGTH_OUT_OF_RANGE),
     PARAGRAPH_SPACE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, ExceptionMessage.PARAGRAPH_SPACE_OUT_OF_RANGE),
+    PARAGRAPH_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.PARAGRAPH_LIKE_NOT_FOUND),
+
     // 소설 관련
     NOVEL_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.NOVEL_NOT_FOUND),
     // 댓글 관련
@@ -30,6 +33,7 @@ public enum ErrorCode {
     VOTE_ONLY_ONE_PARAGRAPH(HttpStatus.BAD_REQUEST, ExceptionMessage.VOTE_ONLY_ONE_PARAGRAPH),
     // 좋아요 관련
     LIKE_DUPLICATED(HttpStatus.BAD_REQUEST, ExceptionMessage.LIKE_DUPLICATED),
+    COMMENT_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.COMMENT_LIKE_NOT_FOUND),
 
     // 멤버 관련
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionMessage.MEMBER_NOT_FOUND),

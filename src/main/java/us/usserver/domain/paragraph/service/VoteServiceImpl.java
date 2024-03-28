@@ -2,6 +2,8 @@ package us.usserver.domain.paragraph.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,15 +45,15 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void unvoting(Long memberId, Long voteId) {
-        Vote vote = entityFacade.getVote(voteId);
-        Author author = entityFacade.getAuthorByMemberId(memberId);
+    public void unvoting(Long memberId, Long paragraphId) {
+        Optional<Vote> byParagraphIdAndAuthorId = voteRepository.findByParagraphIdAndAuthorId(paragraphId, memberId);
 
-        if (!vote.getAuthor().getId().equals(author.getId())) {
-            throw new BaseException(ErrorCode.AUTHOR_NOT_AUTHORIZED);
+        if (byParagraphIdAndAuthorId.isEmpty()) {
+            throw new BaseException(ErrorCode.VOTE_NOT_FOUND);
+        } else {
+            Vote vote = byParagraphIdAndAuthorId.get();
+            vote.getParagraph().removeVote(vote);
+            voteRepository.delete(vote);
         }
-
-        vote.getParagraph().removeVote(vote);
-        voteRepository.delete(vote);
     }
 }
