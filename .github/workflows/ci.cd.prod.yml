@@ -2,11 +2,11 @@
 name: 🚀 Build & Deploy workflow environment
 
 on:
-  pull_request:
-    branches: [main]
-    types: [closed]
-#  push: #test용
+#  pull_request:
 #    branches: [main]
+#    types: [closed]
+  push: #test용
+    branches: [main]
 
 jobs:
   build:
