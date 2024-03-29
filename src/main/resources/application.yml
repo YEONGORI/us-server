@@ -16,7 +16,7 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
     path: swagger.html            # Swagger UI 경로 => localhost:8000/demo-ui.html
-    tags-sorter: alpha
+    tags-sorter: alpha #
     operations-sorter: alpha
   api-docs:
     path: /api-docs/json
