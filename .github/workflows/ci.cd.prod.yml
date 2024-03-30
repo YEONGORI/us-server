@@ -5,10 +5,11 @@ on:
   pull_request:
     branches: [main]
     types: [closed]
+#  push: #test용
+#    branches: [main]
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
       ENV_PATH: ./src/main/resources

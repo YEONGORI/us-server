@@ -9,13 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ParagraphSpaceReq {
-    @Min(1)
-    @Max(30)
-    @Schema(description = "단락 간격", example = "16")
-    private Integer paragraphSpace;
-}
+public record ParagraphSpaceReq(
+        @Min(1) @Max(30)
+        @Schema(description = "단락 간격", example = "16")
+        Integer paragraphSpace
+) {}

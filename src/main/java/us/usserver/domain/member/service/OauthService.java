@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
@@ -19,7 +18,7 @@ import us.usserver.global.utils.RedisUtils;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Component
@@ -28,7 +27,6 @@ public class OauthService {
     private final RequestOauthInfoService requestOauthInfoService;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
-    private final AuthorRepository authorRepository;
     private final RedisUtils redisUtils;
 
     @Value("${jwt.refresh.duration}")
@@ -65,8 +63,8 @@ public class OauthService {
     }
 
     private String getRandomNickname() {
-        Random random = new Random();
-        return NICKNAME[random.nextInt(18)] + random.nextInt(0, 999);
+        int number = ThreadLocalRandom.current().nextInt(0, 999);
+        return NICKNAME[ThreadLocalRandom.current().nextInt(18)] + number;
     }
 
     private MemberInfoDto getMemberInfoDto(Optional<Member> bySocialTypeAndSocialId) {

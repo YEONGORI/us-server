@@ -22,20 +22,20 @@ public class AuthorServiceImpl implements AuthorService {
         Member member = entityFacade.getMember(memberId);
         Author author = member.getAuthor();
 
-        if (updateAuthorReq.getNickname() != null) {
-            author.changeNickname(updateAuthorReq.getNickname());
+        if (updateAuthorReq.nickname() != null) {
+            author.changeNickname(updateAuthorReq.nickname());
         }
-        if (updateAuthorReq.getIntroduction() != null) {
-            author.changeIntroduction(updateAuthorReq.getIntroduction());
+        if (updateAuthorReq.introduction() != null) {
+            author.changeIntroduction(updateAuthorReq.introduction());
         }
-        if (updateAuthorReq.getProfileImg() != null) {
-            author.changeProfileImg(updateAuthorReq.getProfileImg());
+        if (updateAuthorReq.profileImg() != null) {
+            author.changeProfileImg(updateAuthorReq.profileImg());
         }
-        if (updateAuthorReq.getCollectionNovelsPublic() != null) {
-            author.setCollectionNovelsPublic(updateAuthorReq.getCollectionNovelsPublic());
+        if (updateAuthorReq.collectionNovelsPublic() != null) {
+            author.setCollectionNovelsPublic(updateAuthorReq.collectionNovelsPublic());
         }
-        if (updateAuthorReq.getParticipateNovelsPublic() != null) {
-            author.setParticipateNovelsPublic(updateAuthorReq.getParticipateNovelsPublic());
+        if (updateAuthorReq.participateNovelsPublic() != null) {
+            author.setParticipateNovelsPublic(updateAuthorReq.participateNovelsPublic());
         }
     }
 

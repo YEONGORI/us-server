@@ -38,7 +38,7 @@ public class AuthorController {
             @AuthenticationPrincipal Long memberId,
             @Validated @RequestBody FontSizeReq req
     ) {
-        authorService.changeFontSize(memberId, req.getFontSize());
+        authorService.changeFontSize(memberId, req.fontSize());
         return ApiCsResponse.success();
     }
 
@@ -49,7 +49,7 @@ public class AuthorController {
             @AuthenticationPrincipal Long memberId,
             @Validated @RequestBody ParagraphSpaceReq req
     ) {
-        authorService.changeParagraphSpace(memberId, req.getParagraphSpace());
+        authorService.changeParagraphSpace(memberId, req.paragraphSpace());
         return ApiCsResponse.success();
     }
 }

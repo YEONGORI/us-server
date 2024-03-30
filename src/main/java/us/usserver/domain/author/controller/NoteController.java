@@ -26,7 +26,7 @@ public class NoteController {
     @Operation(summary = "내가 쓴 한줄 불러오기", description = "내가 작성한 모든 한줄 불러오기")
     @ApiResponse(responseCode = "200", description = "불러오기 성공",
             content = @Content(schema = @Schema(implementation = GetParagraphNote.class)))
-    @GetMapping("/viewed")
+    @GetMapping("/wrote")
     public ApiCsResponse<GetParagraphNote> wroteParagraphs(@AuthenticationPrincipal Long memberId) {
         GetParagraphNote paragraphPreviews = noteService.wroteParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
@@ -45,7 +45,7 @@ public class NoteController {
     @ApiResponse(responseCode = "200", description = "불러오기 성공",
                 content = @Content(schema = @Schema(implementation = GetParagraphNote.class)))
     @GetMapping("/liked")
-    public ApiCsResponse<GetParagraphNote> likedNovels(@AuthenticationPrincipal Long memberId) {
+    public ApiCsResponse<GetParagraphNote> likedParagraphs(@AuthenticationPrincipal Long memberId) {
         GetParagraphNote paragraphPreviews = noteService.likedParagraphs(memberId);
         return ApiCsResponse.success(paragraphPreviews);
     }

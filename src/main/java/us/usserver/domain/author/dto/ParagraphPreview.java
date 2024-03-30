@@ -2,6 +2,7 @@ package us.usserver.domain.author.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Value;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.entity.Paragraph;
@@ -25,6 +26,9 @@ public record ParagraphPreview(
         @Schema(description = "한줄 작성 날짜", example = "2023.12.31 00:00:00")
         LocalDateTime date
 ) {
+    @Value("${aws.public.ip}")
+    private static String publicIp;
+
     public static ParagraphPreview fromParagraph(Paragraph paragraph, Novel novel, Chapter chapter) {
         return ParagraphPreview.builder()
                 .authorId(paragraph.getAuthor().getId())
@@ -38,6 +42,6 @@ public record ParagraphPreview(
     }
 
     private static String getShortcuts(Long novelId, Long chapterId) { // TODO: 이후 URL에 따라 수정
-        return "http://localhost:8080/" + novelId + "/" + chapterId;
+        return "http://" + publicIp + ":8080/" + novelId + "/" + chapterId;
     }
 }

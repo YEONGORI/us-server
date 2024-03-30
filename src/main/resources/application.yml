@@ -5,7 +5,6 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MariaDBDialect
-
   #    show-sql: true
   #    properties:
   #      hibernate:
@@ -17,8 +16,8 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
     path: swagger.html            # Swagger UI 경로 => localhost:8000/demo-ui.html
-    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
-    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    tags-sorter: alpha #
+    operations-sorter: alpha
   api-docs:
     path: /api-docs/json
     groups:

@@ -26,7 +26,7 @@ public class NoteServiceImpl implements NoteService {
     private final EntityFacade entityFacade;
 
     private final ParagraphRepository paragraphRepository;
-    private final VoteRepository voteJpaRepository;
+    private final VoteRepository voteRepository;
     private final ParagraphLikeRepository paragraphLikeRepository;
 
     @Override
@@ -49,7 +49,7 @@ public class NoteServiceImpl implements NoteService {
         Member member = entityFacade.getMember(memberId);
         Author author = member.getAuthor();
 
-        List<Vote> votes = voteJpaRepository.findAllByAuthor(author);
+        List<Vote> votes = voteRepository.findAllByAuthor(author);
         List<ParagraphPreview> paragraphPreviews = votes.stream().map(vote -> ParagraphPreview.fromParagraph(
                 vote.getParagraph(),
                 vote.getParagraph().getChapter().getNovel(),
