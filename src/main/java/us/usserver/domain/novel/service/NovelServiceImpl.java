@@ -193,6 +193,10 @@ public class NovelServiceImpl implements NovelService {
                 SortColumn.createdAt);
 
         Set<String> keywords = tokenizeKeyword(searchKeyword.keyword());
+        novelRepository.searchNovelList(keywords, pageRequest);
+
+
+
         Slice<Novel> novelSlice = novelRepository.searchNovelList(keywords, pageRequest);
         return null;
     }

@@ -1,27 +1,19 @@
 package us.usserver.infra.novel;
 
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import us.usserver.domain.novel.constant.Hashtag;
-import us.usserver.domain.novel.constant.NovelStatus;
-import us.usserver.domain.novel.constant.Orders;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
-import us.usserver.domain.novel.dto.SortDto;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepositoryCustom;
 
 import java.util.List;
 import java.util.Set;
 
-import static org.springframework.util.StringUtils.hasText;
 import static us.usserver.domain.novel.entity.QNovel.novel;
 
 @Repository
@@ -31,88 +23,35 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom {
 
     @Override
     public Slice<Novel> searchNovelList(Set<String> keywords, Pageable pageable) {
-//        List<Novel> novels = getSearchNovel(keyword, pageable);
-        Sort sort = pageable.getSort();
-        queryFactory
-                .select(novel)
+        List<Novel> novelList = queryFactory
+                .select(novel) // TODO: 나중에 DTO 로 조회할 것
                 .from(novel)
-                .where(
-                        containsTitle(keyword),
-                        containsAuthorName(keyword)
-                )
-//                .orderBy(pageable.getSort())
+                .where(searchByKeywords(keywords))
+//                .orderBy(pageable.getSort()) TODO: 정렬 방법 정할 것
+//                TODO: MariaDB에서 Full Text Index와 MATCH() ... AGAINST() 구문을 사용하여 텍스트 검색을 수행하고, 검색 결과의 관련성을 평가할 수 있다는데 확인해 볼 것
+                // 마치 ts_rank와 유사한 기능
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
-//        return checkLastPage(pageable, novels);
-        return null;
+        return getNovelSlice(novelList, pageable);
     }
 
-//    private List<Novel> getMoreNovel(Long lastNovelId, Pageable pageable) {
-//        return queryFactory
-//                .select(novel)
-//                .from(novel)
-//                .where(ltNovelId(lastNovelId))
-////                .orderBy(pageable.getSort())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize()+1)
-//                .fetch();
-//    }
-
-//    private List<Novel> getSearchNovel(SearchKeyword searchKeyword, Pageable pageable) {
-//        return queryFactory
-//                .select(novel)
-//                .from(novel)
-//                .where(
-//                        ltNovelId(searchKeyword.getLastNovelId()),
-//                        containsTitle(searchKeyword.getTitle()),
-//                        containsHashtag(searchKeyword.getHashtag()),
-//                        eqNovelStatus(searchKeyword.getStatus()))
-//                .orderBy(novelSort(searchKeyword.getSortDto()))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize()+1)
-//                .fetch();
-//    }
-
-    private BooleanExpression containsTitle(String title) {
-        return hasText(title) ? novel.title.contains(title) : null;
+    private Predicate searchByKeywords(Set<String> keywords) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        for (String keyword : keywords) {
+            booleanBuilder.or(novel.title.contains(keyword));
+            booleanBuilder.or(novel.mainAuthor.nickname.contains(keyword));
+        }
+        return booleanBuilder;
     }
 
-    private BooleanExpression containsAuthorName(String name) {
-        return hasText(name) ? novel.mainAuthor.nickname.contains(name) : null;
+    private Slice<Novel> getNovelSlice(List<Novel> novelList, Pageable pageable) {
+        boolean hasNext = false;
+
+        if (novelList.size() > pageable.getPageSize()) {
+            hasNext = true;
+            novelList.remove(pageable.getPageSize());
+        }
+        return new SliceImpl<>(novelList, pageable, hasNext);
     }
-//
-//    private OrderSpecifier<?> getOrderSpecifier(Sort sort) {
-//        sort.
-//        if (sortDto == null) {
-//            //Default:사전순
-//            return new OrderSpecifier<>(Order.ASC, novel.title);
-//        }
-//
-//        Order direction = (sortDto.getOrders() == Orders.DESC) ? Order.DESC : Order.ASC;
-//        switch (sortDto.getSorts()) {
-//            case LATEST -> {
-//                //최신 업데이트순
-//                return new OrderSpecifier<>(direction, novel.updatedAt);
-//            }
-//            case NEW -> {
-//                //신작순
-//                return new OrderSpecifier<>(direction, novel.createdAt);
-//            }
-//            default -> {
-//                //조회순
-//                return new OrderSpecifier<>(direction, novel.hit);
-//            }
-//        }
-//    }
-//
-//    private Slice<Novel> checkLastPage(Pageable pageable, List<Novel> content) {
-//        boolean hasNext = false;
-//
-//        if (content.size() > pageable.getPageSize()) {
-//            hasNext = true;
-//            content.remove(pageable.getPageSize());
-//        }
-//        return new SliceImpl<>(content, pageable, hasNext);
-//    }
 }
