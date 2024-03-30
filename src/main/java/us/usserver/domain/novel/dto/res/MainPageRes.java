@@ -1,7 +1,8 @@
-package us.usserver.domain.novel.dto;
+package us.usserver.domain.novel.dto.res;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import us.usserver.domain.novel.dto.NovelInfo;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class MainPageResponse {
+public class MainPageRes {
     @Schema(description = "인기있는 소설 List", example = "novel1, novel2, ...")
     private List<NovelInfo> popularNovels;
 

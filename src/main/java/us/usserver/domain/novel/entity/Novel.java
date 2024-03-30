@@ -98,9 +98,6 @@ public class Novel extends BaseEntity {
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<NovelLike> novelLikes = new ArrayList<>();
 
-    public void setIdForTest(Long id) {
-        this.id = id;
-    }
     public void changeSynopsis(String synopsis) {
         this.synopsis = synopsis;
     }

@@ -13,6 +13,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.req.MoreNovelReq;
+import us.usserver.domain.novel.dto.req.NovelBlueprint;
+import us.usserver.domain.novel.dto.req.NovelSynopsis;
+import us.usserver.domain.novel.dto.req.SearchKeyword;
+import us.usserver.domain.novel.dto.res.MainPageRes;
+import us.usserver.domain.novel.dto.res.MoreNovelRes;
+import us.usserver.domain.novel.dto.res.NovelPageInfoRes;
+import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.service.NovelService;
 import us.usserver.global.response.ApiCsResponse;
 
@@ -73,49 +81,49 @@ public class NovelController {
 
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
-            content = @Content(schema = @Schema(implementation = MainPageResponse.class)))
+            content = @Content(schema = @Schema(implementation = MainPageRes.class)))
     @GetMapping("/main")
-    public ApiCsResponse<MainPageResponse> getHomeNovelListInfo(
+    public ApiCsResponse<MainPageRes> getHomeNovelListInfo(
             @AuthenticationPrincipal Long memberId
     ) {
-        MainPageResponse homeNovelList = novelService.getMainPage(memberId);
+        MainPageRes homeNovelList = novelService.getMainPage(memberId);
         return ApiCsResponse.success(homeNovelList);
     }
 
     @Operation(summary = "소설 더보기", description = "실시간 업데이트, 신작 모아보기 더보기 API")
     @ApiResponse(responseCode = "200", description = "소설 더보기 load 성공",
-            content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
+            content = @Content(schema = @Schema(implementation = NovelPageInfoRes.class)))
     @GetMapping("/main/more")
-    public ApiCsResponse<MoreNovelResponse> getMoreNovels(
+    public ApiCsResponse<MoreNovelRes> getMoreNovels(
             @AuthenticationPrincipal Long memberId,
-            @Valid MoreNovelRequest moreNovelRequest
+            @Valid MoreNovelReq moreNovelReq
     ) {
-        MoreNovelResponse moreNovels = novelService.getMoreNovels(memberId, moreNovelRequest);
+        MoreNovelRes moreNovels = novelService.getMoreNovels(memberId, moreNovelReq);
         return ApiCsResponse.success(moreNovels);
     }
 
     @Operation(summary = "읽은 소설 더보기", description = "내가 읽었던 소설 더보기 API")
     @ApiResponse(responseCode = "200", description = "읽은 소설 더보기 laod 성공",
-            content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
+            content = @Content(schema = @Schema(implementation = NovelPageInfoRes.class)))
     @GetMapping("/main/more/read")
-    public ApiCsResponse<MoreNovelResponse> readNovel(
+    public ApiCsResponse<MoreNovelRes> readNovel(
             @AuthenticationPrincipal Long memberId
     ) {
-        MoreNovelResponse moreNovelResponse = novelService.readMoreNovel(memberId);
-        return ApiCsResponse.success(moreNovelResponse);
+        MoreNovelRes moreNovelRes = novelService.readMoreNovel(memberId);
+        return ApiCsResponse.success(moreNovelRes);
 
     }
 
     @Operation(summary = "소설 검색", description = "사용자 소설 검색 API")
     @ApiResponse(responseCode = "200", description = "소설 검색 성공",
-            content = @Content(schema = @Schema(implementation = NovelPageInfoResponse.class)))
+            content = @Content(schema = @Schema(implementation = SearchNovelRes.class)))
     @GetMapping("/search")
-    public ApiCsResponse<NovelPageInfoResponse> searchNovel(
+    public ApiCsResponse<SearchNovelRes> searchNovel(
             @AuthenticationPrincipal Long memberId,
-            @Valid SearchNovelReq searchNovelReq
+            @Valid SearchKeyword searchKeyword
     ) {
-        NovelPageInfoResponse novelPageInfoResponse = novelService.searchNovel(memberId, searchNovelReq);
-        return ApiCsResponse.success(novelPageInfoResponse);
+        SearchNovelRes searchNovelRes = novelService.searchNovel(memberId, searchKeyword);
+        return ApiCsResponse.success(searchNovelRes);
     }
 
     @Operation(summary = "작가 소개 수정", description = "메인 작가 소개글 수정하기")

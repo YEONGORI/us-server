@@ -3,6 +3,13 @@ package us.usserver.domain.novel.service;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.req.MoreNovelReq;
+import us.usserver.domain.novel.dto.req.NovelBlueprint;
+import us.usserver.domain.novel.dto.req.SearchKeyword;
+import us.usserver.domain.novel.dto.res.MainPageRes;
+import us.usserver.domain.novel.dto.res.MoreNovelRes;
+import us.usserver.domain.novel.dto.res.NovelPageInfoRes;
+import us.usserver.domain.novel.dto.res.SearchNovelRes;
 
 
 @Service
@@ -17,13 +24,13 @@ public interface NovelService {
 
     NovelInfo createNovel(Long memberId, NovelBlueprint novelBlueprint);
 
-    MainPageResponse getMainPage(Long memberId);
+    MainPageRes getMainPage(Long memberId);
 
-    MoreNovelResponse getMoreNovels(Long memberId, MoreNovelRequest moreNovelRequest);
+    MoreNovelRes getMoreNovels(Long memberId, MoreNovelReq moreNovelReq);
 
-    MoreNovelResponse readMoreNovel(Long memberId);
+    MoreNovelRes readMoreNovel(Long memberId);
 
-    NovelPageInfoResponse searchNovel(Long memberId, SearchNovelReq searchNovelReq);
+    SearchNovelRes searchNovel(Long memberId, SearchKeyword searchKeyword);
 
     SearchKeywordResponse searchKeyword(Member member);
 

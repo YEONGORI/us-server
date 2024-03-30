@@ -1,40 +1,41 @@
-package us.usserver.domain.member.service;
+package us.usserver.domain.member.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.AuthorMother;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.member.MemberMother;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
-import us.usserver.global.response.exception.BaseException;
+import us.usserver.domain.member.service.TokenProvider;
 import us.usserver.global.utils.RedisUtils;
 
 import java.time.Duration;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
 @Transactional
+@AutoConfigureMockMvc
 @SpringBootTest
-class MemberServiceTest {
-    @Autowired
-    private MemberService memberService;
-
+class MemberControllerTest {
     @Autowired
     private TokenProvider tokenProvider;
     @Autowired
     private RedisUtils redisUtils;
-
     @Autowired
-    private AuthorRepository authorRepository;
+    private MockMvc mockMvc;
+
     @Autowired
     private MemberRepository memberRepository;
 
@@ -56,39 +57,34 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("로그아웃 TEST")
-    void logout() {
+    @DisplayName("로그아웃 API TEST")
+    void logout() throws Exception {
         // given
 
         // when
-        memberService.logout(accessToken, refreshToken);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/member/logout")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        assertNull(redisUtils.getData(member.getId().toString()));
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("회원 탈퇴 TEST")
-    void withdraw() {
+    @DisplayName("회원 탈퇴 API TEST")
+    void withdraw() throws Exception {
         // given
 
         // when
-        memberService.withdraw(member.getId());
-        Optional<Member> memberById = memberRepository.findById(member.getId());
-        Optional<Author> authorById = authorRepository.findById(author.getId());
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/member/withdraw")
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization-Refresh", "Bearer " + refreshToken)
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        assertTrue(memberById.isEmpty());
-        assertTrue(authorById.isEmpty());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 유저의 회원 탈퇴 TEST")
-    void withdraw_2() {
-        // given
-
-        // when then
-        assertThrows(BaseException.class,
-                () -> memberService.withdraw(9999L));
+        resultActions.andExpect(status().isOk());
     }
 }
