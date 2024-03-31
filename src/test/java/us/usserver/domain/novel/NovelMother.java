@@ -3,6 +3,7 @@ package us.usserver.domain.novel;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.misc.EnumRandomizer;
+import org.jeasy.random.randomizers.range.FloatRangeRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
 import us.usserver.domain.author.entity.Author;
@@ -32,6 +33,7 @@ public class NovelMother {
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
                 .randomize(NovelStatus.class, new EnumRandomizer<>(NovelStatus.class))
                 .randomize(named("hit").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 0))
+                .randomize(named("score").and(ofType(Float.class)), new FloatRangeRandomizer(0.0F, 10.0F))
                 .randomize(named("participantCnt").and(ofType(Integer.class)), new IntegerRangeRandomizer(0, 0))
                 .randomize(NovelSize.class, new EnumRandomizer<>(NovelSize.class))
                 .randomize(Author.class, () -> author)

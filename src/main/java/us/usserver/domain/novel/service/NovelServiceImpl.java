@@ -4,16 +4,13 @@ import jakarta.transaction.Transactional;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
-import kr.co.shineware.nlp.komoran.model.Token;
 import kr.co.shineware.util.common.model.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
@@ -32,7 +29,6 @@ import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.MainPageRes;
 import us.usserver.domain.novel.dto.res.MoreNovelRes;
-import us.usserver.domain.novel.dto.res.NovelPageInfoRes;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
@@ -55,9 +51,7 @@ public class NovelServiceImpl implements NovelService {
     private final ChapterService chapterService;
 
     private final AuthorityRepository authorityRepository;
-    private final AuthorRepository authorRepository;
     private final NovelRepository novelRepository;
-    private final RedisTemplate<String, String> redisTemplate;
 
     private static final Integer RECENT_KEYWORD_SIZE = 10;
     private static final Integer DEFAULT_PAGE_SIZE = 6;
@@ -66,7 +60,7 @@ public class NovelServiceImpl implements NovelService {
     @Transactional
     public NovelInfo createNovel(Long memberId, NovelBlueprint novelBlueprint) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
-        Novel novel = novelBlueprint.toEntity(author);
+        Novel novel = novelBlueprint.mapBlueprintToNovel(author);
         Novel saveNovel = novelRepository.save(novel);
 
         authorityRepository.save(Authority.builder()
@@ -193,12 +187,10 @@ public class NovelServiceImpl implements NovelService {
                 SortColumn.createdAt);
 
         Set<String> keywords = tokenizeKeyword(searchKeyword.keyword());
-        novelRepository.searchNovelList(keywords, pageRequest);
-
-
 
         Slice<Novel> novelSlice = novelRepository.searchNovelList(keywords, pageRequest);
-        return null;
+        Set<NovelSimpleInfo> novelSimpleInfos = novelSlice.map(NovelSimpleInfo::mapNovelToSimpleInfo).toSet();
+        return new SearchNovelRes(novelSimpleInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }
 
     private PageRequest getPageRequest(int pageNum, int pageSize, Sort.Direction direction, SortColumn sortColumn) {

@@ -23,10 +23,7 @@ import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
 import us.usserver.domain.novel.constant.Hashtag;
 import us.usserver.domain.novel.constant.NovelSize;
-import us.usserver.domain.novel.dto.AuthorDescription;
-import us.usserver.domain.novel.dto.MainNovelType;
-import us.usserver.domain.novel.dto.NovelDetailInfo;
-import us.usserver.domain.novel.dto.NovelInfo;
+import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.req.NovelSynopsis;
@@ -43,8 +40,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Rollback
 @Transactional
@@ -59,8 +55,6 @@ class SearchServiceTest {
     private AuthorRepository authorRepository;
     @Autowired
     private MemberRepository memberRepository;
-    @Autowired
-    private ChapterRepository chapterRepository;
 
     private Novel novel;
     private Novel newNovel;
@@ -94,104 +88,109 @@ class SearchServiceTest {
     }
 
     @Test
-    @DisplayName("소설 정보 확인")
-    void getNovelInfo() {
+    @DisplayName("소설 검색 TEST")
+    void getNovelInfo_1() {
         // given
-        SearchKeyword searchKeyword = SearchKeyword.builder().keyword("환생 CEO").nextPage(0).build();
+        SearchKeyword searchKeyword = SearchKeyword.builder().keyword(novel.getTitle().substring(1)).nextPage(0).build();
 
         // when
         SearchNovelRes searchNovelRes = novelService.searchNovel(member.getId(), searchKeyword);
 
         // then
-    }
-
-    /*
-    @Test
-    @DisplayName("소설 검색")
-    void 소설검색_제목_성공() {
-        //given
-        SearchKeyword searchNovelReq1 = SearchKeyword.builder()
-                .authorId(author.getId())
-                .title("TITLE")
-                .hashtag(null)
-                .status(null)
-                .lastNovelId(0L)
-                .size(5)
-                .sortDto(new SortDto(Sorts.HIT, Orders.DESC))
-                .build();
-
-        SearchKeyword searchNovelReq2 = SearchKeyword.builder()
-                .authorId(author.getId())
-                .title("TITLE")
-                .hashtag(null)
-                .status(null)
-                .lastNovelId(0L)
-                .size(5)
-                .sortDto(new SortDto(Sorts.LATEST, Orders.ASC))
-                .build();
-
-
-        //when
-        NovelPageInfoRes novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoRes novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
-
-        //then
-        assertThat(novelPageInfoResponse1.getNovelList().size()).isEqualTo(2);
-        assertThat(novelPageInfoResponse1.getNovelList().get(0).getTitle()).isEqualTo("TITLE2");
-        assertThat(novelPageInfoResponse1.getNovelList().get(1).getTitle()).isEqualTo("TITLE");
-
-        assertThat(novelPageInfoResponse2.getNovelList().size()).isEqualTo(2);
-        assertThat(novelPageInfoResponse2.getNovelList().get(0).getTitle()).isEqualTo("TITLE");
-        assertThat(novelPageInfoResponse2.getNovelList().get(1).getTitle()).isEqualTo("TITLE2");
+        assertThat(searchNovelRes.novelSimpleInfos().size()).isNotZero();
     }
 
     @Test
-    @DisplayName("검색 키워드")
-    void 소설검색_키워드_성공() {
-        //given
-        SearchKeyword searchNovelReq1 = SearchKeyword.builder()
-                .authorId(author.getId())
-                .title("TITLE")
-                .hashtag(null)
-                .status(null)
-                .lastNovelId(0L)
-                .size(5)
-                .sortDto(new SortDto(Sorts.HIT, Orders.DESC))
-                .build();
+    @DisplayName("소설 검색 페이징(By 제목) TEST")
+    void getNovelInfo_2() {
+        // given
+        Novel novel1 = NovelMother.generateNovel(author);
+        Novel novel2 = NovelMother.generateNovel(author);
+        Novel novel3 = NovelMother.generateNovel(author);
+        Novel novel4 = NovelMother.generateNovel(author);
+        Novel novel5 = NovelMother.generateNovel(author);
+        Novel novel6 = NovelMother.generateNovel(author);
+        Novel novel7 = NovelMother.generateNovel(author);
+        Novel novel8 = NovelMother.generateNovel(author);
+        Novel novel9 = NovelMother.generateNovel(author);
+        Novel novel10 = NovelMother.generateNovel(author);
+        Novel novel11 = NovelMother.generateNovel(author);
+        Novel novel12 = NovelMother.generateNovel(author);
+        Novel novel13 = NovelMother.generateNovel(author);
+        novel1.setTitleForTest("전생회전");
+        novel2.setTitleForTest("전생회귀");
+        novel3.setTitleForTest("나혼자만 전생자");
+        novel4.setTitleForTest("전생하는 법");
+        novel5.setTitleForTest("나루토");
+        novel6.setTitleForTest("게임 속 바바리안으로 살아남기");
+        novel7.setTitleForTest("전생 배드로");
+        novel8.setTitleForTest("광마 회귀");
+        novel9.setTitleForTest("화산 귀환");
+        novel10.setTitleForTest("화산 전생");
+        novel11.setTitleForTest("전생 공주");
+        novel12.setTitleForTest("전생 왕자");
 
-        SearchKeyword searchNovelReq2 = SearchKeyword.builder()
-                .authorId(author.getId())
-                .title("TITLE2")
-                .hashtag(null)
-                .status(null)
-                .lastNovelId(0L)
-                .size(5)
-                .sortDto(new SortDto(Sorts.LATEST, Orders.ASC))
-                .build();
-        SearchKeyword searchNovelReq3 = SearchKeyword.builder()
-                .authorId(author.getId())
-                .title("TITLE")
-                .hashtag(null)
-                .status(null)
-                .lastNovelId(0L)
-                .size(5)
-                .sortDto(new SortDto(Sorts.LATEST, Orders.ASC))
-                .build();
+        SearchKeyword searchKeyword1 = SearchKeyword.builder().keyword("전생").nextPage(0).build();
+        SearchKeyword searchKeyword2 = SearchKeyword.builder().keyword("전생").nextPage(1).build();
 
-        //when
-        NovelPageInfoRes novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoRes novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
-        NovelPageInfoRes novelPageInfoResponse3 = novelServiceV0.searchNovel(searchNovelReq3);
+        // when
+        novelRepository.save(novel1);
+        novelRepository.save(novel2);
+        novelRepository.save(novel3);
+        novelRepository.save(novel4);
+        novelRepository.save(novel5);
+        novelRepository.save(novel6);
+        novelRepository.save(novel7);
+        novelRepository.save(novel8);
+        novelRepository.save(novel9);
+        novelRepository.save(novel10);
+        novelRepository.save(novel11);
+        novelRepository.save(novel12);
+        novelRepository.save(novel13);
+        SearchNovelRes searchNovelRes1 = novelService.searchNovel(member.getId(), searchKeyword1);
+        SearchNovelRes searchNovelRes2 = novelService.searchNovel(member.getId(), searchKeyword2);
 
-        SearchKeywordResponse searchKeywordResponse = novelServiceV0.searchKeyword();
+        // then
+        for (NovelSimpleInfo novelSimpleInfo : searchNovelRes1.novelSimpleInfos()) {
+            if (!novelSimpleInfo.title().contains("전생") && !novelSimpleInfo.createdAuthor().contains("전생"))
+                fail();
+        }
+        for (NovelSimpleInfo novelSimpleInfo : searchNovelRes2.novelSimpleInfos()) {
+            if (!novelSimpleInfo.title().contains("전생") && !novelSimpleInfo.createdAuthor().contains("전생"))
+                fail();
+        }
+    }
 
-        //then
-        assertThat(searchKeywordResponse.getHotSearch().size()).isEqualTo(2);
-        assertThat(searchKeywordResponse.getHotSearch().get(0)).isEqualTo("TITLE");
-        assertThat(searchKeywordResponse.getHotSearch().get(1)).isEqualTo("TITLE2");
+    @Test
+    @DisplayName("소설 검색 페이징(By 작가 이름) TEST")
+    void getNovelInfo_3() {
+        // given
+        author.setNicknameForTest("소설킹");
+        author = authorRepository.save(author);
+        Novel novel1 = NovelMother.generateNovel(author);
+        Novel novel2 = NovelMother.generateNovel(author);
+        Novel novel3 = NovelMother.generateNovel(author);
+        Novel novel4 = NovelMother.generateNovel(author);
+        Novel novel5 = NovelMother.generateNovel(author);
+        Novel novel6 = NovelMother.generateNovel(author);
+        Novel novel7 = NovelMother.generateNovel(author);
 
-        assertThat(searchKeywordResponse.getRecentSearch().size()).isEqualTo(2);
-        assertThat(searchKeywordResponse.getRecentSearch().get(0)).isEqualTo("TITLE");
-        assertThat(searchKeywordResponse.getRecentSearch().get(1)).isEqualTo("TITLE2");
-    } */
+        SearchKeyword searchKeyword1 = SearchKeyword.builder().keyword("소설").nextPage(0).build();
+        SearchKeyword searchKeyword2 = SearchKeyword.builder().keyword("소설").nextPage(1).build();
+
+        // when
+        novelRepository.save(novel1);
+        novelRepository.save(novel2);
+        novelRepository.save(novel3);
+        novelRepository.save(novel4);
+        novelRepository.save(novel5);
+        novelRepository.save(novel6);
+        novelRepository.save(novel7);
+        SearchNovelRes searchNovelRes1 = novelService.searchNovel(member.getId(), searchKeyword1);
+        SearchNovelRes searchNovelRes2 = novelService.searchNovel(member.getId(), searchKeyword2);
+
+        // then
+        assertThat(searchNovelRes1.novelSimpleInfos().size()).isEqualTo(6);
+        assertThat(searchNovelRes2.novelSimpleInfos().size()).isOne();
+    }
 }

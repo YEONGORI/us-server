@@ -127,4 +127,8 @@ public class Author {
     public void setMember(Member member) {
         this.member = member;
     }
+
+    public void setNicknameForTest(String nickname) {
+        this.nickname = nickname;
+    }
 }
