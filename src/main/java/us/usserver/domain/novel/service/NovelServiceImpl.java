@@ -1,20 +1,14 @@
 package us.usserver.domain.novel.service;
 
 import jakarta.transaction.Transactional;
-import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
-import kr.co.shineware.nlp.komoran.core.Komoran;
-import kr.co.shineware.nlp.komoran.model.KomoranResult;
-import kr.co.shineware.util.common.model.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
-import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.dto.StakeInfo;
 import us.usserver.domain.authority.dto.res.StakeInfoResponse;
 import us.usserver.domain.authority.entity.Authority;
@@ -22,14 +16,14 @@ import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterService;
-import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
+import us.usserver.domain.novel.dto.SortColumn;
 import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.MainPageRes;
 import us.usserver.domain.novel.dto.res.MoreNovelRes;
-import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.EntityFacade;
@@ -38,9 +32,6 @@ import us.usserver.global.response.exception.ErrorCode;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @Slf4j
 @Service
@@ -53,7 +44,6 @@ public class NovelServiceImpl implements NovelService {
     private final AuthorityRepository authorityRepository;
     private final NovelRepository novelRepository;
 
-    private static final Integer RECENT_KEYWORD_SIZE = 10;
     private static final Integer DEFAULT_PAGE_SIZE = 6;
 
     @Override
@@ -63,8 +53,8 @@ public class NovelServiceImpl implements NovelService {
         Novel novel = novelBlueprint.mapBlueprintToNovel(author);
         Novel saveNovel = novelRepository.save(novel);
 
-        authorityRepository.save(Authority.builder()
-                .author(author).novel(novel).build());
+        authorityRepository.save(
+                Authority.builder().author(author).novel(novel).build());
 
         chapterService.createChapter(saveNovel.getId(), author.getId());
         return NovelInfo.mapNovelToNovelInfo(novel);
@@ -124,7 +114,7 @@ public class NovelServiceImpl implements NovelService {
             throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
         }
 
-        novel.changeAuthorDescription(req.getDescription());
+        novel.changeAuthorDescription(req.description());
         return req;
     }
 
@@ -177,22 +167,6 @@ public class NovelServiceImpl implements NovelService {
         return new MoreNovelRes(novelInfos, 0, Boolean.FALSE);
     }
 
-    @Override
-    @Transactional
-    public SearchNovelRes searchNovel(Long memberId, SearchKeyword searchKeyword) {
-        PageRequest pageRequest = getPageRequest(
-                searchKeyword.nextPage(),
-                DEFAULT_PAGE_SIZE,
-                Sort.Direction.DESC,
-                SortColumn.createdAt);
-
-        Set<String> keywords = tokenizeKeyword(searchKeyword.keyword());
-
-        Slice<Novel> novelSlice = novelRepository.searchNovelList(keywords, pageRequest);
-        Set<NovelSimpleInfo> novelSimpleInfos = novelSlice.map(NovelSimpleInfo::mapNovelToSimpleInfo).toSet();
-        return new SearchNovelRes(novelSimpleInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
-    }
-
     private PageRequest getPageRequest(int pageNum, int pageSize, Sort.Direction direction, SortColumn sortColumn) {
         return PageRequest.of(pageNum, pageSize, Sort.by(direction, sortColumn.toString()));
     }
@@ -206,95 +180,4 @@ public class NovelServiceImpl implements NovelService {
                 .toList();
     }
 
-    private Set<String> tokenizeKeyword(String keyword) {
-        Komoran komoran = new Komoran(DEFAULT_MODEL.LIGHT);
-        KomoranResult komoranResult = komoran.analyze(keyword);
-        List<Pair<String, String>> list = komoranResult.getList();
-
-        Set<String> keywords = list.stream()
-                .filter(stringStringPair -> stringStringPair.getSecond().contentEquals("NNG")) // 명사
-                .map(Pair::getFirst)
-                .collect(Collectors.toSet());
-
-        keywords.addAll(list.stream()
-                .filter(stringStringPair -> stringStringPair.getSecond().contentEquals("SL")) // 영어
-                .map(Pair::getFirst)
-                .map(String::toLowerCase)
-                .toList());
-
-        return keywords;
-    }
-
-
-    @Override
-    @Transactional
-    public SearchKeywordResponse searchKeyword(Member member) {
-//        Author author = member.getAuthor();
-//
-//        //최신 검색어
-//        ListOperations<String, String> opsForList = redisTemplate.opsForList();
-//        ZSetOperations<String, String> opsForZSet = redisTemplate.opsForZSet();
-//
-//        //인기 검색어
-//        String hot_keyword = "ranking";
-//        Set<ZSetOperations.TypedTuple<String>> rankingTuples = opsForZSet.reverseRangeWithScores(hot_keyword, 0, 9);
-//
-//        return SearchKeywordResponse.builder()
-//                .recentSearch(opsForList.range(String.valueOf(author.getId()), 0, 9))
-//                .hotSearch(rankingTuples.stream().map(set -> set.getValue()).collect(Collectors.toList()))
-//                .build();
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public void deleteSearchKeyword(Member member) {
-//        Author author = authorRepository.getAuthorByMember(member)
-//                .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
-//
-//        String key = String.valueOf(author.getId());
-//        Long size = redisTemplate.opsForList().size(key);
-//
-//        redisTemplate.opsForList().rightPop(key, size);
-    }
-
-//    private void increaseKeywordScore(String keyword) {
-//        int score = 0;
-//
-//        try {
-//            redisTemplate.opsForZSet().incrementScore("ranking", keyword,1);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//        redisTemplate.opsForZSet().incrementScore("ranking", keyword, score);
-//    }
-//
-//    private void recentKeyword(Long authorId, String keyword) {
-//        if (authorId == null) {
-//            return;
-//        }
-//
-//        String key = String.valueOf(authorId);
-//        String equalWord = null;
-//        ListOperations<String, String> list = redisTemplate.opsForList();
-//
-//        for (int i = 0; i < list.size(key); i++) {
-//            String frontWord = list.leftPop(key);
-//            if (frontWord.equals(keyword)) {
-//                equalWord = frontWord;
-//            } else{
-//                list.rightPush(key, frontWord);
-//            }
-//        }
-//        if (equalWord != null) {
-//            list.leftPush(key, equalWord);
-//            return;
-//        }
-//
-//        Long size = list.size(key);
-//        if (size == (long) RECENT_KEYWORD_SIZE) {
-//            list.rightPop(key);
-//        }
-//        list.leftPush(key, keyword);
-//    }
 }

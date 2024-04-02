@@ -9,19 +9,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import us.usserver.domain.member.entity.Member;
-import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
 import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.req.NovelSynopsis;
 import us.usserver.domain.novel.dto.req.SearchKeyword;
-import us.usserver.domain.novel.dto.res.MainPageRes;
-import us.usserver.domain.novel.dto.res.MoreNovelRes;
-import us.usserver.domain.novel.dto.res.NovelPageInfoRes;
-import us.usserver.domain.novel.dto.res.SearchNovelRes;
+import us.usserver.domain.novel.dto.res.*;
 import us.usserver.domain.novel.service.NovelService;
+import us.usserver.domain.novel.service.SearchService;
 import us.usserver.global.response.ApiCsResponse;
 
 import java.net.URI;
@@ -33,6 +31,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class NovelController {
     private final NovelService novelService;
+    private final SearchService searchService;
 
     @Operation(summary = "소설 생성", description = "작가가 소설을 생성하는 API")
     @ApiResponse(responseCode = "201", description = "파티 생성 성공", content = @Content(schema = @Schema(implementation = NovelInfo.class)))
@@ -72,11 +71,24 @@ public class NovelController {
     public ResponseEntity<ApiCsResponse<String>> modifyNovelSynopsis(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long novelId,
-            @Validated @RequestBody NovelSynopsis req
+            @Valid @RequestBody NovelSynopsis req
     ) {
         String synopsis = novelService.modifyNovelSynopsis(novelId, memberId, req.getSynopsis());
         ApiCsResponse<String> response = ApiCsResponse.success(synopsis);
         return ResponseEntity.created(URI.create("")).body(response);
+    }
+
+    @Operation(summary = "작가 소개 수정", description = "메인 작가 소개글 수정하기")
+    @ApiResponse(responseCode = "200", description = "소설 검색 성공",
+            content = @Content(schema = @Schema(implementation = AuthorDescription.class)))
+    @PatchMapping("/{novelId}/author-description")
+    public ApiCsResponse<AuthorDescription> modifyAuthorDescription(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long novelId,
+            @Valid @RequestBody AuthorDescription req
+    ) {
+        AuthorDescription description = novelService.modifyAuthorDescription(novelId, memberId, req);
+        return ApiCsResponse.success(description);
     }
 
     @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
@@ -96,7 +108,7 @@ public class NovelController {
     @GetMapping("/main/more")
     public ApiCsResponse<MoreNovelRes> getMoreNovels(
             @AuthenticationPrincipal Long memberId,
-            @Valid MoreNovelReq moreNovelReq
+            @Valid @RequestBody MoreNovelReq moreNovelReq
     ) {
         MoreNovelRes moreNovels = novelService.getMoreNovels(memberId, moreNovelReq);
         return ApiCsResponse.success(moreNovels);
@@ -114,46 +126,32 @@ public class NovelController {
 
     }
 
+    @Operation(summary = "검색 페이지 조회", description = "검색 페이지 조회 API")
+    @ApiResponse(responseCode = "200", description = "검색 페이지 조회 성공",
+            content = @Content(schema = @Schema(implementation = SearchPageRes.class)))
+    @GetMapping("/main/search")
+    public ApiCsResponse<SearchPageRes> getSearchPage(@AuthenticationPrincipal Long memberId) {
+        SearchPageRes searchWordResponse = searchService.getSearchPage(memberId);
+        return ApiCsResponse.success(searchWordResponse);
+    }
+
     @Operation(summary = "소설 검색", description = "사용자 소설 검색 API")
     @ApiResponse(responseCode = "200", description = "소설 검색 성공",
             content = @Content(schema = @Schema(implementation = SearchNovelRes.class)))
     @GetMapping("/search")
     public ApiCsResponse<SearchNovelRes> searchNovel(
             @AuthenticationPrincipal Long memberId,
-            @Valid SearchKeyword searchKeyword
+            @Valid @RequestBody SearchKeyword searchKeyword
     ) {
-        SearchNovelRes searchNovelRes = novelService.searchNovel(memberId, searchKeyword);
+        SearchNovelRes searchNovelRes = searchService.searchNovel(memberId, searchKeyword);
         return ApiCsResponse.success(searchNovelRes);
     }
-
-    @Operation(summary = "작가 소개 수정", description = "메인 작가 소개글 수정하기")
-    @ApiResponse(responseCode = "200", description = "소설 검색 성공",
-            content = @Content(schema = @Schema(implementation = AuthorDescription.class)))
-    @PatchMapping("/{novelId}/author-description")
-    public ApiCsResponse<AuthorDescription> modifyAuthorDescription(
-            @AuthenticationPrincipal Long memberId,
-            @PathVariable Long novelId,
-            @Validated @RequestBody AuthorDescription req
-    ) {
-        AuthorDescription description = novelService.modifyAuthorDescription(novelId, memberId, req);
-        return ApiCsResponse.success(description);
-    }
-
-    @Operation(summary = "검색 페이지 Keyword", description = "인기검색어, 최근 검색어 목록 조회 API")
-    @ApiResponse(responseCode = "200", description = "검색 Keyword load 성공",
-            content = @Content(schema = @Schema(implementation = SearchKeywordResponse.class)))
-    @GetMapping("/search-keyword")
-    public ApiCsResponse<SearchKeywordResponse> getSearchWord(@AuthenticationPrincipal Member member) {
-        SearchKeywordResponse searchWordResponse = novelService.searchKeyword(member);
-        return ApiCsResponse.success(searchWordResponse);
-    }
-
     
     @Operation(summary = "검색 페이지 Keyword Delete", description = "인기 검색어, 최근 검색어 목록 삭제 API")
     @ApiResponse(responseCode = "200", description = "검색 Keyword Delete 성공")
-    @DeleteMapping("/search-keyword")
-    public ApiCsResponse<Void> deleteAllSearchWord(@AuthenticationPrincipal Member member) {
-        novelService.deleteSearchKeyword(member);
+    @DeleteMapping("/search/keyword")
+    public ApiCsResponse<Void> deleteAllSearchWord(@AuthenticationPrincipal Long memberId) {
+        searchService.deleteSearchKeyword(memberId);
         return ApiCsResponse.success();
     }
 }

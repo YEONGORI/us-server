@@ -1,6 +1,5 @@
 package us.usserver.domain.novel.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,44 +9,26 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.AuthorMother;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.chapter.ChapterMother;
-import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.MemberMother;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.NovelMother;
-import us.usserver.domain.novel.constant.AgeRating;
-import us.usserver.domain.novel.constant.Genre;
-import us.usserver.domain.novel.constant.Hashtag;
-import us.usserver.domain.novel.constant.NovelSize;
-import us.usserver.domain.novel.dto.*;
-import us.usserver.domain.novel.dto.req.MoreNovelReq;
-import us.usserver.domain.novel.dto.req.NovelBlueprint;
-import us.usserver.domain.novel.dto.req.NovelSynopsis;
+import us.usserver.domain.novel.dto.NovelSimpleInfo;
 import us.usserver.domain.novel.dto.req.SearchKeyword;
-import us.usserver.domain.novel.dto.res.MainPageRes;
-import us.usserver.domain.novel.dto.res.MoreNovelRes;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.response.exception.BaseException;
-import us.usserver.global.response.exception.ExceptionMessage;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Rollback
 @Transactional
 @SpringBootTest
 class SearchServiceTest {
     @Autowired
-    private NovelService novelService;
+    private SearchService searchService;
 
     @Autowired
     private NovelRepository novelRepository;
@@ -94,7 +75,7 @@ class SearchServiceTest {
         SearchKeyword searchKeyword = SearchKeyword.builder().keyword(novel.getTitle().substring(1)).nextPage(0).build();
 
         // when
-        SearchNovelRes searchNovelRes = novelService.searchNovel(member.getId(), searchKeyword);
+        SearchNovelRes searchNovelRes = searchService.searchNovel(member.getId(), searchKeyword);
 
         // then
         assertThat(searchNovelRes.novelSimpleInfos().size()).isNotZero();
@@ -147,8 +128,8 @@ class SearchServiceTest {
         novelRepository.save(novel11);
         novelRepository.save(novel12);
         novelRepository.save(novel13);
-        SearchNovelRes searchNovelRes1 = novelService.searchNovel(member.getId(), searchKeyword1);
-        SearchNovelRes searchNovelRes2 = novelService.searchNovel(member.getId(), searchKeyword2);
+        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), searchKeyword1);
+        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), searchKeyword2);
 
         // then
         for (NovelSimpleInfo novelSimpleInfo : searchNovelRes1.novelSimpleInfos()) {
@@ -173,7 +154,6 @@ class SearchServiceTest {
         Novel novel4 = NovelMother.generateNovel(author);
         Novel novel5 = NovelMother.generateNovel(author);
         Novel novel6 = NovelMother.generateNovel(author);
-        Novel novel7 = NovelMother.generateNovel(author);
 
         SearchKeyword searchKeyword1 = SearchKeyword.builder().keyword("소설").nextPage(0).build();
         SearchKeyword searchKeyword2 = SearchKeyword.builder().keyword("소설").nextPage(1).build();
@@ -185,9 +165,8 @@ class SearchServiceTest {
         novelRepository.save(novel4);
         novelRepository.save(novel5);
         novelRepository.save(novel6);
-        novelRepository.save(novel7);
-        SearchNovelRes searchNovelRes1 = novelService.searchNovel(member.getId(), searchKeyword1);
-        SearchNovelRes searchNovelRes2 = novelService.searchNovel(member.getId(), searchKeyword2);
+        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), searchKeyword1);
+        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), searchKeyword2);
 
         // then
         assertThat(searchNovelRes1.novelSimpleInfos().size()).isEqualTo(6);

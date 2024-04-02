@@ -2,6 +2,7 @@ package us.usserver.domain.novel.dto.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import us.usserver.domain.novel.constant.Hashtag;
@@ -9,7 +10,7 @@ import us.usserver.domain.novel.constant.NovelStatus;
 
 @Builder
 public record SearchKeyword(
-        @Schema(description = "검색어", example = "주술")
+        @NotEmpty @Schema(description = "검색어", example = "주술")
         String keyword,
 
         @Min(0)

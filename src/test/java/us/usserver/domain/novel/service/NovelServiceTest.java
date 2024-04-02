@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.AuthorMother;
-import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.MemberMother;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.NovelMother;
@@ -22,7 +23,10 @@ import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
 import us.usserver.domain.novel.constant.Hashtag;
 import us.usserver.domain.novel.constant.NovelSize;
-import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.MainNovelType;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
 import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.req.NovelSynopsis;
@@ -30,8 +34,8 @@ import us.usserver.domain.novel.dto.res.MainPageRes;
 import us.usserver.domain.novel.dto.res.MoreNovelRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.response.exception.*;
-import us.usserver.domain.member.MemberMother;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -187,18 +191,19 @@ class NovelServiceTest {
     @Test
     @DisplayName("작가 소개 수정")
     void modifyAuthorDescription() {
-        AuthorDescription descriptionRequest = NovelMother.generateDescription();
+        AuthorDescription descriptionRequest = AuthorDescription.builder().description("작가 소개 수정본").build();
         AuthorDescription desriptionResponse = assertDoesNotThrow(
                 () -> novelService.modifyAuthorDescription(novel.getId(), author.getId(), descriptionRequest));
 
-        assertThat(descriptionRequest.getDescription()).isEqualTo(desriptionResponse.getDescription());
+        assertThat(descriptionRequest.description()).isEqualTo(desriptionResponse.description());
     }
 
     @Test
     @DisplayName("권한 없는 작가의 작가 소개 수정")
     void modifyDescriptionNotAuthority() {
         // given
-        AuthorDescription authorDescription = NovelMother.generateDescription();
+        AuthorDescription authorDescription = AuthorDescription.builder().description("작가 소개 수정본").build();
+
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
@@ -338,7 +343,7 @@ class NovelServiceTest {
         NovelPageInfoRes novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
         NovelPageInfoRes novelPageInfoResponse3 = novelServiceV0.searchNovel(searchNovelReq3);
 
-        SearchKeywordResponse searchKeywordResponse = novelServiceV0.searchKeyword();
+        SearchPageRes searchKeywordResponse = novelServiceV0.searchKeyword();
 
         //then
         assertThat(searchKeywordResponse.getHotSearch().size()).isEqualTo(2);
@@ -369,10 +374,10 @@ class NovelServiceTest {
         MainPageRes mainPageRes = novelService.getMainPage(member.getId());
 
         //then
-        assertThat(mainPageRes.getReadNovels().get(0).id()).isEqualTo(novel.getId());
-        assertThat(mainPageRes.getPopularNovels().get(0).id()).isEqualTo(newNovel.getId());
-        assertThat(mainPageRes.getRealTimeUpdateNovels().get(0).id()).isEqualTo(novel.getId());
-        assertThat(mainPageRes.getRecentlyCreatedNovels().get(0).id()).isEqualTo(newNovel.getId());
+        assertThat(mainPageRes.readNovels().get(0).id()).isEqualTo(novel.getId());
+        assertThat(mainPageRes.popularNovels().get(0).id()).isEqualTo(newNovel.getId());
+        assertThat(mainPageRes.realTimeUpdateNovels().get(0).id()).isEqualTo(novel.getId());
+        assertThat(mainPageRes.recentlyCreatedNovels().get(0).id()).isEqualTo(newNovel.getId());
     }
 
     @Test
