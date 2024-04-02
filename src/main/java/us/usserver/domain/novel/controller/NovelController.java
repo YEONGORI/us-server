@@ -150,8 +150,11 @@ public class NovelController {
     @Operation(summary = "검색 페이지 Keyword Delete", description = "인기 검색어, 최근 검색어 목록 삭제 API")
     @ApiResponse(responseCode = "200", description = "검색 Keyword Delete 성공")
     @DeleteMapping("/search/keyword")
-    public ApiCsResponse<Void> deleteAllSearchWord(@AuthenticationPrincipal Long memberId) {
-        searchService.deleteSearchKeyword(memberId);
+    public ApiCsResponse<Void> deleteAllSearchWord(
+            @AuthenticationPrincipal Long memberId,
+            @Valid @RequestBody SearchKeyword searchKeyword
+    ) {
+        searchService.deleteSearchKeyword(memberId, searchKeyword.keyword());
         return ApiCsResponse.success();
     }
 }

@@ -11,5 +11,5 @@ public interface SearchService {
 
     SearchPageRes getSearchPage(Long memberId);
 
-    void deleteSearchKeyword(Long memberId);
+    void deleteSearchKeyword(Long memberId, String keyword);
 }

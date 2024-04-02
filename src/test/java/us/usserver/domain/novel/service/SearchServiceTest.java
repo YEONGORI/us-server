@@ -17,6 +17,7 @@ import us.usserver.domain.novel.NovelMother;
 import us.usserver.domain.novel.dto.NovelSimpleInfo;
 import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
+import us.usserver.domain.novel.dto.res.SearchPageRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 
@@ -171,5 +172,17 @@ class SearchServiceTest {
         // then
         assertThat(searchNovelRes1.novelSimpleInfos().size()).isEqualTo(6);
         assertThat(searchNovelRes2.novelSimpleInfos().size()).isOne();
+    }
+
+    @Test
+    @DisplayName("소설 검색 페이지 조회 TEST")
+    void getSearchPage() {
+        // given
+
+
+        // when
+        SearchPageRes searchPage = searchService.getSearchPage(member.getId());
+
+        // then
     }
 }
