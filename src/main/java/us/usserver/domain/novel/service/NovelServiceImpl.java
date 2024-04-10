@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
+import us.usserver.domain.author.repository.AuthorRepository;
 import us.usserver.domain.authority.dto.StakeInfo;
 import us.usserver.domain.authority.dto.res.StakeInfoResponse;
 import us.usserver.domain.authority.entity.Authority;
@@ -30,6 +31,7 @@ import us.usserver.global.EntityFacade;
 import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -43,6 +45,7 @@ public class NovelServiceImpl implements NovelService {
 
     private final AuthorityRepository authorityRepository;
     private final NovelRepository novelRepository;
+    private final AuthorRepository authorRepository;
 
     private static final Integer DEFAULT_PAGE_SIZE = 6;
 
@@ -121,8 +124,7 @@ public class NovelServiceImpl implements NovelService {
     @Override
     @Transactional
     public MainPageRes getMainPage(Long memberId) {
-        Author author = entityFacade.getAuthorByMemberId(memberId);
-        List<NovelInfo> readNovels = getReadNovels(author);
+        List<NovelInfo> readNovels = getReadNovels(memberId);
 
         PageRequest realTimeUpdates = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
         PageRequest recentlyCreated = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
@@ -171,7 +173,11 @@ public class NovelServiceImpl implements NovelService {
         return PageRequest.of(pageNum, pageSize, Sort.by(direction, sortColumn.toString()));
     }
 
-    private List<NovelInfo> getReadNovels(Author author) {
+    private List<NovelInfo> getReadNovels(Long memberId) {
+        Author author = authorRepository.findById(memberId).orElse(null);
+        if (author == null) {
+            return Collections.emptyList();
+        }
         return author.getReadNovels().stream()
                 .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
                 .limit(6)
