@@ -1,6 +1,5 @@
 package us.usserver.domain.novel.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -52,7 +51,7 @@ public class Novel extends BaseEntity {
     private AgeRating ageRating;
 
     @NotNull @Enumerated(EnumType.STRING)
-    private NovelStatus novelStatus;
+    private NovelStatus status;
 
     @NotNull
     private Integer hit;

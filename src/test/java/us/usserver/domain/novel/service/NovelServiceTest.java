@@ -121,16 +121,16 @@ class NovelServiceTest {
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
                 () -> novelService.getNovelDetailInfo(novel.getId()));
 
-        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
-        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
-        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
-        assertThat(novelDetailInfo.getChapterInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.title()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.thumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.synopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.authorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.authorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.ageRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.genre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.hashtags()).isEqualTo(novel.getHashtags());
+        assertThat(novelDetailInfo.stakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.chapterInfos()).isEqualTo(Collections.emptyList());
     }
 
     @Test
@@ -151,16 +151,16 @@ class NovelServiceTest {
                 () -> novelService.getNovelDetailInfo(novel.getId()));
 
         // then
-        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
-        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
-        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
-        assertThat(novelDetailInfo.getChapterInfos().size()).isEqualTo(2);
+        assertThat(novelDetailInfo.title()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.thumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.synopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.authorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.authorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.ageRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.genre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.hashtags()).isEqualTo(novel.getHashtags());
+        assertThat(novelDetailInfo.stakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.chapterInfos().size()).isEqualTo(2);
     }
 
     @Test
@@ -168,9 +168,9 @@ class NovelServiceTest {
     void modifyNovelSynopsis() {
         NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
         String synopsisResponse = assertDoesNotThrow(
-                () -> novelService.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.getSynopsis()));
+                () -> novelService.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.synopsis()));
 
-        assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse);
+        assertThat(synopsisRequest.synopsis()).isEqualTo(synopsisResponse);
     }
     
     @Test
@@ -181,7 +181,7 @@ class NovelServiceTest {
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
-                () -> novelService.modifyNovelSynopsis(novel.getId(), newAuthor.getId(), synopsisRequest.getSynopsis()));
+                () -> novelService.modifyNovelSynopsis(novel.getId(), newAuthor.getId(), synopsisRequest.synopsis()));
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
