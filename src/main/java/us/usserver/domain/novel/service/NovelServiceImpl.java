@@ -154,10 +154,9 @@ public class NovelServiceImpl implements NovelService {
         return new MoreNovelRes(novelInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }
 
-
     @Override
     @Transactional
-    public MoreNovelRes readMoreNovel(Long memberId){
+    public MoreNovelRes readMoreNovel(Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
 
         List<NovelInfo> novelInfos = author.getReadNovels().stream()
@@ -172,6 +171,7 @@ public class NovelServiceImpl implements NovelService {
     private PageRequest getPageRequest(int pageNum, int pageSize, Sort.Direction direction, SortColumn sortColumn) {
         return PageRequest.of(pageNum, pageSize, Sort.by(direction, sortColumn.toString()));
     }
+
     private List<NovelInfo> getReadNovels(Long memberId) {
         if (memberId == null) {
             return Collections.emptyList();

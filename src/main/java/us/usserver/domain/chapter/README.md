@@ -1,12 +1,18 @@
-# Chapter Domain을 개발하면서 했던 고민
+# 📜 Chapter Domain을 개발하면서 했던 고민
 
 ---
+## 점수 최신화
 
-## 도메인간 의존성 분리
+사용자(Author)들은 각 회차(Chapter)에 점수(Score)를 줄 수 있다. 점수들의 평균이 회차의 score가 되고, 모든 회차들의 평균 score가 Novel Entity의 score가 된다.
 
-- **문제점**
-    >ScoreService 의 postScore 메서드에서 Novel Domain의 필드를 수정하는 로직이 존재한다.
-  > 
-    >이때 모든 회차의 평점을 평균 내서 소설의 평점을 정하는데, 이 로직을 postScore 메서드에 추가하게 된다면
-  > 
-  > 
+그렇다면 소설의 score는 어느 주기로 최신화가 되어야 할까?
+
+### 💡 고려사항
+
+1. 소설의 score는 실시간성이 중요한 데이터가 아니다.
+2. Chapter의 score가 필요하게 끔 API 스펙이 변경될 수 있다.
+3. Chapter 도메인에서 Novel Entity의 필드 값을 수정하는 로직을 작성하면 도메인 간 강한 결합이 생긴다.
+
+### 💡 해결 방안
+1. chapter에 score 컬럼을 생성한다. 
+
