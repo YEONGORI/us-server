@@ -12,7 +12,7 @@ import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.comment.CommentMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.entity.Chapter;

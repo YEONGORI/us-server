@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.entity.Chapter;
@@ -15,7 +15,6 @@ import us.usserver.domain.chapter.repository.ScoreRepository;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.comment.entity.Comment;
 import us.usserver.domain.comment.repository.CommentRepository;
-import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.service.ParagraphService;
@@ -26,10 +25,11 @@ import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
-@Transactional
+
 @RequiredArgsConstructor
 public class ChapterServiceImpl implements ChapterService {
     private final EntityFacade entityFacade;
@@ -40,6 +40,7 @@ public class ChapterServiceImpl implements ChapterService {
     private final ScoreRepository scoreRepository;
 
     @Override
+    @Transactional
     public List<ChapterInfo> getChaptersOfNovel(Novel novel) {
         List<Chapter> chapters = chapterRepository.findAllByNovelOrderByPart(novel);
 
@@ -49,8 +50,8 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    @Transactional
     public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long memberId, Long chapterId) {
-        // TODO: 조회수 증가 로직 추가
         Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Novel novel = entityFacade.getNovel(novelId);
@@ -74,6 +75,7 @@ public class ChapterServiceImpl implements ChapterService {
             score = 0.0;
         }
 
+        novel.upHitCnt();
         author.addReadNovel(ReadNovel.builder().author(author).novel(novel).readDate(LocalDateTime.now()).build()); // Set 이라 중복 검사를 하지 않아도 됨
         return ChapterDetailInfo.builder()
                 .part(part)
@@ -93,6 +95,7 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    @Transactional
     public void createChapter(Long novelId, Long memberId) {
         Novel novel = entityFacade.getNovel(novelId);
         Author author = entityFacade.getAuthorByMemberId(memberId);
@@ -116,6 +119,17 @@ public class ChapterServiceImpl implements ChapterService {
         }
         novel.addChapter(chapter);
         chapterRepository.save(chapter);
+    }
+
+    @Override
+    @Transactional
+    public void finishChapter(Long chapterId, Long memberId) {
+        Chapter chapter = entityFacade.getChapter(chapterId);
+
+        if (!Objects.equals(chapter.getNovel().getMainAuthor().getId(), memberId)) {
+            throw new BaseException(ErrorCode.MAIN_AUTHOR_NOT_MATCHED);
+        }
+        chapter.changeStatus(ChapterStatus.COMPLETED);
     }
 
     private String makeTitle(String novelName, Integer part) {

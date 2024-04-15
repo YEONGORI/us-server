@@ -5,7 +5,7 @@ import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.text.StringRandomizer;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.novel.entity.Novel;
 
 import java.nio.charset.StandardCharsets;

@@ -2,7 +2,6 @@ package us.usserver.domain.chapter.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import us.usserver.domain.chapter.constant.ChapterStatus;
 import us.usserver.domain.comment.dto.CommentInfo;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
 import us.usserver.domain.paragraph.dto.ParagraphSelected;

@@ -1,4 +1,4 @@
-package us.usserver.domain.chapter.constant;
+package us.usserver.domain.chapter.dto;
 
 public enum ChapterStatus {
     IN_PROGRESS,

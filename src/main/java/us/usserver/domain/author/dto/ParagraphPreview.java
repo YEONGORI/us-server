@@ -41,7 +41,7 @@ public record ParagraphPreview(
                 .build();
     }
 
-    private static String getShortcuts(Long novelId, Long chapterId) { // TODO: 이후 URL에 따라 수정
+    private static String getShortcuts(Long novelId, Long chapterId) {
         return "http://" + publicIp + ":8080/" + novelId + "/" + chapterId;
     }
 }

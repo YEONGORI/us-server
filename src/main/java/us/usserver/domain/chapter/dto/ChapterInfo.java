@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.chapter.constant.ChapterStatus;
 
 import java.time.LocalDateTime;
 
