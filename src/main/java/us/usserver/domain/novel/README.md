@@ -1,4 +1,4 @@
-# Novel Domain을 개발하면서 했던 고민
+# 📜 Novel Domain을 개발하면서 했던 고민
 
 ---
 ## 메인 페이지 조회
