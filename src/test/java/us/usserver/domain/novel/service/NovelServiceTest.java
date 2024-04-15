@@ -223,8 +223,8 @@ class NovelServiceTest {
                 .thumbnail("TEST THUMBNAIL")
                 .synopsis("TEST SYNOPSIS")
                 .authorDescription("TEST AUTHORDESCRIPTION")
-                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-                .genre(Genre.FANTASY)
+                .hashtag(Collections.singleton(Hashtag.판타지))
+                .genre(Genre.판타지)
                 .ageRating(AgeRating.GENERAL)
                 .novelSize(NovelSize.LONG)
                 .build();
@@ -235,8 +235,8 @@ class NovelServiceTest {
         //then
         assertThat(novelInfo).isNotNull();
         assertThat(novelInfo.title()).isEqualTo("TEST TITLE");
-        assertThat(novelInfo.hashtag()).isEqualTo(Collections.singleton(Hashtag.HASHTAG1));
-        assertThat(novelInfo.genre()).isEqualTo(Genre.FANTASY);
+        assertThat(novelInfo.hashtag()).isEqualTo(Collections.singleton(Hashtag.판타지));
+        assertThat(novelInfo.genre()).isEqualTo(Genre.판타지);
         assertThat(novelInfo.createdAuthor().id()).isEqualTo(author.getId());
         assertThat(novelInfo.joinedAuthorCnt()).isZero();
         assertThat(novelInfo.commentCnt()).isZero();
@@ -252,8 +252,8 @@ class NovelServiceTest {
                 .thumbnail("TEST THUMBNAIL")
                 .synopsis("TEST SYNOPSIS")
                 .authorDescription("TEST AUTHORDESCRIPTION")
-                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-                .genre(Genre.FANTASY)
+                .hashtag(Collections.singleton(Hashtag.판타지))
+                .genre(Genre.판타지)
                 .ageRating(AgeRating.GENERAL)
                 .novelSize(NovelSize.LONG)
                 .build();

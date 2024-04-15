@@ -25,6 +25,7 @@ public class ScoreServiceImpl implements ScoreService {
 
     @Override
     public void postScore(Long chapterId, Long memberId, PostScore postScore) {
+        // TODO: 스코어가 등록 되었을 때 소설에 전파해서 전체 점수 조정 로직 수정
         Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
 

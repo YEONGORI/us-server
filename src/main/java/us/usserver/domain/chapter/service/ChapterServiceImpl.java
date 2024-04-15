@@ -50,6 +50,7 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public ChapterDetailInfo getChapterDetailInfo(Long novelId, Long memberId, Long chapterId) {
+        // TODO: 조회수 증가 로직 추가
         Author author = entityFacade.getAuthorByMemberId(memberId);
         Chapter chapter = entityFacade.getChapter(chapterId);
         Novel novel = entityFacade.getNovel(novelId);

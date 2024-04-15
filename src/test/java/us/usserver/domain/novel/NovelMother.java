@@ -28,7 +28,7 @@ public class NovelMother {
                 .randomize(named("thumbnail").and(ofType(String.class)), new StringRandomizer(500)) // URL이 들어갈 예정이라 대충 잡아 놓음
                 .randomize(named("synopsis").and(ofType(String.class)), new StringRandomizer(300))
                 .randomize(named("authorDescription").and(ofType(String.class)), new StringRandomizer(300))
-                .randomize(named("hashtag").and(ofType(Set.class)), () -> EnumSet.of(Hashtag.HASHTAG1))
+                .randomize(named("hashtag").and(ofType(Set.class)), () -> EnumSet.of(Hashtag.판타지))
                 .randomize(Genre.class, new EnumRandomizer<>(Genre.class))
                 .randomize(AgeRating.class, new EnumRandomizer<>(AgeRating.class))
                 .randomize(NovelStatus.class, new EnumRandomizer<>(NovelStatus.class))
