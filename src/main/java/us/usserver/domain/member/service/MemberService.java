@@ -6,5 +6,5 @@ import us.usserver.domain.member.entity.Member;
 @Service
 public interface MemberService {
     void logout(String accessToken, String refreshToken);
-    void withdraw(Member member);
+    void withdraw(Long memberId);
 }

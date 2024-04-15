@@ -27,7 +27,6 @@ public class OauthService {
     private final RequestOauthInfoService requestOauthInfoService;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
-    private final AuthorRepository authorRepository;
     private final RedisUtils redisUtils;
 
     @Value("${jwt.refresh.duration}")

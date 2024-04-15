@@ -36,8 +36,8 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴", description = "사용자 회원 탈퇴 API")
     @ApiResponse(responseCode = "200", description = "회원탈퇴 성공")
     @DeleteMapping("/withdraw")
-    public ApiCsResponse<Void> withdrawMember(@AuthenticationPrincipal Member member) {
-        memberService.withdraw(member);
+    public ApiCsResponse<Void> withdrawMember(@AuthenticationPrincipal Long memberId) {
+        memberService.withdraw(memberId);
         return ApiCsResponse.success();
     }
 }

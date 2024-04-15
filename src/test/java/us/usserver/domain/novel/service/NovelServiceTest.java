@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.AuthorMother;
-import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.entity.ReadNovel;
 import us.usserver.domain.author.repository.AuthorRepository;
+import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.MemberMother;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.NovelMother;
@@ -22,11 +23,19 @@ import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
 import us.usserver.domain.novel.constant.Hashtag;
 import us.usserver.domain.novel.constant.NovelSize;
-import us.usserver.domain.novel.dto.*;
+import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.MainNovelType;
+import us.usserver.domain.novel.dto.NovelDetailInfo;
+import us.usserver.domain.novel.dto.NovelInfo;
+import us.usserver.domain.novel.dto.req.MoreNovelReq;
+import us.usserver.domain.novel.dto.req.NovelBlueprint;
+import us.usserver.domain.novel.dto.req.NovelSynopsis;
+import us.usserver.domain.novel.dto.res.MainPageRes;
+import us.usserver.domain.novel.dto.res.MoreNovelRes;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
-import us.usserver.global.response.exception.*;
-import us.usserver.domain.member.MemberMother;
+import us.usserver.global.response.exception.BaseException;
+import us.usserver.global.response.exception.ExceptionMessage;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -182,18 +191,19 @@ class NovelServiceTest {
     @Test
     @DisplayName("작가 소개 수정")
     void modifyAuthorDescription() {
-        AuthorDescription descriptionRequest = NovelMother.generateDescription();
+        AuthorDescription descriptionRequest = AuthorDescription.builder().description("작가 소개 수정본").build();
         AuthorDescription desriptionResponse = assertDoesNotThrow(
                 () -> novelService.modifyAuthorDescription(novel.getId(), author.getId(), descriptionRequest));
 
-        assertThat(descriptionRequest.getDescription()).isEqualTo(desriptionResponse.getDescription());
+        assertThat(descriptionRequest.description()).isEqualTo(desriptionResponse.description());
     }
 
     @Test
     @DisplayName("권한 없는 작가의 작가 소개 수정")
     void modifyDescriptionNotAuthority() {
         // given
-        AuthorDescription authorDescription = NovelMother.generateDescription();
+        AuthorDescription authorDescription = AuthorDescription.builder().description("작가 소개 수정본").build();
+
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
@@ -260,7 +270,7 @@ class NovelServiceTest {
     @DisplayName("소설 검색")
     void 소설검색_제목_성공() {
         //given
-        SearchNovelReq searchNovelReq1 = SearchNovelReq.builder()
+        SearchKeyword searchNovelReq1 = SearchKeyword.builder()
                 .authorId(author.getId())
                 .title("TITLE")
                 .hashtag(null)
@@ -270,7 +280,7 @@ class NovelServiceTest {
                 .sortDto(new SortDto(Sorts.HIT, Orders.DESC))
                 .build();
 
-        SearchNovelReq searchNovelReq2 = SearchNovelReq.builder()
+        SearchKeyword searchNovelReq2 = SearchKeyword.builder()
                 .authorId(author.getId())
                 .title("TITLE")
                 .hashtag(null)
@@ -282,8 +292,8 @@ class NovelServiceTest {
 
 
         //when
-        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
+        NovelPageInfoRes novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
+        NovelPageInfoRes novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
 
         //then
         assertThat(novelPageInfoResponse1.getNovelList().size()).isEqualTo(2);
@@ -299,7 +309,7 @@ class NovelServiceTest {
     @DisplayName("검색 키워드")
     void 소설검색_키워드_성공() {
         //given
-        SearchNovelReq searchNovelReq1 = SearchNovelReq.builder()
+        SearchKeyword searchNovelReq1 = SearchKeyword.builder()
                 .authorId(author.getId())
                 .title("TITLE")
                 .hashtag(null)
@@ -309,7 +319,7 @@ class NovelServiceTest {
                 .sortDto(new SortDto(Sorts.HIT, Orders.DESC))
                 .build();
 
-        SearchNovelReq searchNovelReq2 = SearchNovelReq.builder()
+        SearchKeyword searchNovelReq2 = SearchKeyword.builder()
                 .authorId(author.getId())
                 .title("TITLE2")
                 .hashtag(null)
@@ -318,7 +328,7 @@ class NovelServiceTest {
                 .size(5)
                 .sortDto(new SortDto(Sorts.LATEST, Orders.ASC))
                 .build();
-        SearchNovelReq searchNovelReq3 = SearchNovelReq.builder()
+        SearchKeyword searchNovelReq3 = SearchKeyword.builder()
                 .authorId(author.getId())
                 .title("TITLE")
                 .hashtag(null)
@@ -329,11 +339,11 @@ class NovelServiceTest {
                 .build();
 
         //when
-        NovelPageInfoResponse novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
-        NovelPageInfoResponse novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
-        NovelPageInfoResponse novelPageInfoResponse3 = novelServiceV0.searchNovel(searchNovelReq3);
+        NovelPageInfoRes novelPageInfoResponse1 = novelServiceV0.searchNovel(searchNovelReq1);
+        NovelPageInfoRes novelPageInfoResponse2 = novelServiceV0.searchNovel(searchNovelReq2);
+        NovelPageInfoRes novelPageInfoResponse3 = novelServiceV0.searchNovel(searchNovelReq3);
 
-        SearchKeywordResponse searchKeywordResponse = novelServiceV0.searchKeyword();
+        SearchPageRes searchKeywordResponse = novelServiceV0.searchKeyword();
 
         //then
         assertThat(searchKeywordResponse.getHotSearch().size()).isEqualTo(2);
@@ -361,13 +371,13 @@ class NovelServiceTest {
         novelRepository.save(newNovel);
         novelRepository.save(novel);
         chapterRepository.save(newChapter);
-        MainPageResponse mainPageResponse = novelService.getMainPage(member.getId());
+        MainPageRes mainPageRes = novelService.getMainPage(member.getId());
 
         //then
-        assertThat(mainPageResponse.getReadNovels().get(0).id()).isEqualTo(novel.getId());
-        assertThat(mainPageResponse.getPopularNovels().get(0).id()).isEqualTo(newNovel.getId());
-        assertThat(mainPageResponse.getRealTimeUpdateNovels().get(0).id()).isEqualTo(novel.getId());
-        assertThat(mainPageResponse.getRecentlyCreatedNovels().get(0).id()).isEqualTo(newNovel.getId());
+        assertThat(mainPageRes.readNovels().get(0).id()).isEqualTo(novel.getId());
+        assertThat(mainPageRes.popularNovels().get(0).id()).isEqualTo(newNovel.getId());
+        assertThat(mainPageRes.realTimeUpdateNovels().get(0).id()).isEqualTo(novel.getId());
+        assertThat(mainPageRes.recentlyCreatedNovels().get(0).id()).isEqualTo(newNovel.getId());
     }
 
     @Test
@@ -382,9 +392,9 @@ class NovelServiceTest {
         Novel novel6 = NovelMother.generateNovel(author);
         Novel novel7 = NovelMother.generateNovel(author);
         Novel novel8 = NovelMother.generateNovel(author);
-        MoreNovelRequest moreNovelRequest1 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq1 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.NEW).nextPage(0).build();
-        MoreNovelRequest moreNovelRequest2 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq2 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.NEW).nextPage(1).build();
 
         //when
@@ -396,19 +406,19 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
 
         //then
-        assertThat(moreNovelResponse1.novelList().get(0).id()).isEqualTo(novel8.getId());
-        assertThat(moreNovelResponse1.novelList().get(5).id()).isEqualTo(novel3.getId());
-        assertThat(moreNovelResponse1.nextPage()).isOne();
-        assertThat(moreNovelResponse1.hasNext()).isTrue();
-        assertThat(moreNovelResponse1.novelList().size()).isEqualTo(6);
+        assertThat(moreNovelRes1.novelList().get(0).id()).isEqualTo(novel8.getId());
+        assertThat(moreNovelRes1.novelList().get(5).id()).isEqualTo(novel3.getId());
+        assertThat(moreNovelRes1.nextPage()).isOne();
+        assertThat(moreNovelRes1.hasNext()).isTrue();
+        assertThat(moreNovelRes1.novelList().size()).isEqualTo(6);
 
-        assertThat(moreNovelResponse2.nextPage()).isEqualTo(2);
-        assertThat(moreNovelResponse2.hasNext()).isFalse();
-        assertThat(moreNovelResponse2.novelList().size()).isEqualTo(4); // setup 메서드 2개 포함
+        assertThat(moreNovelRes2.nextPage()).isEqualTo(2);
+        assertThat(moreNovelRes2.hasNext()).isFalse();
+        assertThat(moreNovelRes2.novelList().size()).isEqualTo(4); // setup 메서드 2개 포함
     }
 
     @Test
@@ -430,9 +440,9 @@ class NovelServiceTest {
         for (int i=0; i<2; i++) novel5.upHitCnt();
         for (int i=0; i<1; i++) novel6.upHitCnt();
 
-        MoreNovelRequest moreNovelRequest1 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq1 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.POPULAR).nextPage(0).build();
-        MoreNovelRequest moreNovelRequest2 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq2 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.POPULAR).nextPage(1).build();
 
         //when
@@ -444,23 +454,23 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
 
         //then
-        assertThat(moreNovelResponse1.novelList().get(0).id()).isEqualTo(novel1.getId());
-        assertThat(moreNovelResponse1.novelList().get(1).id()).isEqualTo(novel2.getId());
-        assertThat(moreNovelResponse1.novelList().get(2).id()).isEqualTo(novel3.getId());
-        assertThat(moreNovelResponse1.novelList().get(3).id()).isEqualTo(novel4.getId());
-        assertThat(moreNovelResponse1.novelList().get(4).id()).isEqualTo(novel5.getId());
-        assertThat(moreNovelResponse1.novelList().get(5).id()).isEqualTo(novel6.getId());
+        assertThat(moreNovelRes1.novelList().get(0).id()).isEqualTo(novel1.getId());
+        assertThat(moreNovelRes1.novelList().get(1).id()).isEqualTo(novel2.getId());
+        assertThat(moreNovelRes1.novelList().get(2).id()).isEqualTo(novel3.getId());
+        assertThat(moreNovelRes1.novelList().get(3).id()).isEqualTo(novel4.getId());
+        assertThat(moreNovelRes1.novelList().get(4).id()).isEqualTo(novel5.getId());
+        assertThat(moreNovelRes1.novelList().get(5).id()).isEqualTo(novel6.getId());
 
-        assertThat(moreNovelResponse1.nextPage()).isOne();
-        assertThat(moreNovelResponse1.hasNext()).isTrue();
-        assertThat(moreNovelResponse1.novelList().size()).isEqualTo(6);
+        assertThat(moreNovelRes1.nextPage()).isOne();
+        assertThat(moreNovelRes1.hasNext()).isTrue();
+        assertThat(moreNovelRes1.novelList().size()).isEqualTo(6);
 
-        assertThat(moreNovelResponse2.nextPage()).isEqualTo(2);
-        assertThat(moreNovelResponse2.hasNext()).isFalse();
+        assertThat(moreNovelRes2.nextPage()).isEqualTo(2);
+        assertThat(moreNovelRes2.hasNext()).isFalse();
     }
 
     @Test
@@ -483,9 +493,9 @@ class NovelServiceTest {
         novel5.addChapter(chapter1);
         novel6.addChapter(chapter1);
 
-        MoreNovelRequest moreNovelRequest1 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq1 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.UPDATE).nextPage(0).build();
-        MoreNovelRequest moreNovelRequest2 = MoreNovelRequest.builder()
+        MoreNovelReq moreNovelReq2 = MoreNovelReq.builder()
                 .mainNovelType(MainNovelType.UPDATE).nextPage(1).build();
 
         //when
@@ -498,11 +508,11 @@ class NovelServiceTest {
         novelRepository.save(novel7);
         novelRepository.save(novel8);
         chapterRepository.save(chapter1);
-        MoreNovelResponse moreNovelResponse1 = novelService.getMoreNovels(member.getId(), moreNovelRequest1);
-        MoreNovelResponse moreNovelResponse2 = novelService.getMoreNovels(member.getId(), moreNovelRequest2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
 
         //then
-        moreNovelResponse1.novelList()
+        moreNovelRes1.novelList()
                         .forEach(novelInfo ->
                                 assertThat(novelInfo.id()).isIn(
                                         novel6.getId(),
@@ -513,11 +523,11 @@ class NovelServiceTest {
                                         novel1.getId()
                                 )
                         );
-        assertThat(moreNovelResponse1.nextPage()).isOne();
-        assertThat(moreNovelResponse1.hasNext()).isTrue();
-        assertThat(moreNovelResponse1.novelList().size()).isEqualTo(6);
+        assertThat(moreNovelRes1.nextPage()).isOne();
+        assertThat(moreNovelRes1.hasNext()).isTrue();
+        assertThat(moreNovelRes1.novelList().size()).isEqualTo(6);
 
-        assertThat(moreNovelResponse2.nextPage()).isEqualTo(2);
-        assertThat(moreNovelResponse2.hasNext()).isFalse();
+        assertThat(moreNovelRes2.nextPage()).isEqualTo(2);
+        assertThat(moreNovelRes2.hasNext()).isFalse();
     }
 }

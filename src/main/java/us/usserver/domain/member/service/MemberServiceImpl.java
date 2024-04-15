@@ -1,5 +1,6 @@
 package us.usserver.domain.member.service;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,12 @@ import us.usserver.global.response.exception.BaseException;
 import us.usserver.global.response.exception.ErrorCode;
 import us.usserver.global.utils.RedisUtils;
 
+import java.util.Map;
+
 @Slf4j
-@RequiredArgsConstructor
-@Transactional
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final RedisUtils redisUtils;
     private final MemberRepository memberRepository;
@@ -27,17 +30,20 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void logout(String accessToken, String refreshToken) {
         DecodedJWT decodedJWT = tokenProvider.decodeJWT(accessToken, refreshToken);
-        String memberId = decodedJWT.getClaim("id").asString();
+        Long memberId = decodedJWT.getClaim("id").asLong();
+        String strMemberId = memberId.toString();
 
-        if (redisUtils.getData(memberId) != null)
-            redisUtils.deleteData(memberId);
+        if (redisUtils.getData(strMemberId) != null)
+            redisUtils.deleteData(strMemberId);
     }
 
     @Override
-    public void withdraw(Member member) {
-        Author author = authorRepository.getAuthorByMemberId(member.getId())
+    public void withdraw(Long memberId) {
+        authorRepository.getAuthorByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.AUTHOR_NOT_FOUND));
-        authorRepository.deleteById(author.getId());
-        memberRepository.deleteById(member.getId());
+
+        String strMemberId = memberId.toString();
+        redisUtils.deleteData(strMemberId);
+        memberRepository.deleteById(memberId);
     }
 }

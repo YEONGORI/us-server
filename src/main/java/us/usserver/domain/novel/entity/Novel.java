@@ -33,40 +33,31 @@ public class Novel extends BaseEntity {
     @Column(name = "novel_id")
     private Long id;
 
-    @NotBlank
-    @Size(max = 16)
+    @NotBlank @Size(max = 16)
     private String title;
 
-    @NotBlank
-    @Size(max = 500)
+    @NotBlank @Size(max = 500)
     private String thumbnail;
 
-    @NotBlank
-    @Size(max = 300)
+    @NotBlank @Size(max = 300)
     private String synopsis;
 
-    @NotBlank
-    @Size(max = 300)
+    @NotBlank @Size(max = 300)
     private String authorDescription;
 
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Hashtag> hashtags;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
+    @NotNull @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
+    @NotNull @Enumerated(EnumType.STRING)
     private AgeRating ageRating;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
+    @NotNull @Enumerated(EnumType.STRING)
     private NovelStatus novelStatus;
 
     @NotNull
     private Integer hit;
+
+    private Float score;
 
     @NotNull
     private Integer participantCnt;
@@ -74,13 +65,14 @@ public class Novel extends BaseEntity {
     @NotNull
     private LocalDateTime recentlyUpdated;
 
-    @Schema(description = "소설 분류", nullable = true, example = "장편소설")
-    @NotNull
-    @Enumerated(EnumType.STRING)
+    @NotNull @Enumerated(EnumType.STRING)
     private NovelSize novelSize;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<Hashtag> hashtags;
+
+    @ManyToOne @JoinColumn(name = "author_id")
     private Author mainAuthor;
 
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
@@ -98,9 +90,6 @@ public class Novel extends BaseEntity {
     @OneToMany(mappedBy = "novel", cascade = CascadeType.ALL)
     private List<NovelLike> novelLikes = new ArrayList<>();
 
-    public void setIdForTest(Long id) {
-        this.id = id;
-    }
     public void changeSynopsis(String synopsis) {
         this.synopsis = synopsis;
     }
@@ -114,5 +103,9 @@ public class Novel extends BaseEntity {
     public void addChapter(Chapter chapter) {
         this.chapters.add(chapter);
         this.recentlyUpdated = LocalDateTime.now();
+    }
+
+    public void setTitleForTest(String title) {
+        this.title = title;
     }
 }

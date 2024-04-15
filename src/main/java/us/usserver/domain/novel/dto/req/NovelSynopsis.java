@@ -1,4 +1,4 @@
-package us.usserver.domain.novel.dto;
+package us.usserver.domain.novel.dto.req;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

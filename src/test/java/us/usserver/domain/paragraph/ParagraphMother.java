@@ -27,4 +27,17 @@ public class ParagraphMother {
         EasyRandom easyRandom = new EasyRandom(randomParameters);
         return easyRandom.nextObject(Paragraph.class);
     }
+
+    public static Paragraph generateParagraphWithSeed(Author author, Chapter chapter, int seed) {
+        EasyRandomParameters randomParameters = new EasyRandomParameters()
+                .charset(StandardCharsets.UTF_8)
+                .randomize(named("content").and(ofType(String.class)), new StringRandomizer(50, 300, seed))
+                .randomize(named("sequence").and(ofType(int.class)), new IntegerRangeRandomizer(0, 15))
+                .randomize(ParagraphStatus.class, () -> ParagraphStatus.IN_VOTING)
+                .randomize(Author.class, () -> author)
+                .randomize(Chapter.class, () -> chapter);
+
+        EasyRandom easyRandom = new EasyRandom(randomParameters);
+        return easyRandom.nextObject(Paragraph.class);
+    }
 }

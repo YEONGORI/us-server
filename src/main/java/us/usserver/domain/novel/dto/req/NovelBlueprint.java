@@ -1,4 +1,4 @@
-package us.usserver.domain.novel.dto;
+package us.usserver.domain.novel.dto.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import us.usserver.domain.author.entity.Author;
-import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.constant.AgeRating;
 import us.usserver.domain.novel.constant.Genre;
@@ -19,7 +18,6 @@ import us.usserver.domain.novel.constant.NovelSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 @Getter
@@ -63,7 +61,7 @@ public class NovelBlueprint {
     @NotBlank
     String thumbnail;
 
-    public Novel toEntity(Author author) {
+    public Novel mapBlueprintToNovel(Author author) {
         return Novel.builder()
                 .title(title)
                 .thumbnail(thumbnail)
@@ -74,6 +72,7 @@ public class NovelBlueprint {
                 .ageRating(ageRating)
                 .novelSize(novelSize)
                 .hit(0)
+                .score(0.0F)
                 .participantCnt(0)
                 .novelStatus(NovelStatus.IN_PROGRESS)
                 .mainAuthor(author)
