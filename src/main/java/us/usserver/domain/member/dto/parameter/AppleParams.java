@@ -8,7 +8,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @AllArgsConstructor
-public class AppleParams implements OauthParams{
+public final class AppleParams implements OauthParams{
     private String authorizationCode;
 
     @Override

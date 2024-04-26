@@ -8,7 +8,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @AllArgsConstructor
-public class NaverParams implements OauthParams{
+public final class NaverParams implements OauthParams{
     private String authorizationCode;
     private String state;
 

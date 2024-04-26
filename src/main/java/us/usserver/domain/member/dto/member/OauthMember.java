@@ -3,12 +3,12 @@ package us.usserver.domain.member.dto.member;
 
 import us.usserver.domain.member.constant.OauthProvider;
 
-public interface OauthMember {
-    public String getSocialId();
+public sealed interface OauthMember permits AppleMember, KakaoMember, NaverMember {
+    String getSocialId();
 
-    public String getEmail();
+    String getEmail();
 
-    public String getNickname();
+    String getNickname();
 
-    public OauthProvider getOauthProvider();
+    OauthProvider getOauthProvider();
 }
