@@ -73,7 +73,7 @@ public class NovelController {
             @PathVariable Long novelId,
             @Valid @RequestBody NovelSynopsis req
     ) {
-        String synopsis = novelService.modifyNovelSynopsis(novelId, memberId, req.getSynopsis());
+        String synopsis = novelService.modifyNovelSynopsis(novelId, memberId, req.synopsis());
         ApiCsResponse<String> response = ApiCsResponse.success(synopsis);
         return ResponseEntity.created(URI.create("")).body(response);
     }
@@ -91,11 +91,20 @@ public class NovelController {
         return ApiCsResponse.success(description);
     }
 
-    @Operation(summary = "우스 메인 홈", description = "메인 페이지 소설을 불러오는 API")
+    @Operation(summary = "우스 메인 홈 비회원", description = "메인 페이지 소설을 불러오는 API(읽은 소설 제외)")
+    @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
+            content = @Content(schema = @Schema(implementation = MainPageRes.class)))
+    @GetMapping("/guest/main")
+    public ApiCsResponse<MainPageRes> getNovelMainGuest() {
+        MainPageRes homeNovelList = novelService.getMainPage(null);
+        return ApiCsResponse.success(homeNovelList);
+    }
+
+    @Operation(summary = "우스 메인 홈 회원", description = "메인 페이지 소설을 불러오는 API")
     @ApiResponse(responseCode = "200", description = "소설 메인 페이지 load 성공",
             content = @Content(schema = @Schema(implementation = MainPageRes.class)))
     @GetMapping("/main")
-    public ApiCsResponse<MainPageRes> getHomeNovelListInfo(
+    public ApiCsResponse<MainPageRes> getNovelMainUser(
             @AuthenticationPrincipal Long memberId
     ) {
         MainPageRes homeNovelList = novelService.getMainPage(memberId);

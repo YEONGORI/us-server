@@ -124,7 +124,12 @@ public class NovelServiceImpl implements NovelService {
     @Override
     @Transactional
     public MainPageRes getMainPage(Long memberId) {
-        List<NovelInfo> readNovels = getReadNovels(memberId);
+        List<NovelInfo> readNovels;
+        if (memberId == null) {
+            readNovels =  Collections.emptyList();
+        } else {
+            readNovels = getReadNovels(memberId);
+        }
 
         PageRequest realTimeUpdates = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
         PageRequest recentlyCreated = getPageRequest(0, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
@@ -154,10 +159,9 @@ public class NovelServiceImpl implements NovelService {
         return new MoreNovelRes(novelInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }
 
-
     @Override
     @Transactional
-    public MoreNovelRes readMoreNovel(Long memberId){
+    public MoreNovelRes readMoreNovel(Long memberId) {
         Author author = entityFacade.getAuthorByMemberId(memberId);
 
         List<NovelInfo> novelInfos = author.getReadNovels().stream()
@@ -174,10 +178,7 @@ public class NovelServiceImpl implements NovelService {
     }
 
     private List<NovelInfo> getReadNovels(Long memberId) {
-        Author author = authorRepository.findById(memberId).orElse(null);
-        if (author == null) {
-            return Collections.emptyList();
-        }
+        Author author = entityFacade.getAuthorByMemberId(memberId);
         return author.getReadNovels().stream()
                 .sorted(Comparator.comparing(ReadNovel::getReadDate).reversed())
                 .limit(6)
@@ -185,5 +186,4 @@ public class NovelServiceImpl implements NovelService {
                 .map(NovelInfo::mapNovelToNovelInfo)
                 .toList();
     }
-
 }

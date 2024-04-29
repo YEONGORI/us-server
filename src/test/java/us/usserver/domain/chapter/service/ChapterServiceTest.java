@@ -12,7 +12,7 @@ import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.comment.CommentMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.dto.ChapterDetailInfo;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.entity.Chapter;
@@ -174,13 +174,13 @@ class ChapterServiceTest {
         ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novel.getId(), author.getId(), chapter2.getId());
 
         // then
-        assertThat(chapterDetailInfo.getPart()).isEqualTo(chapter2.getPart());
-        assertThat(chapterDetailInfo.getTitle()).isEqualTo(chapter2.getTitle());
-        assertThat(chapterDetailInfo.getMyParagraph()).isNull();
-        assertThat(chapterDetailInfo.getBestParagraph()).isNull();
-        assertThat(chapterDetailInfo.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo.getPrevPart()).isEqualTo(chapter1.getPart());
-        assertThat(chapterDetailInfo.getNextPart()).isEqualTo(chapter3.getPart());
+        assertThat(chapterDetailInfo.part()).isEqualTo(chapter2.getPart());
+        assertThat(chapterDetailInfo.title()).isEqualTo(chapter2.getTitle());
+        assertThat(chapterDetailInfo.myParagraph()).isNull();
+        assertThat(chapterDetailInfo.bestParagraph()).isNull();
+        assertThat(chapterDetailInfo.selectedParagraphs()).isEqualTo(Collections.emptyList());
+        assertThat(chapterDetailInfo.prevPart()).isEqualTo(chapter1.getPart());
+        assertThat(chapterDetailInfo.nextPart()).isEqualTo(chapter3.getPart());
     }
 
     @Test
@@ -208,21 +208,21 @@ class ChapterServiceTest {
         ChapterDetailInfo chapterDetailInfo3 = chapterService.getChapterDetailInfo(novel.getId(), author.getId(), chapter3.getId());
 
         // then
-        assertThat(chapterDetailInfo1.getPart()).isEqualTo(chapter1.getPart());
-        assertThat(chapterDetailInfo1.getTitle()).isEqualTo(chapter1.getTitle());
-        assertThat(chapterDetailInfo1.getMyParagraph()).isNull();
-        assertThat(chapterDetailInfo1.getBestParagraph()).isNull();
-        assertThat(chapterDetailInfo1.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo1.getPrevPart()).isNull();
-        assertThat(chapterDetailInfo1.getNextPart()).isEqualTo(chapter2.getPart());
+        assertThat(chapterDetailInfo1.part()).isEqualTo(chapter1.getPart());
+        assertThat(chapterDetailInfo1.title()).isEqualTo(chapter1.getTitle());
+        assertThat(chapterDetailInfo1.myParagraph()).isNull();
+        assertThat(chapterDetailInfo1.bestParagraph()).isNull();
+        assertThat(chapterDetailInfo1.selectedParagraphs()).isEqualTo(Collections.emptyList());
+        assertThat(chapterDetailInfo1.prevPart()).isNull();
+        assertThat(chapterDetailInfo1.nextPart()).isEqualTo(chapter2.getPart());
 
-        assertThat(chapterDetailInfo3.getPart()).isEqualTo(chapter3.getPart());
-        assertThat(chapterDetailInfo3.getTitle()).isEqualTo(chapter3.getTitle());
-        assertThat(chapterDetailInfo3.getMyParagraph()).isNull();
-        assertThat(chapterDetailInfo3.getBestParagraph()).isNull();
-        assertThat(chapterDetailInfo3.getSelectedParagraphs()).isEqualTo(Collections.emptyList());
-        assertThat(chapterDetailInfo3.getPrevPart()).isEqualTo(chapter2.getPart());
-        assertThat(chapterDetailInfo3.getNextPart()).isNull();
+        assertThat(chapterDetailInfo3.part()).isEqualTo(chapter3.getPart());
+        assertThat(chapterDetailInfo3.title()).isEqualTo(chapter3.getTitle());
+        assertThat(chapterDetailInfo3.myParagraph()).isNull();
+        assertThat(chapterDetailInfo3.bestParagraph()).isNull();
+        assertThat(chapterDetailInfo3.selectedParagraphs()).isEqualTo(Collections.emptyList());
+        assertThat(chapterDetailInfo3.prevPart()).isEqualTo(chapter2.getPart());
+        assertThat(chapterDetailInfo3.nextPart()).isNull();
     }
 
     @Test
@@ -272,9 +272,9 @@ class ChapterServiceTest {
         ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novel.getId(), author.getId(), chapter1.getId());
 
         // then
-        assertThat(chapterDetailInfo.getCommentCnt()).isEqualTo(3);
-        assertThat(chapterDetailInfo.getBestComments().size()).isEqualTo(3);
-        assertThat(chapterDetailInfo.getBestComments().get(0).getId()).isEqualTo(comment1.getId());
+        assertThat(chapterDetailInfo.commentCnt()).isEqualTo(3);
+        assertThat(chapterDetailInfo.bestComments().size()).isEqualTo(3);
+        assertThat(chapterDetailInfo.bestComments().get(0).getId()).isEqualTo(comment1.getId());
     }
 
     @Test
@@ -301,7 +301,7 @@ class ChapterServiceTest {
         ChapterDetailInfo chapterDetailInfo = chapterService.getChapterDetailInfo(novel.getId(), author.getId(), chapter2.getId());
 
         // then
-        assertThat(chapterDetailInfo.getFontSize()).isEqualTo(15);
-        assertThat(chapterDetailInfo.getParagraphSpace()).isEqualTo(16);
+        assertThat(chapterDetailInfo.fontSize()).isEqualTo(15);
+        assertThat(chapterDetailInfo.paragraphSpace()).isEqualTo(16);
     }
 }

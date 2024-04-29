@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,8 @@ import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.authority.service.StakeService;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
-import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.paragraph.constant.ParagraphStatus;
 import us.usserver.domain.paragraph.dto.ParagraphInVoting;
@@ -24,7 +23,6 @@ import us.usserver.domain.paragraph.dto.ParagraphsOfChapter;
 import us.usserver.domain.paragraph.dto.req.PostParagraphReq;
 import us.usserver.domain.paragraph.dto.res.GetParagraphResponse;
 import us.usserver.domain.paragraph.entity.Paragraph;
-import us.usserver.domain.paragraph.entity.ParagraphLike;
 import us.usserver.domain.paragraph.repository.ParagraphLikeRepository;
 import us.usserver.domain.paragraph.repository.ParagraphRepository;
 import us.usserver.domain.paragraph.repository.VoteRepository;
@@ -83,15 +81,15 @@ public class ParagraphServiceImpl implements ParagraphService {
         Chapter chapter = entityFacade.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
-        if (req.getContent().length() > 300 || req.getContent().length() < 50) {
+        if (req.content().length() > 300 || req.content().length() < 50) {
             throw new BaseException(ErrorCode.PARAGRAPH_LENGTH_OUT_OF_RANGE);
         }
 
         Paragraph paragraph = paragraphRepository.save(
                 Paragraph.builder()
-                        .content(req.getContent())
+                        .content(req.content())
                         .sequence(nextChapterCnt)
-                        .paragraphStatus(ParagraphStatus.UNSELECTED)
+                        .paragraphStatus(ParagraphStatus.IN_VOTING)
                         .chapter(chapter)
                         .author(author)
                         .build()
@@ -170,7 +168,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
-        int maxVoteCnt = 0, voteCnt;
+        int maxVoteCnt = -1, voteCnt;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             voteCnt = voteRepository.countAllByParagraph(paragraph);

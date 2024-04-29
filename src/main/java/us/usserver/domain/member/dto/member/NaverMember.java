@@ -7,7 +7,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NaverMember implements OauthMember{
+public final class NaverMember implements OauthMember{
 
     @JsonProperty("response")
     private Response response;

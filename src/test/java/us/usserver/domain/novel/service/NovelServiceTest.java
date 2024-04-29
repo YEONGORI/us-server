@@ -121,16 +121,16 @@ class NovelServiceTest {
         NovelDetailInfo novelDetailInfo = assertDoesNotThrow(
                 () -> novelService.getNovelDetailInfo(novel.getId()));
 
-        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
-        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
-        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
-        assertThat(novelDetailInfo.getChapterInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.title()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.thumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.synopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.authorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.authorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.ageRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.genre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.hashtags()).isEqualTo(novel.getHashtags());
+        assertThat(novelDetailInfo.stakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.chapterInfos()).isEqualTo(Collections.emptyList());
     }
 
     @Test
@@ -151,37 +151,37 @@ class NovelServiceTest {
                 () -> novelService.getNovelDetailInfo(novel.getId()));
 
         // then
-        assertThat(novelDetailInfo.getTitle()).isEqualTo(novel.getTitle());
-        assertThat(novelDetailInfo.getThumbnail()).isEqualTo(novel.getThumbnail());
-        assertThat(novelDetailInfo.getSynopsis()).isEqualTo(novel.getSynopsis());
-        assertThat(novelDetailInfo.getAuthorName()).isEqualTo(novel.getMainAuthor().getNickname());
-        assertThat(novelDetailInfo.getAuthorIntroduction()).isEqualTo(novel.getAuthorDescription());
-        assertThat(novelDetailInfo.getAgeRating()).isEqualTo(novel.getAgeRating());
-        assertThat(novelDetailInfo.getGenre()).isEqualTo(novel.getGenre());
-        assertThat(novelDetailInfo.getHashtags()).isEqualTo(novel.getHashtags());
-        assertThat(novelDetailInfo.getStakeInfos()).isEqualTo(Collections.emptyList());
-        assertThat(novelDetailInfo.getChapterInfos().size()).isEqualTo(2);
+        assertThat(novelDetailInfo.title()).isEqualTo(novel.getTitle());
+        assertThat(novelDetailInfo.thumbnail()).isEqualTo(novel.getThumbnail());
+        assertThat(novelDetailInfo.synopsis()).isEqualTo(novel.getSynopsis());
+        assertThat(novelDetailInfo.authorName()).isEqualTo(novel.getMainAuthor().getNickname());
+        assertThat(novelDetailInfo.authorIntroduction()).isEqualTo(novel.getAuthorDescription());
+        assertThat(novelDetailInfo.ageRating()).isEqualTo(novel.getAgeRating());
+        assertThat(novelDetailInfo.genre()).isEqualTo(novel.getGenre());
+        assertThat(novelDetailInfo.hashtags()).isEqualTo(novel.getHashtags());
+        assertThat(novelDetailInfo.stakeInfos()).isEqualTo(Collections.emptyList());
+        assertThat(novelDetailInfo.chapterInfos().size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("쇼셜 소개 수정")
     void modifyNovelSynopsis() {
-        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        NovelSynopsis synopsisRequest = NovelSynopsis.builder().synopsis("소설 소개는 적당한 길이로 해야합니다.").build();
         String synopsisResponse = assertDoesNotThrow(
-                () -> novelService.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.getSynopsis()));
+                () -> novelService.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.synopsis()));
 
-        assertThat(synopsisRequest.getSynopsis()).isEqualTo(synopsisResponse);
+        assertThat(synopsisRequest.synopsis()).isEqualTo(synopsisResponse);
     }
     
     @Test
     @DisplayName("권한 없는 작가의 소설 소개 수정")
     void modifySysnopsisNotAuthority() {
         // given
-        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        NovelSynopsis synopsisRequest = NovelSynopsis.builder().synopsis("소설 소개는 적당한 길이로 해야합니다.").build();
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
-                () -> novelService.modifyNovelSynopsis(novel.getId(), newAuthor.getId(), synopsisRequest.getSynopsis()));
+                () -> novelService.modifyNovelSynopsis(novel.getId(), newAuthor.getId(), synopsisRequest.synopsis()));
 
         // then
         assertThat(baseException.getMessage()).isEqualTo(ExceptionMessage.MAIN_AUTHOR_NOT_MATCHED);
@@ -223,8 +223,8 @@ class NovelServiceTest {
                 .thumbnail("TEST THUMBNAIL")
                 .synopsis("TEST SYNOPSIS")
                 .authorDescription("TEST AUTHORDESCRIPTION")
-                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-                .genre(Genre.FANTASY)
+                .hashtag(Collections.singleton(Hashtag.판타지))
+                .genre(Genre.판타지)
                 .ageRating(AgeRating.GENERAL)
                 .novelSize(NovelSize.LONG)
                 .build();
@@ -235,8 +235,8 @@ class NovelServiceTest {
         //then
         assertThat(novelInfo).isNotNull();
         assertThat(novelInfo.title()).isEqualTo("TEST TITLE");
-        assertThat(novelInfo.hashtag()).isEqualTo(Collections.singleton(Hashtag.HASHTAG1));
-        assertThat(novelInfo.genre()).isEqualTo(Genre.FANTASY);
+        assertThat(novelInfo.hashtag()).isEqualTo(Collections.singleton(Hashtag.판타지));
+        assertThat(novelInfo.genre()).isEqualTo(Genre.판타지);
         assertThat(novelInfo.createdAuthor().id()).isEqualTo(author.getId());
         assertThat(novelInfo.joinedAuthorCnt()).isZero();
         assertThat(novelInfo.commentCnt()).isZero();
@@ -252,8 +252,8 @@ class NovelServiceTest {
                 .thumbnail("TEST THUMBNAIL")
                 .synopsis("TEST SYNOPSIS")
                 .authorDescription("TEST AUTHORDESCRIPTION")
-                .hashtag(Collections.singleton(Hashtag.HASHTAG1))
-                .genre(Genre.FANTASY)
+                .hashtag(Collections.singleton(Hashtag.판타지))
+                .genre(Genre.판타지)
                 .ageRating(AgeRating.GENERAL)
                 .novelSize(NovelSize.LONG)
                 .build();

@@ -44,4 +44,16 @@ public class ChapterController {
         chapterService.createChapter(novelId, memberId);
         return ApiCsResponse.success();
     }
+
+    @Operation(summary = "소설의 m(1~n)화 생성하기", description = "전지적독자시점 2화 생성하기")
+    @ApiResponse(responseCode = "200", description = "m화 생성 성공",
+            content = @Content(schema = @Schema(implementation = String.class)))
+    @PatchMapping("/{chapterId}")
+    public ApiCsResponse<Void> finishChapter(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long chapterId
+    ) {
+        chapterService.finishChapter(chapterId, memberId);
+        return ApiCsResponse.success();
+    }
 }

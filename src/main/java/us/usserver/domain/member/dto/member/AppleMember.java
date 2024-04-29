@@ -7,7 +7,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AppleMember implements OauthMember {
+public final class AppleMember implements OauthMember {
     @JsonProperty("sub")
     private String sub;
 

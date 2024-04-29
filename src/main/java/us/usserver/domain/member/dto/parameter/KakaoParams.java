@@ -8,7 +8,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @AllArgsConstructor
-public class KakaoParams implements OauthParams{
+public final class KakaoParams implements OauthParams{
     private String authorizationCode;
 
     @Override

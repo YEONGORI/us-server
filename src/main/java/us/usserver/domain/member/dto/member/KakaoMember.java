@@ -7,7 +7,7 @@ import us.usserver.domain.member.constant.OauthProvider;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoMember implements OauthMember {
+public final class KakaoMember implements OauthMember {
 
     @JsonProperty("id")
     private String id;

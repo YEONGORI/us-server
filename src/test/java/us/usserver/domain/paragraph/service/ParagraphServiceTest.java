@@ -12,7 +12,7 @@ import us.usserver.domain.author.AuthorMother;
 import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.author.repository.AuthorRepository;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
@@ -218,7 +218,7 @@ class ParagraphServiceTest {
         assertThat(paragraphInVoting.voteCnt()).isZero();
         assertThat(paragraphInVoting.authorName()).isEqualTo(author.getNickname());
         assertThat(paragraphs.stream().anyMatch(p ->
-                p.getContent().equals(req.getContent()))).isTrue();
+                p.getContent().equals(req.content()))).isTrue();
     }
 
     @Test

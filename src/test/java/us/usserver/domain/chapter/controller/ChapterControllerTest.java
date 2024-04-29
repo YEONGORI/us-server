@@ -18,7 +18,7 @@ import us.usserver.domain.comment.CommentMother;
 import us.usserver.domain.author.entity.Author;
 import us.usserver.domain.authority.entity.Authority;
 import us.usserver.domain.authority.repository.AuthorityRepository;
-import us.usserver.domain.chapter.constant.ChapterStatus;
+import us.usserver.domain.chapter.dto.ChapterStatus;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
 import us.usserver.domain.member.entity.Member;
