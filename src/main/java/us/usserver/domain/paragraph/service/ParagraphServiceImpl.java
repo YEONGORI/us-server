@@ -168,7 +168,7 @@ public class ParagraphServiceImpl implements ParagraphService {
         List<ParagraphSelected> selectedParagraphs = new ArrayList<>();
         ParagraphInVoting myParagraph = null, bestParagraph = null;
 
-        int maxVoteCnt = 0, voteCnt;
+        int maxVoteCnt = -1, voteCnt;
         for (Paragraph paragraph : paragraphs) {
             ParagraphStatus status = paragraph.getParagraphStatus();
             voteCnt = voteRepository.countAllByParagraph(paragraph);
