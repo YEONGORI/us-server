@@ -81,13 +81,13 @@ public class ParagraphServiceImpl implements ParagraphService {
         Chapter chapter = entityFacade.getChapter(chapterId);
         int nextChapterCnt = paragraphRepository.countParagraphsByChapter(chapter) + 1;
 
-        if (req.getContent().length() > 300 || req.getContent().length() < 50) {
+        if (req.content().length() > 300 || req.content().length() < 50) {
             throw new BaseException(ErrorCode.PARAGRAPH_LENGTH_OUT_OF_RANGE);
         }
 
         Paragraph paragraph = paragraphRepository.save(
                 Paragraph.builder()
-                        .content(req.getContent())
+                        .content(req.content())
                         .sequence(nextChapterCnt)
                         .paragraphStatus(ParagraphStatus.UNSELECTED)
                         .chapter(chapter)

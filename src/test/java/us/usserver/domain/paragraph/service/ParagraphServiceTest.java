@@ -218,7 +218,7 @@ class ParagraphServiceTest {
         assertThat(paragraphInVoting.voteCnt()).isZero();
         assertThat(paragraphInVoting.authorName()).isEqualTo(author.getNickname());
         assertThat(paragraphs.stream().anyMatch(p ->
-                p.getContent().equals(req.getContent()))).isTrue();
+                p.getContent().equals(req.content()))).isTrue();
     }
 
     @Test
