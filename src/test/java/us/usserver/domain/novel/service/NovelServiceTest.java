@@ -166,7 +166,7 @@ class NovelServiceTest {
     @Test
     @DisplayName("쇼셜 소개 수정")
     void modifyNovelSynopsis() {
-        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        NovelSynopsis synopsisRequest = NovelSynopsis.builder().synopsis("소설 소개는 적당한 길이로 해야합니다.").build();
         String synopsisResponse = assertDoesNotThrow(
                 () -> novelService.modifyNovelSynopsis(novel.getId(), author.getId(), synopsisRequest.synopsis()));
 
@@ -177,7 +177,7 @@ class NovelServiceTest {
     @DisplayName("권한 없는 작가의 소설 소개 수정")
     void modifySysnopsisNotAuthority() {
         // given
-        NovelSynopsis synopsisRequest = NovelMother.generateSysnopsis();
+        NovelSynopsis synopsisRequest = NovelSynopsis.builder().synopsis("소설 소개는 적당한 길이로 해야합니다.").build();
 
         // when
         BaseException baseException = assertThrows(BaseException.class,
