@@ -89,7 +89,7 @@ public class ParagraphServiceImpl implements ParagraphService {
                 Paragraph.builder()
                         .content(req.content())
                         .sequence(nextChapterCnt)
-                        .paragraphStatus(ParagraphStatus.UNSELECTED)
+                        .paragraphStatus(ParagraphStatus.IN_VOTING)
                         .chapter(chapter)
                         .author(author)
                         .build()
