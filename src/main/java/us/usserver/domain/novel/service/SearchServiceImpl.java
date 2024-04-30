@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import us.usserver.domain.novel.dto.NovelSimpleInfo;
 import us.usserver.domain.novel.dto.SortColumn;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.dto.res.SearchPageRes;
 import us.usserver.domain.novel.entity.Novel;
@@ -30,15 +29,15 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     @Transactional
-    public SearchNovelRes searchNovel(Long memberId, SearchKeyword searchKeyword) {
-        PageRequest pageRequest = getPageRequest(searchKeyword.nextPage());
+    public SearchNovelRes searchNovel(Long memberId, String keyword, Integer nextPage) {
+        PageRequest pageRequest = getPageRequest(nextPage);
 
-        Set<String> keywords = komoranService.tokenizeKeyword(searchKeyword.keyword());
+        Set<String> keywords = komoranService.tokenizeKeyword(keyword);
 
         Slice<Novel> novelSlice = novelRepository.searchNovelList(keywords, pageRequest);
         Set<NovelSimpleInfo> novelSimpleInfos = novelSlice.map(NovelSimpleInfo::mapNovelToSimpleInfo).toSet();
 
-        redisUtils.saveSearchLog(searchKeyword.keyword(), memberId);
+        redisUtils.saveSearchLog(keyword, memberId);
 
         return new SearchNovelRes(novelSimpleInfos, novelSlice.getNumber() + 1, novelSlice.hasNext());
     }

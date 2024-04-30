@@ -14,11 +14,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import us.usserver.domain.author.AuthorMother;
-import us.usserver.domain.author.dto.req.UpdateAuthorReq;
-import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.author.entity.Author;
+import us.usserver.domain.chapter.ChapterMother;
 import us.usserver.domain.chapter.entity.Chapter;
 import us.usserver.domain.chapter.repository.ChapterRepository;
+import us.usserver.domain.member.MemberMother;
 import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.member.service.TokenProvider;
@@ -29,13 +29,10 @@ import us.usserver.domain.novel.constant.Hashtag;
 import us.usserver.domain.novel.constant.NovelSize;
 import us.usserver.domain.novel.dto.AuthorDescription;
 import us.usserver.domain.novel.dto.MainNovelType;
-import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.entity.Novel;
 import us.usserver.domain.novel.repository.NovelRepository;
 import us.usserver.global.utils.RedisUtils;
-import us.usserver.domain.member.MemberMother;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -58,7 +55,6 @@ class NovelControllerTest {
     private TokenProvider tokenProvider;
     @Autowired
     private RedisUtils redisUtils;
-
 
     @Autowired
     private MemberRepository memberRepository;
@@ -257,17 +253,13 @@ class NovelControllerTest {
     @DisplayName("소설 더보기 조회 API TEST")
     void getMoreNovels() throws Exception {
         // given
-        MoreNovelReq moreNovelReq = new MoreNovelReq(0, MainNovelType.NEW);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String reqBody = objectMapper.writeValueAsString(moreNovelReq);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/novel" + "/main/more")
+                .get("/novel" + "/main/more" + "/" + MainNovelType.NEW + "/0")
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reqBody));
+                .contentType(MediaType.APPLICATION_JSON));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
@@ -301,16 +293,13 @@ class NovelControllerTest {
     @DisplayName("소설 검색 API TEST")
     void searchNovel() throws Exception {
         // given
-        SearchKeyword searchKeyword = new SearchKeyword("검색어", 0);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String reqBody = objectMapper.writeValueAsString(searchKeyword);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/novel" + "/search")
+                .get("/novel" + "/search" + "/0")
+                .param("keyword", "검색어")
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Authorization-Refresh", "Bearer " + refreshToken)
-                .content(reqBody)
                 .contentType(MediaType.APPLICATION_JSON));
         String resultString = resultActions.andReturn().getResponse().getContentAsString();
 

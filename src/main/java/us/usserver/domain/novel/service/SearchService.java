@@ -1,13 +1,12 @@
 package us.usserver.domain.novel.service;
 
 import org.springframework.stereotype.Service;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.dto.res.SearchPageRes;
 
 @Service
 public interface SearchService {
-    SearchNovelRes searchNovel(Long memberId, SearchKeyword searchKeyword);
+    SearchNovelRes searchNovel(Long memberId, String keyword, Integer nextPage);
 
     SearchPageRes getSearchPage(Long memberId);
 

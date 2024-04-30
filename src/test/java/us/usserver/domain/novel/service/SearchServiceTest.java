@@ -15,7 +15,6 @@ import us.usserver.domain.member.entity.Member;
 import us.usserver.domain.member.repository.MemberRepository;
 import us.usserver.domain.novel.NovelMother;
 import us.usserver.domain.novel.dto.NovelSimpleInfo;
-import us.usserver.domain.novel.dto.req.SearchKeyword;
 import us.usserver.domain.novel.dto.res.SearchNovelRes;
 import us.usserver.domain.novel.dto.res.SearchPageRes;
 import us.usserver.domain.novel.entity.Novel;
@@ -73,10 +72,11 @@ class SearchServiceTest {
     @DisplayName("소설 검색 TEST")
     void getNovelInfo_1() {
         // given
-        SearchKeyword searchKeyword = SearchKeyword.builder().keyword(novel.getTitle().substring(1)).nextPage(0).build();
+        String keyword = novel.getTitle().substring(1);
+        Integer nextPage = 0;
 
         // when
-        SearchNovelRes searchNovelRes = searchService.searchNovel(member.getId(), searchKeyword);
+        SearchNovelRes searchNovelRes = searchService.searchNovel(member.getId(), keyword, nextPage);
 
         // then
         assertThat(searchNovelRes.novelSimpleInfos().size()).isNotZero();
@@ -112,8 +112,6 @@ class SearchServiceTest {
         novel11.setTitleForTest("전생 공주");
         novel12.setTitleForTest("전생 왕자");
 
-        SearchKeyword searchKeyword1 = SearchKeyword.builder().keyword("전생").nextPage(0).build();
-        SearchKeyword searchKeyword2 = SearchKeyword.builder().keyword("전생").nextPage(1).build();
 
         // when
         novelRepository.save(novel1);
@@ -129,8 +127,8 @@ class SearchServiceTest {
         novelRepository.save(novel11);
         novelRepository.save(novel12);
         novelRepository.save(novel13);
-        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), searchKeyword1);
-        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), searchKeyword2);
+        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), "전생", 0);
+        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), "전생", 1);
 
         // then
         for (NovelSimpleInfo novelSimpleInfo : searchNovelRes1.novelSimpleInfos()) {
@@ -156,9 +154,6 @@ class SearchServiceTest {
         Novel novel5 = NovelMother.generateNovel(author);
         Novel novel6 = NovelMother.generateNovel(author);
 
-        SearchKeyword searchKeyword1 = SearchKeyword.builder().keyword("소설").nextPage(0).build();
-        SearchKeyword searchKeyword2 = SearchKeyword.builder().keyword("소설").nextPage(1).build();
-
         // when
         novelRepository.save(novel1);
         novelRepository.save(novel2);
@@ -166,8 +161,8 @@ class SearchServiceTest {
         novelRepository.save(novel4);
         novelRepository.save(novel5);
         novelRepository.save(novel6);
-        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), searchKeyword1);
-        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), searchKeyword2);
+        SearchNovelRes searchNovelRes1 = searchService.searchNovel(member.getId(), "소설", 0);
+        SearchNovelRes searchNovelRes2 = searchService.searchNovel(member.getId(), "소설", 1);
 
         // then
         assertThat(searchNovelRes1.novelSimpleInfos().size()).isEqualTo(6);

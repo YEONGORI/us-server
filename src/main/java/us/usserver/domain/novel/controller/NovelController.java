@@ -11,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import us.usserver.domain.novel.dto.AuthorDescription;
+import us.usserver.domain.novel.dto.MainNovelType;
 import us.usserver.domain.novel.dto.NovelDetailInfo;
 import us.usserver.domain.novel.dto.NovelInfo;
-import us.usserver.domain.novel.dto.req.MoreNovelReq;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.req.NovelSynopsis;
 import us.usserver.domain.novel.dto.req.SearchKeyword;
@@ -114,12 +114,13 @@ public class NovelController {
     @Operation(summary = "소설 더보기", description = "실시간 업데이트, 신작 모아보기 더보기 API")
     @ApiResponse(responseCode = "200", description = "소설 더보기 load 성공",
             content = @Content(schema = @Schema(implementation = NovelPageInfoRes.class)))
-    @GetMapping("/main/more")
+    @GetMapping("/main/more/{mainNovelType}/{nextPage}")
     public ApiCsResponse<MoreNovelRes> getMoreNovels(
             @AuthenticationPrincipal Long memberId,
-            @Valid @RequestBody MoreNovelReq moreNovelReq
+            @PathVariable MainNovelType mainNovelType,
+            @PathVariable Integer nextPage
     ) {
-        MoreNovelRes moreNovels = novelService.getMoreNovels(memberId, moreNovelReq);
+        MoreNovelRes moreNovels = novelService.getMoreNovels(memberId, mainNovelType, nextPage);
         return ApiCsResponse.success(moreNovels);
     }
 
@@ -147,12 +148,13 @@ public class NovelController {
     @Operation(summary = "소설 검색", description = "사용자 소설 검색 API")
     @ApiResponse(responseCode = "200", description = "소설 검색 성공",
             content = @Content(schema = @Schema(implementation = SearchNovelRes.class)))
-    @GetMapping("/search")
+    @GetMapping("/search/{nextPage}")
     public ApiCsResponse<SearchNovelRes> searchNovel(
             @AuthenticationPrincipal Long memberId,
-            @Valid @RequestBody SearchKeyword searchKeyword
+            @RequestParam String keyword,
+            @PathVariable Integer nextPage
     ) {
-        SearchNovelRes searchNovelRes = searchService.searchNovel(memberId, searchKeyword);
+        SearchNovelRes searchNovelRes = searchService.searchNovel(memberId, keyword, nextPage);
         return ApiCsResponse.success(searchNovelRes);
     }
     

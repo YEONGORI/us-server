@@ -392,10 +392,6 @@ class NovelServiceTest {
         Novel novel6 = NovelMother.generateNovel(author);
         Novel novel7 = NovelMother.generateNovel(author);
         Novel novel8 = NovelMother.generateNovel(author);
-        MoreNovelReq moreNovelReq1 = MoreNovelReq.builder()
-                .mainNovelType(MainNovelType.NEW).nextPage(0).build();
-        MoreNovelReq moreNovelReq2 = MoreNovelReq.builder()
-                .mainNovelType(MainNovelType.NEW).nextPage(1).build();
 
         //when
         novelRepository.save(novel1);
@@ -406,8 +402,8 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
-        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), MainNovelType.NEW, 0);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), MainNovelType.NEW, 1);
 
         //then
         assertThat(moreNovelRes1.novelList().get(0).id()).isEqualTo(novel8.getId());
@@ -454,8 +450,8 @@ class NovelServiceTest {
         novelRepository.save(novel6);
         novelRepository.save(novel7);
         novelRepository.save(novel8);
-        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
-        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), MainNovelType.POPULAR, 0);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), MainNovelType.POPULAR, 1);
 
         //then
         assertThat(moreNovelRes1.novelList().get(0).id()).isEqualTo(novel1.getId());
@@ -508,8 +504,8 @@ class NovelServiceTest {
         novelRepository.save(novel7);
         novelRepository.save(novel8);
         chapterRepository.save(chapter1);
-        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), moreNovelReq1);
-        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), moreNovelReq2);
+        MoreNovelRes moreNovelRes1 = novelService.getMoreNovels(member.getId(), MainNovelType.UPDATE, 0);
+        MoreNovelRes moreNovelRes2 = novelService.getMoreNovels(member.getId(), MainNovelType.UPDATE, 1);
 
         //then
         moreNovelRes1.novelList()

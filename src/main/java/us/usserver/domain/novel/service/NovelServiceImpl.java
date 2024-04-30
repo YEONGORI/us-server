@@ -17,11 +17,7 @@ import us.usserver.domain.authority.repository.AuthorityRepository;
 import us.usserver.domain.authority.service.StakeService;
 import us.usserver.domain.chapter.dto.ChapterInfo;
 import us.usserver.domain.chapter.service.ChapterService;
-import us.usserver.domain.novel.dto.AuthorDescription;
-import us.usserver.domain.novel.dto.NovelDetailInfo;
-import us.usserver.domain.novel.dto.NovelInfo;
-import us.usserver.domain.novel.dto.SortColumn;
-import us.usserver.domain.novel.dto.req.MoreNovelReq;
+import us.usserver.domain.novel.dto.*;
 import us.usserver.domain.novel.dto.req.NovelBlueprint;
 import us.usserver.domain.novel.dto.res.MainPageRes;
 import us.usserver.domain.novel.dto.res.MoreNovelRes;
@@ -147,11 +143,11 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     @Transactional
-    public MoreNovelRes getMoreNovels(Long memberId, MoreNovelReq moreNovelReq) {
-        PageRequest pageRequest = switch (moreNovelReq.mainNovelType()) {
-            case NEW -> getPageRequest(moreNovelReq.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
-            case UPDATE -> getPageRequest(moreNovelReq.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
-            case POPULAR -> getPageRequest(moreNovelReq.nextPage(), DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
+    public MoreNovelRes getMoreNovels(Long memberId, MainNovelType mainNovelType, Integer nextPage) {
+        PageRequest pageRequest = switch (mainNovelType) {
+            case NEW -> getPageRequest(nextPage, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.createdAt);
+            case UPDATE -> getPageRequest(nextPage, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.recentlyUpdated);
+            case POPULAR -> getPageRequest(nextPage, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, SortColumn.hit);
         };
 
         Slice<Novel> novelSlice = novelRepository.findSliceBy(pageRequest);
