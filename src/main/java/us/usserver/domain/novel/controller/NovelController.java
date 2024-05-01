@@ -112,8 +112,7 @@ public class NovelController {
     }
 
     @Operation(summary = "소설 더보기", description = "실시간 업데이트, 신작 모아보기 더보기 API")
-    @ApiResponse(responseCode = "200", description = "소설 더보기 load 성공",
-            content = @Content(schema = @Schema(implementation = NovelPageInfoRes.class)))
+    @ApiResponse(responseCode = "200", description = "소설 더보기 load 성공")
     @GetMapping("/main/more/{mainNovelType}/{nextPage}")
     public ApiCsResponse<MoreNovelRes> getMoreNovels(
             @AuthenticationPrincipal Long memberId,
@@ -146,8 +145,7 @@ public class NovelController {
     }
 
     @Operation(summary = "소설 검색", description = "사용자 소설 검색 API")
-    @ApiResponse(responseCode = "200", description = "소설 검색 성공",
-            content = @Content(schema = @Schema(implementation = SearchNovelRes.class)))
+    @ApiResponse(responseCode = "200", description = "소설 검색 성공")
     @GetMapping("/search/{nextPage}")
     public ApiCsResponse<SearchNovelRes> searchNovel(
             @AuthenticationPrincipal Long memberId,
