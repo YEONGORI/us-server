@@ -73,7 +73,7 @@ public class ParagraphController {
 
     @Operation(summary = "한줄 삭제하기", description = "선택한 한줄 삭제")
     @ApiResponse(responseCode = "200", description = "삭제 성공")
-    @PatchMapping("/{paragraphId}")
+    @DeleteMapping("/{paragraphId}")
     public ResponseEntity<ApiCsResponse<Void>> selectParagraph(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long paragraphId
